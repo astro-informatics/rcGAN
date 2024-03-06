@@ -164,7 +164,8 @@ class MMDataTransform:
 
         # Normalization step.
         normalized_gamma, mean, std = transforms.normalize_instance(pt_gamma)
-        normalized_gt = transforms.normalize(pt_kappa, mean, std)
+        #normalized_gt = transforms.normalize(pt_kappa, mean, std)
+        normalized_gt = pt_kappa #No normalisation of gt wrt mean and std of gamma.
 
         # Mask the shear gamma
         if self.mask is not None:
