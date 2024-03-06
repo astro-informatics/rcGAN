@@ -82,18 +82,31 @@ if __name__ == "__main__":
 
                 np_gt = None
 
-                np_gt = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu())).numpy(), 180)
-                np_zfr = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((zfr[j] * std[j] + mean[j]).cpu())).numpy(), 180)
+                # np_gt = ndimage.rotate(
+                #     torch.tensor(tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu())).numpy(), 180)
+                # np_zfr = ndimage.rotate(
+                #     torch.tensor(tensor_to_complex_np((zfr[j] * std[j] + mean[j]).cpu())).numpy(), 180)
+                # np_avgs['mmGAN'] = ndimage.rotate(
+                #     torch.tensor(tensor_to_complex_np((avg_mmGAN[j] * std[j] + mean[j]).cpu())).numpy(),
+                #     180)
 
+                # for z in range(cfg.num_z_test):
+                #     np_samps['mmGAN'].append(ndimage.rotate(torch.tensor(
+                #         tensor_to_complex_np((gens_mmGAN[j, z] * std[j] + mean[j]).cpu())).numpy(), 180))
+
+                np_gt = ndimage.rotate(
+                    torch.tensor(tensor_to_complex_np((gt[j]).cpu())).numpy(), 180)
+                np_zfr = ndimage.rotate(
+                    torch.tensor(tensor_to_complex_np((zfr[j]).cpu())).numpy(), 180) #Removing std and mean contributions.
+                
                 np_avgs['mmGAN'] = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((avg_mmGAN[j] * std[j] + mean[j]).cpu())).numpy(),
+                    torch.tensor(tensor_to_complex_np((avg_mmGAN[j]).cpu())).numpy(),
                     180)
 
                 for z in range(cfg.num_z_test):
                     np_samps['mmGAN'].append(ndimage.rotate(torch.tensor(
-                        tensor_to_complex_np((gens_mmGAN[j, z] * std[j] + mean[j]).cpu())).numpy(), 180))
+                        tensor_to_complex_np((gens_mmGAN[j, z]).cpu())).numpy(), 180))
+
 
                 np_stds['mmGAN'] = np.std(np.stack(np_samps['mmGAN']), axis=0)
 

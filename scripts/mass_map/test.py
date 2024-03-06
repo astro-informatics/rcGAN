@@ -108,15 +108,19 @@ if __name__ == "__main__":
                     single_samps = np.zeros((n, cfg.im_size, cfg.im_size))
 
                     # S = sp.linop.Multiply((cfg.im_size, cfg.im_size), tensor_to_complex_np(maps[j].cpu()))
-                    gt_ksp, avg_ksp = tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu()), tensor_to_complex_np(
-                        (avg[j] * std[j] + mean[j]).cpu())
+                    # gt_ksp, avg_ksp = tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu()), tensor_to_complex_np(
+                    #     (avg[j] * std[j] + mean[j]).cpu())
+
+                    gt_ksp, avg_ksp = tensor_to_complex_np((gt[j]).cpu()), tensor_to_complex_np(
+                        (avg[j]).cpu())
 
                     avg_gen_np = torch.tensor(avg_ksp).abs().numpy()
                     gt_np = torch.tensor(gt_ksp).abs().numpy()
 
                     for z in range(n):
                         # np_samp = tensor_to_complex_np((gens[j, z, :, :, :, :] * std[j] + mean[j]).cpu())
-                        np_samp = tensor_to_complex_np((gens[j, z, :, :, :] * std[j] + mean[j]).cpu())
+                        # np_samp = tensor_to_complex_np((gens[j, z, :, :, :] * std[j] + mean[j]).cpu())
+                        np_samp = tensor_to_complex_np((gens[j, z, :, :, :]).cpu())
                         single_samps[z, :, :] = torch.tensor(np_samp).abs().numpy()
 
                     med_np = np.median(single_samps, axis=0)
