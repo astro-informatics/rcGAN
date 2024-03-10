@@ -9,16 +9,10 @@ import sys
 sys.path.append('/home/jjwhit/rcGAN/')
 
 from data.lightning.MassMappingDataModule import MMDataModule
-from data.lightning.MassMappingDataModule import MMDataTransform #import compute_fourier_kernel, realistic_noise_maker
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
 from utils.mri import transforms
-import time
-
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-from skimage.measure import find_contours
 
 def load_object(dct):
     return types.SimpleNamespace(**dct)
@@ -65,19 +59,7 @@ if __name__ == "__main__":
     std = std.cuda()
 
     gens_mmGAN = torch.zeros(size=(cfg.num_z_test, cfg.im_size, cfg.im_size, 2)).cuda()
-    # for z in range(cfg.num_z_test):
-    #     gens_mmGAN[z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(normalized_gamma).cuda())
-    #normalized gamma or cosmos_shear_tensor?
-    batch_size = 32  # or any other suitable value
+    for z in range(cfg.num_z_test):
+        gens_mmGAN[z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(normalized_gamma).cuda())
 
-    start_time = time.time()
-    for z in range(0, cfg.num_z_test, batch_size):
-        gens_mmGAN[z:z+batch_size, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(normalized_gamma).cuda())
-    total_time = time.time() - start_time
-    print(f'total time is: {total_time}')
-
-    torch.save('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_samps_400.npy', gens_mmGAN)
-
-    # avg_mmGAN = torch.mean(gens_mmGAN, dim=1)
-
-    # zfr = mmGAN_model.reformat(cosmos_shear_tensor)
+    torch.save('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_samps_no_norm', gens_mmGAN)
