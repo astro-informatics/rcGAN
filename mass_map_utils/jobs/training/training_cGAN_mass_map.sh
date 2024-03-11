@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=training
+#SBATCH --job-name=tr_no_norm
 #SBATCH -p GPU
 # requesting one node
 # SBATCH -N1
@@ -13,8 +13,8 @@
 #SBATCH --mem-per-gpu=80GB           # memory per GPU
 #SBATCH --mail-use=jessica.whitney.22@ucl.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --output=training_%j.out
-#SBATCH --error=training_%j.err
+#SBATCH --output=tr_no_norm_%j.out
+#SBATCH --error=tr_no_norm_%j.err
 
 
 
@@ -36,4 +36,4 @@ echo $WANDB_CONFIG_DIR
 
 cd /home/jjwhit/rcGAN
 
-srun python -u train.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos --num-gpus 4
+srun python -u train.py --config ./configs/mass_map.yml --exp-name mmgan_training_no_norm --num-gpus 4
