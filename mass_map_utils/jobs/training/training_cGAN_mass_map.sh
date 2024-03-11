@@ -36,4 +36,4 @@ echo $WANDB_CONFIG_DIR
 
 cd /home/jjwhit/rcGAN
 
-srun python -u train.py --config ./configs/mass_map.yml --exp-name mmgan_training_cosmos --num-gpus 4
+srun python -u train.py --config ./configs/mass_map.yml --exp-name mmgan_training_shared_mean --num-gpus 4
