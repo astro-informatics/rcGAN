@@ -85,7 +85,7 @@ if __name__ == "__main__":
                 np_gt = ndimage.rotate(
                     torch.tensor(tensor_to_complex_np((gt[j]).cpu())).numpy(), 180)
                 np_zfr = ndimage.rotate(
-                    torch.tensor(tensor_to_complex_np((zfr[j).cpu())).numpy(), 180)
+                    torch.tensor(tensor_to_complex_np((zfr[j]).cpu())).numpy(), 180)
 
                 np_avgs['mmGAN'] = ndimage.rotate(
                     torch.tensor(tensor_to_complex_np((avg_mmGAN[j]).cpu())).numpy(),
