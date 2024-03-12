@@ -35,7 +35,7 @@ if __name__ == "__main__":
     best_epoch = -1
     inception_embedding = VGG16Embedding()
     best_cfid = 10000000
-    start_epoch = 50 #Will start saving models after 50 epochs
+    start_epoch = 70 #Will start saving models after 50 epochs
     end_epoch = 100
 
 
