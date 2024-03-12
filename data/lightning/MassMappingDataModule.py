@@ -7,6 +7,7 @@ from data.datasets.MM_data import MassMappingDataset_Test, MassMappingDataset_Tr
 from utils.mri import transforms
 from typing import Tuple
 import pathlib
+import torch
 
 
 
@@ -164,7 +165,7 @@ class MMDataTransform:
 
         # Normalization step.
         normalized_gamma, mean, std = transforms.normalize_instance(pt_gamma)
-        normalized_gt = pt_kappa - np.mean(pt_kappa)
+        normalized_gt = pt_kappa - torch.mean(pt_kappa)
 
         # Mask the shear gamma
         if self.mask is not None:
