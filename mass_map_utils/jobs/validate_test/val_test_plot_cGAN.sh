@@ -38,5 +38,5 @@ cd /home/jjwhit/rcGAN
 #Remember to change exp-name to the batch you want to validate
 # srun python -u ./scripts/mass_map/validate.py --config ./configs/mass_map.yml --exp-name mmgan_training_no_norm
 # srun python -u ./scripts/mass_map/test.py --config ./configs/mass_map.yml --exp-name mmgan_training_no_norm
-srun python -u ./scripts/mass_map/plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_no_norm --num-figs 1
-srun python -u ./scripts/mass_map/gen_cosmos_samps.py --config ./configs/mass_map.yml --exp-name mmgan_training_no_norm
+srun python -u ./scripts/mass_map/plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_no_norm --num-figs 5
+# srun python -u ./scripts/mass_map/gen_cosmos_samps.py --config ./configs/mass_map.yml --exp-name mmgan_training_no_norm
