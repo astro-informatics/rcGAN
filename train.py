@@ -2,16 +2,18 @@ import torch
 import yaml
 import types
 import json
+import sys
+sys.path.append('/home/mars/git/rcGAN/')
 
 import pytorch_lightning as pl
 
 from pytorch_lightning.callbacks import ModelCheckpoint
-from data.lightning.MRIDataModule import MRIDataModule
+# from data.lightning.MRIDataModule import MRIDataModule
 from utils.parse_args import create_arg_parser
 from models.lightning.rcGAN import rcGAN
 from pytorch_lightning import seed_everything
 from pytorch_lightning.loggers import WandbLogger
-from data.lightning.MassMappingDataModule import MMDataModule
+# from data.lightning.MassMappingDataModule import MMDataModule
 from data.lightning.RadioDataModule import RadioDataModule
 from models.lightning.mmGAN import mmGAN
 
@@ -43,6 +45,7 @@ if __name__ == '__main__':
             dm = MMDataModule(cfg)
             model = mmGAN(cfg, args.exp_name, args.num_gpus)
         elif cfg.experience == 'radio':
+            cfg.num_workers = args.num_gpus # set number of workers to same as gpu
             dm = RadioDataModule(cfg)
             model = mmGAN(cfg, args.exp_name, args.num_gpus)
         else:

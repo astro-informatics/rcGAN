@@ -24,9 +24,15 @@ class mmGAN(pl.LightningModule):
         self.in_chans = args.in_chans + 2  # Two extra dimensions of the added noise 
         self.out_chans = args.out_chans
 
+        try:
+            alt_upsample = self.args.alt_upsample
+        except:
+            alt_upsample = False
+            
         self.generator = UNetModel(
             in_chans=self.in_chans,
             out_chans=self.out_chans,
+            alt_upsample=alt_upsample
         )
 
         self.discriminator = DiscriminatorModel(
