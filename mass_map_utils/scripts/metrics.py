@@ -1,0 +1,158 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import json
+import sys
+sys.path.append("/home/jjwhit/rcGAN")
+
+data_dir = "/share/gpu0/jjwhit/samples/rmse/"
+
+mask =  np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy', allow_pickle=True
+).astype(bool)
+
+def rmse(a:np.ndarray, b:np.ndarray, mask:bool)->float:
+    '''
+    args:
+        a (np.ndarray): ground truth
+        b (np.ndarray): reconstruction
+        mask (bool): mask
+    returns:
+        rmse (float): root mean squared error
+    '''
+    a = a[mask==1]
+    b = b[mask==1]
+    return(np.sqrt(np.mean(np.square(a-b))))
+
+def pearsoncoeff(a:np.ndarray, b:np.ndarray, mask:bool)->float:
+    '''
+    args:
+        a (np.ndarray): ground truth
+        b (np.ndarray): reconstruction
+        mask (bool): mask
+    returns:
+        pearson (float): Pearson correlation coefficient
+    '''
+    a = a[mask==1]
+    b = b[mask==1]
+    a -= np.mean(a)
+    b -= np.mean(b)
+    num = np.sum(a*b)
+    denom = np.sqrt(np.sum(a**2)*np.sum(b**2))
+    return num/denom
+
+def psnr(a:np.ndarray, b:np.ndarray, mask:bool)->float:
+    '''
+    args:
+        a (np.ndarray): ground truth
+        b (np.ndarray): reconstruction
+        mask (bool): mask
+    returns:
+        psnr (float): peak signal-to-noise ratio
+    '''
+    a = a[mask==1]
+    b = b[mask==1]
+    mse = np.mean((a-b)**2)
+    r = a.max()
+    return 10*np.log10(r/mse)
+
+def SNR(a:np.ndarray, b:np.ndarray, mask:bool)->float:
+    '''
+    args:
+        a (np.ndarray): ground truth
+        b (np.ndarray): reconstruction
+        mask (bool): mask
+    returns:
+        snr (float): signal-to-noise ratio
+    '''
+    a = a[mask==1]
+    b = b[mask==1]
+    signal = np.mean(a**2)
+    noise = np.mean((a-b)**2)
+    return 10*np.log10(signal/noise)
+
+r_ks = []
+r_gan = []
+rmse_ks = []
+rmse_gan = []
+psnr_ks = []
+psnr_gan = []
+snr_ks = []
+snr_gan = []
+r_std_abs_error = []
+r_abs_error_sims = []
+r_std_sims = []
+all_psnr_vals = []
+within_std_count = []
+
+for map in range (1,1001):
+    np_gts = np.load(data_dir+f"np_gt_{map}.npy")
+    np_samps = np.load(data_dir+f"np_samps_{map}.npy")
+    np_avgs = np.load(data_dir+f"np_avgs_{map}.npy")
+    np_stds = np.load(data_dir+f"np_stds_{map}.npy")
+    np_kss = np.load(data_dir+f"np_kss_{map}.npy")
+
+    gt = np_gts.real
+    ks = np_kss.real
+    gan = np_avgs.real
+
+
+    r_gan.append(pearsoncoeff(gt, gan, mask))
+    r_ks.append(pearsoncoeff(gt, ks, mask))
+
+    rmse_ks.append(rmse(ks, gt, mask))
+    rmse_gan.append(rmse(gan, gt, mask))
+
+    psnr_ks.append(psnr(gt, ks, mask))
+    psnr_gan.append(psnr(gt, gan, mask))
+
+    snr_ks.append(SNR(gt, ks, mask))
+    snr_gan.append(SNR(gt, gan, mask))
+
+    abs_error_gan = np.abs(gan - gt)
+
+    relative_error = abs_error_gan.real / np_stds.real
+    mean_relative_error = np.mean(relative_error[mask])
+    std_relative_error = np.std(relative_error[mask])
+
+    lower_bound = mean_relative_error - std_relative_error
+    upper_bound = mean_relative_error + std_relative_error
+    pix_within_std_relative = np.sum((relative_error[mask] >= lower_bound) & (relative_error[mask] <= upper_bound))
+    total_masked_pix_relative = np.sum(mask)
+    within_std_count_relative = pix_within_std_relative / total_masked_pix_relative
+    within_std_count.append(within_std_count_relative)
+
+    r_std_abs_error.append(pearsoncoeff(np_stds.real, abs_error_gan, mask))
+    r_abs_error_sims.append(pearsoncoeff(gt, abs_error_gan, mask))
+    r_std_sims.append(pearsoncoeff(np_stds.real, gt, mask))
+
+    psnr_vals = []
+    for n in range(1,33):
+        # Average the first `n` posterior samples to create a reconstruction
+        recon = np.mean(np_samps[:n].real, axis=0)
+        
+        # Calculate PSNR for this reconstruction
+        psnr_value = psnr(recon, np_gts.real, mask)
+        psnr_vals.append(psnr_value)
+    all_psnr_vals.append(psnr_vals)
+
+results_dict = {
+    "r_ks_avg": np.mean(r_ks),
+    "r_gan_avg": np.mean(r_gan_avg),
+    "rmse_ks_avg": np.mean(rmse_ks_avg),
+    "rmse_gan_avg": np.mean(rmse_gan_avg),
+    "psnr_ks_avg": np.mean(psnr_ks_avg),
+    "psnr_gan_avg": np.mean(psnr_gan_avg),
+    "snr_ks_avg": np.mean(snr_ks_avg),
+    "snr_gan_avg": np.mean(snr_gan_avg),
+    "r_std_abs_error_avg": np.mean(r_std_abs_error_avg),
+    "r_abs_error_sims_avg": np.mean(r_abs_error_sims_avg),
+    "r_std_sims_avg": np.mean(r_std_sims_avg),
+    "all_psnr_vals": np.array(all_psnr_vals),
+    "all_psnr_mean": np.mean(all_psnr_vals, axis=0),
+    "all_psnr_std": np.std(all_psnr_vals, axis=0),
+    "average_within_std_relative_count": np.mean(within_std_count)
+}
+
+with open("results_dict.json", "w") as json_file:
+    json.dump(results_dict, json_file)
+
+ 
