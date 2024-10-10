@@ -187,7 +187,7 @@ class mmGAN(pl.LightningModule):
                            device=self.device)
         for z in range(num_code):
             # gens[:, z, :, :, :] = self.forward(y) * std[:, None, None, None] + mean[:, None, None, None] 
-            gens[:, z, :, :, :] = self.forward(y) * kappa_std[:, None, None, None] + kappa_mean[:, None, None, None] #TODO: All good here?
+            gens[:, z, :, :, :] = self.forward(y) * kappa_std[:, None, None, None] + kappa_mean[:, None, None, None]
 
         avg = torch.mean(gens, dim=1)
         avg_gen = self.reformat(avg)

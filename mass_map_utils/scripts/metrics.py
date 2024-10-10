@@ -1,13 +1,20 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import json
 import sys
 sys.path.append("/home/jjwhit/rcGAN")
+from data.lightning.MassMappingDataModule import MMDataTransform
+from mass_map_utils.scripts.ks_utils import backward_model
+from scipy import ndimage
 
-data_dir = "/share/gpu0/jjwhit/samples/rmse/"
+data_dir = "/share/gpu0/jjwhit/samples/ks/rmse/"
 
 mask =  np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy', allow_pickle=True
 ).astype(bool)
+std1 = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std1.npy', allow_pickle=True)
+std2 = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std2.npy', allow_pickle=True)
+
+kernel = MMDataTransform.compute_fourier_kernel(300)
+np_kss = {}
 
 def rmse(a:np.ndarray, b:np.ndarray, mask:bool)->float:
     '''
@@ -88,7 +95,13 @@ for map in range (1,1001):
     np_samps = np.load(data_dir+f"np_samps_{map}.npy")
     np_avgs = np.load(data_dir+f"np_avgs_{map}.npy")
     np_stds = np.load(data_dir+f"np_stds_{map}.npy")
-    np_kss = np.load(data_dir+f"np_kss_{map}.npy")
+
+    gamma_sim = MMDataTransform.forward_model(np_gts, kernel) + (
+                std1 * np.random.randn(300, 300) + 1.j * std2 * np.random.randn(300,300)
+            )
+    gamma_sim *= mask
+    backward = backward_model(gamma_sim, kernel)
+    np_kss = ndimage.gaussian_filter(backward, sigma=1/.29)
 
     gt = np_gts.real
     ks = np_kss.real
@@ -135,24 +148,24 @@ for map in range (1,1001):
     all_psnr_vals.append(psnr_vals)
 
 results_dict = {
-    "r_ks_avg": np.mean(r_ks),
-    "r_gan_avg": np.mean(r_gan_avg),
-    "rmse_ks_avg": np.mean(rmse_ks_avg),
-    "rmse_gan_avg": np.mean(rmse_gan_avg),
-    "psnr_ks_avg": np.mean(psnr_ks_avg),
-    "psnr_gan_avg": np.mean(psnr_gan_avg),
-    "snr_ks_avg": np.mean(snr_ks_avg),
-    "snr_gan_avg": np.mean(snr_gan_avg),
-    "r_std_abs_error_avg": np.mean(r_std_abs_error_avg),
-    "r_abs_error_sims_avg": np.mean(r_abs_error_sims_avg),
-    "r_std_sims_avg": np.mean(r_std_sims_avg),
-    "all_psnr_vals": np.array(all_psnr_vals),
-    "all_psnr_mean": np.mean(all_psnr_vals, axis=0),
-    "all_psnr_std": np.std(all_psnr_vals, axis=0),
-    "average_within_std_relative_count": np.mean(within_std_count)
+    "r_ks_avg": float(np.mean(r_ks)),
+    "r_gan_avg": float(np.mean(r_gan)),
+    "rmse_ks_avg": float(np.mean(rmse_ks)),
+    "rmse_gan_avg": float(np.mean(rmse_gan)),
+    "psnr_ks_avg": float(np.mean(psnr_ks)),
+    "psnr_gan_avg": float(np.mean(psnr_gan)),
+    "snr_ks_avg": float(np.mean(snr_ks)),
+    "snr_gan_avg": float(np.mean(snr_gan)),
+    "r_std_abs_error_avg": float(np.mean(r_std_abs_error)),
+    "r_abs_error_sims_avg": float(np.mean(r_abs_error_sims)),
+    "r_std_sims_avg": float(np.mean(r_std_sims)),
+    "all_psnr_vals": np.array(all_psnr_vals).tolist(),
+    "all_psnr_mean": np.mean(all_psnr_vals, axis=0).tolist(),
+    "all_psnr_std": np.std(all_psnr_vals, axis=0).tolist(),
+    "average_within_std_relative_count": float(np.mean(within_std_count))
 }
 
-with open("results_dict.json", "w") as json_file:
+with open("results_dict", "w") as json_file:
     json.dump(results_dict, json_file)
 
  
