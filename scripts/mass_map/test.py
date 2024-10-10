@@ -15,7 +15,8 @@ from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
 from utils.mri.math import tensor_to_complex_np
 # from evaluation_scripts.metrics import ssim, psnr
-from skimage.metrics import peak_signal_noise_ratio as psnr
+# from skimage.metrics import peak_signal_noise_ratio as psnr
+from mass_map_utils.scripts.ks_utils import psnr
 from skimage.metrics import structural_similarity as ssim
 from utils.embeddings import VGG16Embedding
 from evaluation_scripts.mass_map_cfid.cfid_metric import CFIDMetric  
@@ -61,6 +62,9 @@ if __name__ == "__main__":
 
     cfg.batch_size = cfg.batch_size * 4
     dm = MMDataModule(cfg)
+    mask = np.load(
+        "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
+    ).astype(bool)
 
 
     dm.setup()
@@ -74,7 +78,7 @@ if __name__ == "__main__":
 
     with torch.no_grad():
         model = mmGAN.load_from_checkpoint(
-            checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
+            checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint-epoch=87.ckpt')
         model.cuda()
         model.eval()
 
@@ -122,7 +126,7 @@ if __name__ == "__main__":
                     med_np = np.median(single_samps, axis=0)
 
                     apsds.append(np.mean(np.std(single_samps, axis=0), axis=(0, 1)))
-                    psnrs.append(psnr(gt_np, avg_gen_np))
+                    psnrs.append(psnr(gt_np, avg_gen_np, mask))
                     ssims.append(ssim(gt_np, avg_gen_np))
                     lpipss.append(lpips_met(rgb(gt_np, cfg.im_size), rgb(avg_gen_np, cfg.im_size)).numpy())
                     distss.append(dists_met(rgb(gt_np, cfg.im_size, unit_norm=True), rgb(avg_gen_np, cfg.im_size, unit_norm=True)).numpy())
