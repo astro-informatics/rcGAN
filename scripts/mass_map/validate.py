@@ -53,7 +53,7 @@ if __name__ == "__main__":
     psnr_vals = []
     snr_vals = []
     rmse_vals = []
-    r_vals = []
+    pearson_vals = []
 
     with torch.no_grad():
 
@@ -89,15 +89,18 @@ if __name__ == "__main__":
                 num_samps=1,
             )
 
-            reconstruction, label, truth = cfid_metric._get_generated_distribution()
+            # reconstruction, label, truth = cfid_metric._get_generated_distribution()
 
-            cfids = cfid_metric.get_cfid_torch_pinv()
+            # cfids = cfid_metric.get_cfid_torch_pinv()
 
-            cfid_val = np.mean(cfids)
+            # cfid_val = np.mean(cfids)
 
-            if cfid_val < best_cfid:
-                best_epoch_cfid = epoch
-                best_cfid = cfid_val
+            # if cfid_val < best_cfid:
+            #     best_epoch_cfid = epoch
+            #     best_cfid = cfid_val
+            
+
+                
 
             pearson_val = pearsoncoeff(truth, reconstruction, mask)
             pearson_vals.append((epoch, pearson_val))
