@@ -122,16 +122,16 @@ if __name__ == "__main__":
                     kappa_mean = cfg.kappa_mean
                     kappa_std = cfg.kappa_std
 
-                    gt_ksp, avg_ksp = (gt[j] * kappa_std + kappa_mean).cpu().numpy(), (
+                    gt_ksp, avg_ksp = (gt[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(), (
                         avg[j] * kappa_std + kappa_mean
-                    ).cpu().numpy()
+                    ).squeeze().cpu().numpy()
 
                     avg_gen_np = avg_ksp  # should be real
                     gt_np = gt_ksp  # should also be real already
 
                     for z in range(n):
                         np_samp = (
-                            (gens[j, z, :, :, :] * kappa_std + kappa_mean).cpu().numpy()
+                            (gens[j, z, :, :, :] * kappa_std + kappa_mean).squeeze().cpu().numpy()
                         )
                         single_samps[z, :, :] = np_samp
 
