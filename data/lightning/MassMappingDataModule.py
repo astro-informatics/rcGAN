@@ -73,13 +73,14 @@ class MMDataTransform:
             relationship in Fourier space.
 
         Args:
-            kappa (np.ndarray): Convergence field, with shape [N,N].
+            kappa (np.ndarray): (Real-valued) convergence field, with shape [N,N].
             D (np.ndarray): Fourier space Kaiser-Squires kernel, with shape = [N,N].
 
         Returns:
             gamma (np.ndarray): Shearing field, with shape [N,N].
         """
-        F_kappa = np.fft.fft2(kappa)  # Perform 2D forward FFT
+        kappa_reshaped = np.squeeze(kappa, axis=-1)  # adds empty 'complex' dimension
+        F_kappa = np.fft.fft2(kappa_reshaped)  # Perform 2D forward FFT
         F_gamma = F_kappa * D  # Map convergence onto shear
         return np.fft.ifft2(F_gamma)  # Perform 2D inverse FFT
 
@@ -98,7 +99,7 @@ class MMDataTransform:
         F_gamma = np.fft.fft2(gamma)
         F_kappa = F_gamma / D
         F_kappa = np.nan_to_num(F_kappa, nan=0, posinf=0, neginf=0)
-        return np.fft.ifft2(F_kappa)
+        return np.fft.ifft2(F_kappa)  # Allows for complex kappa here
 
     @staticmethod
     def noise_maker(
@@ -164,7 +165,7 @@ class MMDataTransform:
         Gamma represents the observation.
 
         Args:
-            kappa (np.ndarray): Complex-valued array.
+            kappa (np.ndarray): Real-valued array.
 
         Returns:
             (tuple) tuple containing:
@@ -175,24 +176,27 @@ class MMDataTransform:
 
         """
         # Generate observation on the fly.
-        gamma = self.gamma_gen(kappa)
+        gamma = self.gamma_gen(
+            kappa
+        )  # real kappa here, but gamma_gen adds empty axis so gamma can be complex
         ks = self.backward_model(gamma, self.D)
 
         # Format input gt data.
-        pt_kappa = transforms.to_tensor(kappa)  # Shape (H, W, 2)
-        pt_kappa = pt_kappa.permute(2, 0, 1)  # Shape (2, H, W)
+        pt_gt = transforms.to_tensor(kappa)  # Shape (H, W, 1)
+        pt_gt = pt_kappa.permute(2, 0, 1)  # Shape (1, H, W)
         # Format observation data.
         pt_gamma = transforms.to_tensor(gamma)  # Shape (H, W, 2)
         pt_gamma = pt_gamma.permute(2, 0, 1)  # Shape (2, H, W)
 
-        pt_ks = transforms.to_tensor(ks)
-        pt_ks = pt_ks.permute(2, 0, 1)
+        # Pseudo-reconstruction of convergence field.
+        pt_ks = transforms.to_tensor(ks)  # Shape (H, W, 2)
+        pt_ks = pt_ks.permute(2, 0, 1)  # Shape (2, H, W)
 
         # Normalization step.
         normalized_gamma, mean, std = transforms.normalise_complex(pt_gamma)
         normalized_gt = transforms.normalize(
-            pt_kappa, 0.00015744006243248638, 0.02968584954283938
-        )
+            pt_gt, 0.00015744006243248638, 0.02968584954283938
+        )  # Shape (1, H, W)
         normalized_ks, mean_ks, std_ks = transforms.normalize_instance(pt_ks)
         normalized_ks = transforms.normalize(pt_ks, mean_ks, std_ks)
 
