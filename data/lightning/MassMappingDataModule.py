@@ -24,6 +24,7 @@ class MMDataTransform:
         self.mask = None
         self.std1 = None
         self.std2 = None
+        self.D = self.compute_fourier_kernel(self.im_size)
 
         # Load mask and std dev for noise
         try:
@@ -101,7 +102,7 @@ class MMDataTransform:
 
     @staticmethod
     def noise_maker(
-        theta: float, im_size: int, ngal: int, kappa: np.ndarray
+        theta: float, im_size: int, ngal: int, kappa: np.ndarray, D: np.ndarray
     ) -> np.ndarray:
         """Adds some random Gaussian noise to a mock weak lensing map.
 
@@ -110,11 +111,11 @@ class MMDataTransform:
             im_size (int): Size of weak lensing map, in pixels.
             ngal (int): Number of galaxies.
             kappa (np.ndarray): Convergence map.
+            D (np.ndarray): Precomputed Fourier kernel.
 
         Returns:
             gamma (np.ndarray): A synthetic representation of the shear field, gamma, with added noise.
         """
-        D = MMDataTransform.compute_fourier_kernel(im_size)
         sigma = 0.37 / np.sqrt(((theta * 60 / im_size) ** 2) * ngal)
         gamma = MMDataTransform.forward_model(kappa, D) + (sigma / np.sqrt(2)) * (
             np.random.randn(im_size, im_size) + 1j * np.random.randn(im_size, im_size)
@@ -131,9 +132,7 @@ class MMDataTransform:
         Returns:
             gamma (np.ndarray): A synthetic representation of the shear field, gamma, with added noise.
         """
-
-        D = MMDataTransform.compute_fourier_kernel(self.im_size)  # Fourier kernel
-        gamma = MMDataTransform.forward_model(kappa, D) + (
+        gamma = MMDataTransform.forward_model(kappa, self.D) + (
             self.std1 * np.random.randn(self.im_size, self.im_size)
             + 1.0j * self.std2 * np.random.randn(self.im_size, self.im_size)
         )
@@ -177,7 +176,7 @@ class MMDataTransform:
         """
         # Generate observation on the fly.
         gamma = self.gamma_gen(kappa)
-        ks = self.backward_model(gamma, self.compute_fourier_kernel(self.im_size))
+        ks = self.backward_model(gamma, self.D)
 
         # Format input gt data.
         pt_kappa = transforms.to_tensor(kappa)  # Shape (H, W, 2)
