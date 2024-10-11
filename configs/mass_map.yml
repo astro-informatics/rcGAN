@@ -15,7 +15,7 @@ num_z_train: 2
 
 # Data
 in_chans: 4  # Real+Imag parts from observation + Kaiser squires map
-out_chans: 2
+out_chans: 1 # A real convergence map
 im_size: 300 # Pixel width/height (square iamges)
 
 # Optimizer:
