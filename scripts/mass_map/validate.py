@@ -4,6 +4,8 @@ import yaml
 import types
 import json
 import numpy as np
+from tqdm import tqdm
+from scipy import ndimage
 
 import sys
 
@@ -14,8 +16,6 @@ from data.lightning.MassMappingDataModule import MMDataModule
 from utils.parse_args import create_arg_parser
 from models.lightning.mmGAN import mmGAN
 from pytorch_lightning import seed_everything
-from utils.embeddings import VGG16Embedding
-from evaluation_scripts.mass_map_cfid.cfid_metric import CFIDMetric
 
 
 def load_object(dct):
@@ -37,8 +37,6 @@ if __name__ == "__main__":
     dm.setup()
     val_loader = dm.val_dataloader()
     best_epoch = -1
-    inception_embedding = VGG16Embedding()
-    best_cfid = 10000000
     best_pearson = -1
     best_psnr = -1
     best_snr = -1
@@ -49,7 +47,6 @@ if __name__ == "__main__":
         "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
     ).astype(bool)
 
-    cfid_vals = []
     psnr_vals = []
     snr_vals = []
     rmse_vals = []
@@ -78,70 +75,80 @@ if __name__ == "__main__":
             model = model.cuda()
             model.eval()
 
-            cfid_metric = CFIDMetric(
-                gan=model,
-                loader=val_loader,
-                image_embedding=inception_embedding,
-                condition_embedding=inception_embedding,
-                cuda=True,
-                args=cfg,
-                ref_loader=False,
-                num_samps=1,
-            )
+            for i, data in tqdm(
+                enumerate(val_loader), desc="Evaluating samples", total=len(val_loader)
+            ):
+                y, x, mean, std = data
+                y = y.cuda()
+                x = x.cuda()
+                mean = mean.cuda()
+                std = std.cuda()
 
-            # reconstruction, label, truth = cfid_metric._get_generated_distribution()
+                gens = torch.zeros(
+                    size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 2)
+                ).cuda()  # Is this a 2 for re im or a 2 for input channels i.e. now a 4
+                for z in range(cfg.num_z_test):
+                    gens[:, z, :, :, :] = model.reformat(model.forward(y))
 
-            # cfids = cfid_metric.get_cfid_torch_pinv()
+                torch_reconstruction = torch.mean(gens, dim=1)
+                torch_truth = model.reformat(x)
+                kappa_mean = cfg.kappa_mean
+                kappa_std = cfg.kappa_std
 
-            # cfid_val = np.mean(cfids)
+                for j in range(y.size(0)):
+                    reconstruction = ndimage.rotate(
+                        (torch_reconstruction[j] * kappa_std + kappa_mean)
+                        .cpu()
+                        .numpy(),
+                        180,
+                    )
+                    truth = ndimage.rotate(
+                        (torch_truth[j] * kappa_std + kappa_mean).cpu().numpy(),
+                        180,
+                    )
+                    reconstruction = np.real(
+                        reconstruction
+                    )  # recon and truth should already be real, but just in case
+                    truth = np.real(truth)
 
-            # if cfid_val < best_cfid:
-            #     best_epoch_cfid = epoch
-            #     best_cfid = cfid_val
-            
+                    pearson_val = pearsoncoeff(truth, reconstruction, mask)
+                    pearson_vals.append((epoch, pearson_val))
+                    if pearson_val > best_pearson:
+                        best_epoch_pearson = epoch
+                        best_pearson = pearson_val
 
-                
+                    psnr_val = psnr(truth, reconstruction, mask)
+                    psnr_vals.append((epoch, psnr_val))
+                    if psnr_val > best_psnr:
+                        best_epoch_psnr = epoch
+                        best_psnr = psnr_val
 
-            pearson_val = pearsoncoeff(truth, reconstruction, mask)
-            pearson_vals.append((epoch, pearson_val))
-            if pearson_val > best_pearson:
-                best_epoch_pearson = epoch
-                best_pearson = pearson_val
+                    snr_val = snr(truth, reconstruction, mask)
+                    snr_vals.append((epoch, snr_val))
+                    if snr_val > best_snr:
+                        best_epoch_snr = epoch
+                        best_snr = snr_val
 
-            psnr_val = psnr(truth, reconstruction, mask)
-            psnr_vals.append((epoch, psnr_val))
-            if psnr_val > best_psnr:
-                best_epoch_psnr = epoch
-                best_psnr = psnr_val
+                    rmse_val = rmse(truth, reconstruction, mask)
+                    rmse_vals.append((epoch, rmse_val))
+                    if rmse_val < best_rmse:
+                        best_epoch_rmse = epoch
+                        best_rmse = rmse_val
 
-            snr_val = snr(truth, reconstruction, mask)
-            snr_vals.append((epoch, snr_val))
-            if snr_val > best_snr:
-                best_epoch_snr = epoch
-                best_snr = snr_val
-
-            rmse_val = rmse(truth, reconstruction, mask)
-            rmse_vals.append((epoch, rmse_val))
-            if rmse_val < best_rmse:
-                best_epoch_rmse = epoch
-                best_rmse = rmse_val
-
-    print(f"BEST EPOCH FOR CFID: {best_epoch_cfid}")
     print(f"BEST EPOCH FOR PSNR: {best_epoch_psnr}")
     print(f"BEST EPOCH FOR SNR: {best_epoch_snr}")
     print(f"BEST EPOCH FOR RMSE: {best_epoch_rmse}")
     print(f"BEST EPOCH FOR R: {best_epoch_pearson}")
 
-    print("Epoch | CFID | PSNR | SNR | RMSE | R")
-    for epoch, cfid, psnr, snr, rmse, r in zip(
+    print("Epoch | PSNR | SNR | RMSE | R")
+    for epoch, psnr, snr, rmse, r in zip(
         range(start_epoch, end_epoch),
-        cfid_vals,
         psnr_vals,
         snr_vals,
         rmse_vals,
-        r_vals,
+        pearson_vals,
     ):
-        print(f"{epoch} | {cfid} | {psnr} | {snr} | {rmse} | {r}")
+        print(f"{epoch} | {psnr} | {snr} | {rmse} | {r}")
 
     # for epoch in range(end_epoch):
     #     try:
@@ -150,7 +157,7 @@ if __name__ == "__main__":
     #     except:
     #         pass
 
-    os.rename(
-        cfg.checkpoint_dir + args.exp_name + f"/checkpoint-epoch={best_epoch}.ckpt",
-        cfg.checkpoint_dir + args.exp_name + f"/checkpoint_best.ckpt",
-    )
+    # os.rename(
+    #     cfg.checkpoint_dir + args.exp_name + f"/checkpoint-epoch={best_epoch}.ckpt",
+    #     cfg.checkpoint_dir + args.exp_name + f"/checkpoint_best.ckpt",
+    # )
