@@ -79,8 +79,7 @@ class MMDataTransform:
         Returns:
             gamma (np.ndarray): Shearing field, with shape [N,N].
         """
-        kappa_reshaped = np.squeeze(kappa, axis=-1)  # adds empty 'complex' dimension
-        F_kappa = np.fft.fft2(kappa_reshaped)  # Perform 2D forward FFT
+        F_kappa = np.fft.fft2(kappa)  # Perform 2D forward FFT
         F_gamma = F_kappa * D  # Map convergence onto shear
         return np.fft.ifft2(F_gamma)  # Perform 2D inverse FFT
 
@@ -182,8 +181,9 @@ class MMDataTransform:
         ks = self.backward_model(gamma, self.D)
 
         # Format input gt data.
-        pt_gt = transforms.to_tensor(kappa)  # Shape (H, W, 1)
-        pt_gt = pt_kappa.permute(2, 0, 1)  # Shape (1, H, W)
+        kappa = np.expand_dims(kappa, axis=-1)
+        pt_gt = torch.from_numpy(kappa)# Shape (H, W, 1)
+        pt_gt = pt_gt.permute(2, 0, 1)  # Shape (1, H, W)
         # Format observation data.
         pt_gamma = transforms.to_tensor(gamma)  # Shape (H, W, 2)
         pt_gamma = pt_gamma.permute(2, 0, 1)  # Shape (2, H, W)
