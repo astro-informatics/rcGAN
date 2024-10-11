@@ -1,80 +1,32 @@
 import numpy as np
 import json
 import sys
+
 sys.path.append("/home/jjwhit/rcGAN")
 from data.lightning.MassMappingDataModule import MMDataTransform
-from mass_map_utils.scripts.ks_utils import backward_model
+from mass_map_utils.scripts.ks_utils import (
+    backward_model,
+    rmse,
+    pearsoncoeff,
+    psnr,
+    snr,
+)
 from scipy import ndimage
 
 data_dir = "/share/gpu0/jjwhit/samples/ks/rmse/"
 
-mask =  np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy', allow_pickle=True
+mask = np.load(
+    "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
 ).astype(bool)
-std1 = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std1.npy', allow_pickle=True)
-std2 = np.load('/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std2.npy', allow_pickle=True)
+std1 = np.load(
+    "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std1.npy", allow_pickle=True
+)
+std2 = np.load(
+    "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std2.npy", allow_pickle=True
+)
 
 kernel = MMDataTransform.compute_fourier_kernel(300)
 np_kss = {}
-
-def rmse(a:np.ndarray, b:np.ndarray, mask:bool)->float:
-    '''
-    args:
-        a (np.ndarray): ground truth
-        b (np.ndarray): reconstruction
-        mask (bool): mask
-    returns:
-        rmse (float): root mean squared error
-    '''
-    a = a[mask==1]
-    b = b[mask==1]
-    return(np.sqrt(np.mean(np.square(a-b))))
-
-def pearsoncoeff(a:np.ndarray, b:np.ndarray, mask:bool)->float:
-    '''
-    args:
-        a (np.ndarray): ground truth
-        b (np.ndarray): reconstruction
-        mask (bool): mask
-    returns:
-        pearson (float): Pearson correlation coefficient
-    '''
-    a = a[mask==1]
-    b = b[mask==1]
-    a -= np.mean(a)
-    b -= np.mean(b)
-    num = np.sum(a*b)
-    denom = np.sqrt(np.sum(a**2)*np.sum(b**2))
-    return num/denom
-
-def psnr(a:np.ndarray, b:np.ndarray, mask:bool)->float:
-    '''
-    args:
-        a (np.ndarray): ground truth
-        b (np.ndarray): reconstruction
-        mask (bool): mask
-    returns:
-        psnr (float): peak signal-to-noise ratio
-    '''
-    a = a[mask==1]
-    b = b[mask==1]
-    mse = np.mean((a-b)**2)
-    r = a.max()
-    return 10*np.log10(r/mse)
-
-def SNR(a:np.ndarray, b:np.ndarray, mask:bool)->float:
-    '''
-    args:
-        a (np.ndarray): ground truth
-        b (np.ndarray): reconstruction
-        mask (bool): mask
-    returns:
-        snr (float): signal-to-noise ratio
-    '''
-    a = a[mask==1]
-    b = b[mask==1]
-    signal = np.mean(a**2)
-    noise = np.mean((a-b)**2)
-    return 10*np.log10(signal/noise)
 
 r_ks = []
 r_gan = []
@@ -90,23 +42,22 @@ r_std_sims = []
 all_psnr_vals = []
 within_std_count = []
 
-for map in range (1,1001):
-    np_gts = np.load(data_dir+f"np_gt_{map}.npy")
-    np_samps = np.load(data_dir+f"np_samps_{map}.npy")
-    np_avgs = np.load(data_dir+f"np_avgs_{map}.npy")
-    np_stds = np.load(data_dir+f"np_stds_{map}.npy")
+for map in range(1, 1001):
+    np_gts = np.load(data_dir + f"np_gt_{map}.npy")
+    np_samps = np.load(data_dir + f"np_samps_{map}.npy")
+    np_avgs = np.load(data_dir + f"np_avgs_{map}.npy")
+    np_stds = np.load(data_dir + f"np_stds_{map}.npy")
 
     gamma_sim = MMDataTransform.forward_model(np_gts, kernel) + (
-                std1 * np.random.randn(300, 300) + 1.j * std2 * np.random.randn(300,300)
-            )
+        std1 * np.random.randn(300, 300) + 1.0j * std2 * np.random.randn(300, 300)
+    )
     gamma_sim *= mask
     backward = backward_model(gamma_sim, kernel)
-    np_kss = ndimage.gaussian_filter(backward, sigma=1/.29)
+    np_kss = ndimage.gaussian_filter(backward, sigma=1 / 0.29)
 
     gt = np_gts.real
     ks = np_kss.real
     gan = np_avgs.real
-
 
     r_gan.append(pearsoncoeff(gt, gan, mask))
     r_ks.append(pearsoncoeff(gt, ks, mask))
@@ -117,8 +68,8 @@ for map in range (1,1001):
     psnr_ks.append(psnr(gt, ks, mask))
     psnr_gan.append(psnr(gt, gan, mask))
 
-    snr_ks.append(SNR(gt, ks, mask))
-    snr_gan.append(SNR(gt, gan, mask))
+    snr_ks.append(snr(gt, ks, mask))
+    snr_gan.append(snr(gt, gan, mask))
 
     abs_error_gan = np.abs(gan - gt)
 
@@ -128,7 +79,9 @@ for map in range (1,1001):
 
     lower_bound = mean_relative_error - std_relative_error
     upper_bound = mean_relative_error + std_relative_error
-    pix_within_std_relative = np.sum((relative_error[mask] >= lower_bound) & (relative_error[mask] <= upper_bound))
+    pix_within_std_relative = np.sum(
+        (relative_error[mask] >= lower_bound) & (relative_error[mask] <= upper_bound)
+    )
     total_masked_pix_relative = np.sum(mask)
     within_std_count_relative = pix_within_std_relative / total_masked_pix_relative
     within_std_count.append(within_std_count_relative)
@@ -138,10 +91,10 @@ for map in range (1,1001):
     r_std_sims.append(pearsoncoeff(np_stds.real, gt, mask))
 
     psnr_vals = []
-    for n in range(1,33):
+    for n in range(1, 33):
         # Average the first `n` posterior samples to create a reconstruction
         recon = np.mean(np_samps[:n].real, axis=0)
-        
+
         # Calculate PSNR for this reconstruction
         psnr_value = psnr(recon, np_gts.real, mask)
         psnr_vals.append(psnr_value)
@@ -162,10 +115,8 @@ results_dict = {
     "all_psnr_vals": np.array(all_psnr_vals).tolist(),
     "all_psnr_mean": np.mean(all_psnr_vals, axis=0).tolist(),
     "all_psnr_std": np.std(all_psnr_vals, axis=0).tolist(),
-    "average_within_std_relative_count": float(np.mean(within_std_count))
+    "average_within_std_relative_count": float(np.mean(within_std_count)),
 }
 
 with open("results_dict", "w") as json_file:
     json.dump(results_dict, json_file)
-
- 
