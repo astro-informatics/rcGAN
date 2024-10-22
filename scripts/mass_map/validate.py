@@ -98,12 +98,12 @@ if __name__ == "__main__":
                 for j in range(y.size(0)):
                     reconstruction = ndimage.rotate(
                         (torch_reconstruction[j] * kappa_std + kappa_mean)
-                        .cpu()
+                        .squeeze().cpu()
                         .numpy(),
                         180,
                     )
                     truth = ndimage.rotate(
-                        (torch_truth[j] * kappa_std + kappa_mean).cpu().numpy(),
+                        (torch_truth[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(),
                         180,
                     )
                     reconstruction = np.real(

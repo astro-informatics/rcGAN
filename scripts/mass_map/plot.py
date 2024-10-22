@@ -87,7 +87,7 @@ if __name__ == "__main__":
                 kappa_std = cfg.kappa_std
 
                 np_gt = ndimage.rotate(
-                    (gt[j] * kappa_std + kappa_mean).cpu().numpy(), 180
+                    (gt[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(), 180
                 )
                 np_zfr = ndimage.rotate(
                     torch.tensor(
@@ -97,12 +97,12 @@ if __name__ == "__main__":
                 ) # Rethink how we're normalising since zfr is complex and kappa_std is real
 
                 np_avgs["mmGAN"] = ndimage.rotate(
-                    (avg_mmGAN[j] * kappa_std + kappa_mean).cpu().numpy(), 180
+                    (avg_mmGAN[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(), 180
                 )
                 for z in range(cfg.num_z_test):
                     np_samps["mmGAN"].append(
                         ndimage.rotate(
-                            (gens_mmGAN[j, z] * kappa_std + kappa_mean).cpu().numpy(),
+                            (gens_mmGAN[j, z] * kappa_std + kappa_mean).squeeze().cpu().numpy(),
                             180,
                         )
                     )
