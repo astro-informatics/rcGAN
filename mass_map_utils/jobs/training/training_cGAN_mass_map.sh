@@ -13,8 +13,8 @@
 #SBATCH --mem-per-gpu=80GB           # memory per GPU
 #SBATCH --mail-use=jessica.whitney.22@ucl.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --output=tr_ks_%j.out
-#SBATCH --error=tr_ks_%j.err
+#SBATCH --output=tr_real_output_%j.out
+#SBATCH --error=tr_real_output_%j.err
 
 
 
@@ -36,4 +36,4 @@ echo $WANDB_CONFIG_DIR
 
 cd /home/jjwhit/rcGAN
 
-srun python -u train.py --config ./configs/mass_map.yml --exp-name mmgan_training_ks --num-gpus 4
+srun python -u train.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output --num-gpus 4
