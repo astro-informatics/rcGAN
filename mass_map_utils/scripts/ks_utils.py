@@ -98,6 +98,7 @@ def rmse(a: np.ndarray, b: np.ndarray, mask: bool) -> float:
         rmse (float): root mean squared error
     """
     if a.shape != b.shape:
+        print(f"Shape of a: {a.shape}, Shape of b: {b.shape}")
         raise ValueError("Shapes of a and b do not match.")
 
     a = a[mask == 1]
@@ -115,6 +116,7 @@ def pearsoncoeff(a: np.ndarray, b: np.ndarray, mask: bool) -> float:
         pearson (float): Pearson correlation coefficient
     """
     if a.shape != b.shape:
+        print(f"Shape of a: {a.shape}, Shape of b: {b.shape}")
         raise ValueError("Shapes of a and b do not match.")
 
     a = a[mask == 1]
@@ -136,6 +138,7 @@ def psnr(a: np.ndarray, b: np.ndarray, mask: bool) -> float:
         psnr (float): peak signal-to-noise ratio
     """
     if a.shape != b.shape:
+        print(f"Shape of a: {a.shape}, Shape of b: {b.shape}")
         raise ValueError("Shapes of a and b do not match.")
 
     a = a[mask == 1]
@@ -155,6 +158,7 @@ def snr(a: np.ndarray, b: np.ndarray, mask: bool) -> float:
         snr (float): signal-to-noise ratio
     """
     if a.shape != b.shape:
+        print(f"Shape of a: {a.shape}, Shape of b: {b.shape}")
         raise ValueError("Shapes of a and b do not match.")
 
     a = a[mask == 1]

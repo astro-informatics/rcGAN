@@ -85,13 +85,13 @@ if __name__ == "__main__":
                 std = std.cuda()
 
                 gens = torch.zeros(
-                    size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 2)
-                ).cuda()  # Is this a 2 for re im or a 2 for input channels i.e. now a 4
+                    size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size)
+                ).cuda() 
                 for z in range(cfg.num_z_test):
-                    gens[:, z, :, :, :] = model.reformat(model.forward(y))
+                    gens[:, z, :, :] = model.reformat(model.forward(y)).squeeze(-1) # remove dimension that used to handle real/complex
 
                 torch_reconstruction = torch.mean(gens, dim=1)
-                torch_truth = model.reformat(x)
+                torch_truth = model.reformat(x).squeeze(-1) # also removing extra dimension here too
                 kappa_mean = cfg.kappa_mean
                 kappa_std = cfg.kappa_std
 

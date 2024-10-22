@@ -13,7 +13,7 @@ from mass_map_utils.scripts.ks_utils import (
 )
 from scipy import ndimage
 
-data_dir = "/share/gpu0/jjwhit/samples/ks/rmse/"
+data_dir = "/share/gpu0/jjwhit/samples/real_output/"
 
 mask = np.load(
     "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
@@ -118,5 +118,5 @@ results_dict = {
     "average_within_std_relative_count": float(np.mean(within_std_count)),
 }
 
-with open("results_dict", "w") as json_file:
+with open("results_dict_real_output", "w") as json_file:
     json.dump(results_dict, json_file)

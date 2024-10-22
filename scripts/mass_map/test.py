@@ -84,7 +84,7 @@ if __name__ == "__main__":
         model = mmGAN.load_from_checkpoint(
             checkpoint_path=cfg.checkpoint_dir
             + args.exp_name
-            + "/checkpoint-epoch=87.ckpt"
+            + "/checkpoint-epoch=93.ckpt"
         )
         model.cuda()
         model.eval()
@@ -107,14 +107,14 @@ if __name__ == "__main__":
                 std = std.cuda()
 
                 gens = torch.zeros(
-                    size=(y.size(0), n, cfg.im_size, cfg.im_size, 2)
+                    size=(y.size(0), n, cfg.im_size, cfg.im_size)
                 ).cuda()
                 for z in range(n):
-                    gens[:, z, :, :, :] = model.reformat(model.forward(y))
+                    gens[:, z, :, :] = model.reformat(model.forward(y)).squeeze(-1)
 
                 avg = torch.mean(gens, dim=1)
 
-                gt = model.reformat(x)
+                gt = model.reformat(x).squeeze(-1)
 
                 for j in range(y.size(0)):
                     single_samps = np.zeros((n, cfg.im_size, cfg.im_size))
@@ -129,10 +129,12 @@ if __name__ == "__main__":
                     avg_gen_np = avg_ksp  # should be real
                     gt_np = gt_ksp  # should also be real already
 
+    
                     for z in range(n):
                         np_samp = (
-                            (gens[j, z, :, :, :] * kappa_std + kappa_mean).cpu().numpy()
+                            (gens[j, z, :, :] * kappa_std + kappa_mean).cpu().numpy()
                         )
+                        np_samp = np_samp.squeeze()
                         single_samps[z, :, :] = np_samp
 
                     med_np = np.median(single_samps, axis=0)

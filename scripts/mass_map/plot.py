@@ -39,7 +39,10 @@ if __name__ == "__main__":
 
     with torch.no_grad():
         mmGAN_model = mmGAN.load_from_checkpoint(
-            checkpoint_path=cfg.checkpoint_dir + args.exp_name + "/checkpoint_best.ckpt"
+            # checkpoint_path=cfg.checkpoint_dir + args.exp_name + "/checkpoint_best.ckpt"
+            checkpoint_path=cfg.checkpoint_dir
+            + args.exp_name
+            + "/checkpoint-epoch=93.ckpt"
         )
 
         mmGAN_model.cuda()
@@ -54,15 +57,15 @@ if __name__ == "__main__":
             std = std.cuda()
 
             gens_mmGAN = torch.zeros(
-                size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 2)
+                size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size)
             ).cuda()  # y.size(0) = batch size
 
             for z in range(cfg.num_z_test):
-                gens_mmGAN[:, z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
+                gens_mmGAN[:, z, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y)).squeeze(-1)
 
             avg_mmGAN = torch.mean(gens_mmGAN, dim=1)
 
-            gt = mmGAN_model.reformat(x)
+            gt = mmGAN_model.reformat(x).squeeze(-1)
             zfr = mmGAN_model.reformat(y)
 
             for j in range(y.size(0)):
@@ -91,7 +94,7 @@ if __name__ == "__main__":
                         tensor_to_complex_np((zfr[j] * kappa_std + kappa_mean).cpu())
                     ).numpy(),
                     180,
-                )
+                ) # Rethink how we're normalising since zfr is complex and kappa_std is real
 
                 np_avgs["mmGAN"] = ndimage.rotate(
                     (avg_mmGAN[j] * kappa_std + kappa_mean).cpu().numpy(), 180
@@ -107,18 +110,18 @@ if __name__ == "__main__":
                 np_stds["mmGAN"] = np.std(np.stack(np_samps["mmGAN"]), axis=0)
 
                 # Save arrays - gt, avg, samps, std, zfr
-                np.save(f"/share/gpu0/jjwhit/samples/np_gt_{fig_count}.npy", np_gt)
-                np.save(f"/share/gpu0/jjwhit/samples/np_zfr_{fig_count}.npy", np_zfr)
+                np.save(f"/share/gpu0/jjwhit/samples/real_output/np_gt_{fig_count}.npy", np_gt)
+                np.save(f"/share/gpu0/jjwhit/samples/real_output/np_zfr_{fig_count}.npy", np_zfr)
                 np.save(
-                    f"/share/gpu0/jjwhit/samples/np_avgs_{fig_count}.npy",
+                    f"/share/gpu0/jjwhit/samples/real_output/np_avgs_{fig_count}.npy",
                     np_avgs["mmGAN"],
                 )
                 np.save(
-                    f"/share/gpu0/jjwhit/samples/np_stds_{fig_count}.npy",
+                    f"/share/gpu0/jjwhit/samples/real_output/np_stds_{fig_count}.npy",
                     np_stds["mmGAN"],
                 )
                 np.save(
-                    f"/share/gpu0/jjwhit/samples/np_samps_{fig_count}.npy",
+                    f"/share/gpu0/jjwhit/samples/real_output/np_samps_{fig_count}.npy",
                     np_samps["mmGAN"],
                 )
 
