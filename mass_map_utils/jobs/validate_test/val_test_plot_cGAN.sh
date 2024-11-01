@@ -36,8 +36,8 @@ echo $WANDB_CONFIG_DIR
 cd /home/jjwhit/rcGAN
 
 #Remember to change exp-name to the batch you want to validate
-# srun python -u ./scripts/mass_map/validate.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output 
-# srun python -u ./scripts/mass_map/test.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output
-# srun python -u ./scripts/mass_map/plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output --num-figs 1000
+srun python -u ./scripts/mass_map/validate.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output 
+srun python -u ./scripts/mass_map/test.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output
+srun python -u ./scripts/mass_map/plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output --num-figs 10
 srun python -u ./scripts/mass_map/cosmos_plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output
-# srun python -u ./mass_map_utils/scripts/metrics.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output
+srun python -u ./mass_map_utils/scripts/metrics.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output
