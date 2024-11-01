@@ -1,7 +1,8 @@
 #Change checkpoint and sense_map path
-checkpoint_dir: /share/gpu0/jjwhit/mass_map/mm_models/
-data_path: /share/gpu0/jjwhit/kappa_cosmos_simulations/cropped_dataset/
-cosmo_dir_path: /home/jjwhit/rcGAN/mass_map_utils/cosmos/
+checkpoint_dir: /share/gpu0/jjwhit/mass_map/mm_models/ # Where model will save checkpoints
+data_path: /share/gpu0/jjwhit/kappa_cosmos_simulations/cropped_dataset/ # Path to simulation dataset
+cosmo_dir_path: /home/jjwhit/rcGAN/mass_map_utils/cosmos/ # Path to cosmos information such as mask
+save_path: /share/gpu0/jjwhit/samples/real_output/ # where figures and samples will be saved
 
 # Define the experience
 experience: mass_mapping
@@ -29,7 +30,6 @@ adv_weight: 1e-5
 
 # Training
 batch_size: 9
-#Remember to increase this for full training
 num_epochs: 100
 psnr_gain_tol: 0.25
 
