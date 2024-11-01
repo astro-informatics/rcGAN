@@ -1,9 +1,9 @@
-#Building a COSMOS-like dataset from kappaTNG weak lensing suite.
 
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 
+'''This script Builds a COSMOS-like dataset of weak lensing maps from kappaTNG weak lensing suites.'''
 
 # Configures redshift distribution.
 redshift_distribution = np.load("/home/jjwhit/rcGAN/mass_map_utils/cosmos/hist_n_z.npy", allow_pickle=True)
