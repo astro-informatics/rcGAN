@@ -1,7 +1,4 @@
 import numpy as np
-from data.lightning.MassMappingDataModule import MMDataTransform
-import torch
-
 
 def backward_model(γ: np.ndarray, 𝒟: np.ndarray) -> np.ndarray:
     """Applies the backward mapping between shear and convergence through their
@@ -16,77 +13,6 @@ def backward_model(γ: np.ndarray, 𝒟: np.ndarray) -> np.ndarray:
     𝓕𝜅 = 𝓕γ / 𝒟  # Map convergence onto shear
     𝓕𝜅 = np.nan_to_num(𝓕𝜅, nan=0, posinf=0, neginf=0)  # Remove singularities
     return np.fft.ifft2(𝓕𝜅)  # Perform 2D inverse FFT
-
-
-# def rmse(a: torch.float64, b: torch.float64, mask: np.ndarray = None) -> float:
-#     """
-#     args:
-#         a (torch.float64): ground truth
-#         b (torch.float64): reconstruction
-#         mask (np.ndarray): Boolean mask
-#     returns:
-#         rmse (float): root mean squared error
-#     """
-#     if mask is not None:
-#         a = a[mask == 1]
-#         b = b[mask == 1]
-#     return torch.sqrt(torch.mean(torch.square(a - b)))
-
-
-# def pearsoncoeff(a: torch.float64, b: torch.float64, mask: np.ndarray = None) -> float:
-#     """
-#     args:
-#         a (torch.float64): ground truth
-#         b (torch.float64): reconstruction
-#         mask (np.ndarray): mask
-#     returns:
-#         pearson (float): Pearson correlation coefficient
-#     """
-#     if mask is not None:
-#         a = a[mask == 1]
-#         b = b[mask == 1]
-#     a -= torch.mean(a)
-#     b -= torch.mean(b)
-#     num = torch.sum(a * b)
-#     denom = torch.sqrt(torch.sum(a**2) * torch.sum(b**2))
-#     return num / denom
-
-
-# def psnr(a: torch.float64, b: torch.float64, mask: np.ndarray = None) -> float:
-#     """
-#     args:
-#         a (torch.float64): ground truth
-#         b (torch.float64): reconstruction
-#         mask (np.ndarray): mask
-#     returns:
-#         psnr (float): peak signal-to-noise ratio
-#     """
-#     if mask is not None:
-#         a = a[mask == 1]
-#         b = b[mask == 1]
-#     mse = torch.mean((a - b) ** 2)
-#     r = a.max()
-#     return 10 * torch.log10(r / mse)
-
-
-# def snr(a: torch.float64, b: torch.float64, mask: np.ndarray = None) -> float:
-#     """
-#     args:
-#         a (torch.float64): ground truth
-#         b (torch.float64): reconstruction
-#         mask (np.ndarray): mask
-#     returns:
-#         snr (float): signal-to-noise ratio
-#     """
-#     if mask is not None:
-#         a = a[mask == 1]
-#         b = b[mask == 1]
-#     signal = torch.mean(a**2)
-#     noise = torch.mean((a - b) ** 2)
-#     return 10 * torch.log10(signal / noise)
-
-# NUMPY VERSIONS
-
 
 def rmse(a: np.ndarray, b: np.ndarray, mask: bool) -> float:
     """
