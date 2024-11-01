@@ -8,7 +8,6 @@ from tqdm import tqdm
 from scipy import ndimage
 
 import sys
-
 sys.path.append("/home/jjwhit/rcGAN/")
 
 from mass_map_utils.scripts.ks_utils import pearsoncoeff, psnr, snr, rmse
@@ -20,7 +19,6 @@ from pytorch_lightning import seed_everything
 
 def load_object(dct):
     return types.SimpleNamespace(**dct)
-
 
 if __name__ == "__main__":
     torch.set_float32_matmul_precision("medium")
@@ -44,7 +42,7 @@ if __name__ == "__main__":
     start_epoch = 80  # Will start saving models after 80 epochs
     end_epoch = cfg.num_epochs
     mask = np.load(
-        "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
+        cfg.cosmo_dir_path + "cosmos_mask.npy", allow_pickle=True
     ).astype(bool)
 
     psnr_vals = []
@@ -150,14 +148,15 @@ if __name__ == "__main__":
     ):
         print(f"{epoch} | {psnr} | {snr} | {rmse} | {r}")
 
-    # for epoch in range(end_epoch):
-    #     try:
-    #         if epoch != best_epoch:
-    #             os.remove(cfg.checkpoint_dir + args.exp_name + f'/checkpoint-epoch={epoch}.ckpt')
-    #     except:
-    #         pass
+    # Toggle this if you don't want other epochs to be deleted
+    for epoch in range(80, end_epoch):
+        try:
+            if epoch != best_epoch_rmse:
+                os.remove(cfg.checkpoint_dir + args.exp_name + f'/checkpoint-epoch={epoch}.ckpt')
+        except:
+            pass
 
-    # os.rename(
-    #     cfg.checkpoint_dir + args.exp_name + f"/checkpoint-epoch={best_epoch}.ckpt",
-    #     cfg.checkpoint_dir + args.exp_name + f"/checkpoint_best.ckpt",
-    # )
+    os.rename(
+        cfg.checkpoint_dir + args.exp_name + f"/checkpoint-epoch={best_epoch_rmse}.ckpt",
+        cfg.checkpoint_dir + args.exp_name + f"/checkpoint_best.ckpt",
+    )

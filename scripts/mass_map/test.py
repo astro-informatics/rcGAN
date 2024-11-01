@@ -3,18 +3,14 @@ import yaml
 import types
 import json
 import lpips
-
 import numpy as np
-
 import sys
-
 sys.path.append("/home/jjwhit/rcGAN/")
 
 from data.lightning.MassMappingDataModule import MMDataModule
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
-from utils.mri.math import tensor_to_complex_np
 from mass_map_utils.scripts.ks_utils import psnr
 from skimage.metrics import structural_similarity as ssim
 from utils.embeddings import VGG16Embedding
@@ -68,7 +64,7 @@ if __name__ == "__main__":
     cfg.batch_size = cfg.batch_size * 4
     dm = MMDataModule(cfg)
     mask = np.load(
-        "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
+        cfg.cosmo_dir_path + "cosmos_mask.npy", allow_pickle=True
     ).astype(bool)
 
     dm.setup()
@@ -84,7 +80,7 @@ if __name__ == "__main__":
         model = mmGAN.load_from_checkpoint(
             checkpoint_path=cfg.checkpoint_dir
             + args.exp_name
-            + "/checkpoint-epoch=93.ckpt"
+            + "/checkpoint_best.ckpt"
         )
         model.cuda()
         model.eval()

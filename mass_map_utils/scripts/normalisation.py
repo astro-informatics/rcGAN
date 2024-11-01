@@ -2,25 +2,35 @@ import numpy as np
 import os
 import sys
 sys.path.append("/home/jjwhit/rcGAN")
-
+import yaml
+import json
+import types
+from utils.parse_args import create_arg_parser
 from data.lightning.MassMappingDataModule import MMDataTransform as MM
 
-data_dir = '/share/gpu0/jjwhit/kappa_cosmos_simulations/cropped_dataset/kappa_train/'
+def load_object(dct):
+    return types.SimpleNamespace(**dct)
+args = create_arg_parser().parse_args()
+with open(args.config, "r") as f:
+    cfg = yaml.load(f, Loader=yaml.FullLoader)
+    cfg = json.loads(json.dumps(cfg), object_hook=load_object)
+
+data_dir = cfg.data_path + 'kappa_train/'
 
 files = os.listdir(data_dir)
 kappa_mean=[]
 shear_mean=[]
 
-im_size=300
+im_size=cfg.im_size
 
 mask =  np.load(
-    '/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy', allow_pickle=True
+    cfg.cosmos_dir_path + 'cosmos_mask.npy', allow_pickle=True
 ).astype(bool)
 std1 = np.load(
-    '/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std1.npy', allow_pickle=True
+    cfg.cosmos_dir_path + 'cosmos_std1.npy', allow_pickle=True
 )
 std2 = np.load(
-    '/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std2.npy', allow_pickle=True
+    cfg.cosmos_dir_path + 'cosmos_std2.npy', allow_pickle=True
 )
 kernel = MM.compute_fourier_kernel(im_size)
 
@@ -55,9 +65,6 @@ for file in files:
     kappa_i = (data - total_kappa_mean)**2
     std_i += np.sum(kappa_i)
     shear = MM.forward_model(data, kernel)
-    '''One thing to note is the random noise won't be consistent from one loop
-    to the other, however, it should average out over large counts, therefore 
-    I don't anticipate it being an issue.'''
     noisy_shear = shear + (
             std1 * np.random.randn(im_size, im_size) 
             + 1.j * std2 * np.random.randn(im_size, im_size) 

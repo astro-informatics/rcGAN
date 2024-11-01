@@ -2,11 +2,9 @@ import torch
 import yaml
 import types
 import json
-
 import numpy as np
-
+import os
 import sys
-
 sys.path.append("/home/jjwhit/rcGAN/")
 
 from data.lightning.MassMappingDataModule import MMDataModule
@@ -39,10 +37,7 @@ if __name__ == "__main__":
 
     with torch.no_grad():
         mmGAN_model = mmGAN.load_from_checkpoint(
-            # checkpoint_path=cfg.checkpoint_dir + args.exp_name + "/checkpoint_best.ckpt"
-            checkpoint_path=cfg.checkpoint_dir
-            + args.exp_name
-            + "/checkpoint-epoch=93.ckpt"
+            checkpoint_path=cfg.checkpoint_dir + args.exp_name + "/checkpoint_best.ckpt"
         )
 
         mmGAN_model.cuda()
@@ -110,18 +105,18 @@ if __name__ == "__main__":
                 np_stds["mmGAN"] = np.std(np.stack(np_samps["mmGAN"]), axis=0)
 
                 # Save arrays - gt, avg, samps, std, zfr
-                np.save(f"/share/gpu0/jjwhit/samples/real_output/np_gt_{fig_count}.npy", np_gt)
-                np.save(f"/share/gpu0/jjwhit/samples/real_output/np_zfr_{fig_count}.npy", np_zfr)
+                np.save(cfg.save_path + f"np_gt_{fig_count}.npy", np_gt)
+                np.save(cfg.save_path + f"np_zfr_{fig_count}.npy", np_zfr)
                 np.save(
-                    f"/share/gpu0/jjwhit/samples/real_output/np_avgs_{fig_count}.npy",
+                    cfg.save_path + f"np_avgs_{fig_count}.npy",
                     np_avgs["mmGAN"],
                 )
                 np.save(
-                    f"/share/gpu0/jjwhit/samples/real_output/np_stds_{fig_count}.npy",
+                    cfg.save_path + f"np_stds_{fig_count}.npy",
                     np_stds["mmGAN"],
                 )
                 np.save(
-                    f"/share/gpu0/jjwhit/samples/real_output/np_samps_{fig_count}.npy",
+                    cfg.save_path + f"np_samps_{fig_count}.npy",
                     np_samps["mmGAN"],
                 )
 

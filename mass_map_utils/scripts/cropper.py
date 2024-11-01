@@ -1,7 +1,17 @@
 import glob
 import os
 import numpy as np
+import sys
+import types
+import yaml
+import json
+sys.path.append("/home/jjwhit/rcGAN/") #Change to your path to rcGAN
+from utils.parse_args import create_arg_parser
 
+
+'''By default, we chose an image size of 300x300 pixels, to better fit the COSMOS data. This script crops the 1024x1024 maps to 300x300 maps.'''
+
+# Paths to the uncropped map folders
 src_train_path = "/share/gpu0/jjwhit/kappa_cosmos_simulations/kappa_train/*.npy"
 src_test_path = "/share/gpu0/jjwhit/kappa_cosmos_simulations/kappa_test/*.npy"
 src_val_path = "/share/gpu0/jjwhit/kappa_cosmos_simulations/kappa_val/*.npy"
@@ -9,8 +19,16 @@ all_training = glob.glob(src_train_path)
 all_test = glob.glob(src_test_path)
 all_val = glob.glob(src_val_path)
 
+def load_object(dct):
+    return types.SimpleNamespace(**dct)
+
+args = create_arg_parser().parse_args()
+with open(args.config, "r") as f:
+    cfg = yaml.load(f, Loader=yaml.FullLoader)
+    cfg = json.loads(json.dumps(cfg), object_hook=load_object)
+
 #Define the destination folder
-dst_path = "/share/gpu0/jjwhit/kappa_cosmos_simulations/cropped_dataset/"
+dst_path = cfg.data_path
 center_size = 300 #Size of COSMOS MAPS
 
    
@@ -33,7 +51,7 @@ if not os.path.exists(dst_val_path):
 
 
 img_number = 1
-#Takes kappa.npy files and crops them - test
+#Test set
 for fname in all_test:
     print('Processing test file n', img_number)
     #Load file
@@ -52,7 +70,7 @@ for fname in all_test:
 
 
 img_number = 1
-#Takes kappa.npy files and crops them - train
+#Training set
 for fname in all_training:
     print('Processing file n', img_number)
     kappa = np.load(fname, allow_pickle=True)
@@ -69,7 +87,7 @@ for fname in all_training:
 
 
 img_num = 1
-#Takes kappa.npy files and crops them - val
+#Validation set
 for fname in all_val:
     print('Processing file n', img_number)
     kappa = np.load(fname, allow_pickle=True)

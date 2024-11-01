@@ -1,28 +1,34 @@
 import numpy as np
 import json
+from scipy import ndimage
 import sys
+import yaml
+import json
+import types
 
 sys.path.append("/home/jjwhit/rcGAN")
 from data.lightning.MassMappingDataModule import MMDataTransform
-from mass_map_utils.scripts.ks_utils import (
-    backward_model,
-    rmse,
-    pearsoncoeff,
-    psnr,
-    snr,
-)
-from scipy import ndimage
+from mass_map_utils.scripts.ks_utils import (backward_model, rmse, pearsoncoeff, psnr, snr,)
+from utils.parse_args import create_arg_parser
 
-data_dir = "/share/gpu0/jjwhit/samples/real_output/"
 
+
+def load_object(dct):
+    return types.SimpleNamespace(**dct)
+args = create_arg_parser().parse_args()
+with open(args.config, "r") as f:
+    cfg = yaml.load(f, Loader=yaml.FullLoader)
+    cfg = json.loads(json.dumps(cfg), object_hook=load_object)
+
+data_dir = cfg.save_path
 mask = np.load(
-    "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
+    cfg.cosmos_dir_path + "cosmos_mask.npy", allow_pickle=True
 ).astype(bool)
 std1 = np.load(
-    "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std1.npy", allow_pickle=True
+    cfg.cosmos_dir_path + "cosmos_std1.npy", allow_pickle=True
 )
 std2 = np.load(
-    "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std2.npy", allow_pickle=True
+    cfg.cosmos_dir_path + "cosmos_std2.npy", allow_pickle=True
 )
 
 kernel = MMDataTransform.compute_fourier_kernel(300)
@@ -42,6 +48,7 @@ r_std_sims = []
 all_psnr_vals = []
 within_std_count = []
 
+# Loop over all 1000 maps in our testing set
 for map in range(1, 1001):
     np_gts = np.load(data_dir + f"np_gt_{map}.npy")
     np_samps = np.load(data_dir + f"np_samps_{map}.npy")
