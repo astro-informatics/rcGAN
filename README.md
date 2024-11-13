@@ -10,7 +10,7 @@ See ```docs/mass_mapping.md``` for instructions on how to setup and reproduce ou
 If you have any questions, or run into any issues, don't hesitate to reach out at jessica.whitney.22@ucl.ac.uk
 
 ## References
-This repository was forked from rcGAN by Bendel et al., with significant changes and modification made by Whitney et al.
+This repository was forked from [rcGAN](https://github.com/matt-bendel/rcGAN) by [Bendel et al.](https://arxiv.org/abs/2210.13389), with significant changes and modification made by Whitney et al.
 
 
 ## Citation
