@@ -3,7 +3,7 @@
 
 # Installation
 
-If in the Hypatia cluster, first run:
+If in a computing cluster, first run:
 ``` bash
 source /share/apps/anaconda/3-2022.05/etc/profile.d/conda.sh
 ```
