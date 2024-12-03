@@ -1,4 +1,10 @@
 # Generative modelling for mass-mapping with fast uncertainty quantification [[arXiv]](https://arxiv.org/abs/2410.24197)
+
+MMGAN is a novel mass-mapping method based on the regularised conditional generative adversarial network (GAN) framework by [Bendel et al.](https://arxiv.org/abs/2210.13389). Designed to quickly generate approximate posterior samples of the convergence field from shear data, MMGAN offers a fully data-driven approach to mass-mapping. These posterior samples allow for the creation of detailed convergence map reconstructions with associated uncertainty maps, making MMGAN a cutting-edge tool for cosmological analysis.
+
+![MMGAN COSMOS convergence map reconstruction](/figures/MMGAN/cosmos_results.png)
+
+
 ## Setup
 See ```docs/setup.md``` for basic environment setup instructions.
 
