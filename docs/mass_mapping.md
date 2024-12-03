@@ -1,9 +1,30 @@
-# Reproducing our MRI results
+# Reproducing our mass-mapping results
 ## Update Config
 Update ```configs/mass_map.yml``` with the path to your data, where you want to store checkpoints, and with the path to additional data such as masks.
 
 ## Data Setup
 All of the scripts required are in the ```mass_map_utils``` folder. We include some preprocessing scripts, currently configured for the kappaTNG mock weak lensing maps.
+
+# Logging
+By default, our model is tracked by Weights and Biases platform. See [their documentation](https://docs.wandb.ai/quickstart) for instructions on how to setup environment variables.
+Alternatively, you may use a different logger. See PyTorch Lightning's [documentation](https://lightning.ai/docs/pytorch/stable/extensions/logging.html) for options.
+
+## Weight and biases
+
+Parameters and environmental variables
+WANDB_CACHE_DIR
+WANDB_DATA_DIR
+will need to be set using the following command:
+``` bash
+export WANDB_DIR=<directory_name>/wandb/logs
+export WANDB_CACHE_DIR=<directory_name>/wandb/.cache/wandb
+export WANDB_CONFIG_DIR=<directory_name>/wandb/.config/wandb
+```
+where <directory_name> is the name of the directory you wish to save your logs to.
+
+logs -> `./wandb` -> `WANDB_DIR`
+artifacts -> `~/.cache/wandb` -> `WANDB_CACHE_DIR`
+configs -> `~/.config/wandb` -> `WANDB_CONFIG_DIR`
 
 ## Training
 Training is as simple as running the following command:
@@ -14,6 +35,17 @@ where training_name will be used to access checkpoints for validation/testing/pl
 
 See wandb documentation (https://docs.wandb.ai/quickstart) for instructions on how to setup environment variables.
 Alternatively, you may use a different logger. See PyTorch Lightning's [documentation](https://lightning.ai/docs/pytorch/stable/extensions/logging.html) for options.
+
+If you need to resume training at any point, use the following command:
+```python
+python train.py --config ./configs/mass_map.yml --exp-name training_name --num-gpus X --resume --resume-epoch Y
+```
+where ```Y``` is the epoch to resume from.
+
+By default, we save the previous 50 epochs. Ensure that your checkpoint path points to a location with sufficient disk space.
+If disk space is a concern, 50 can be reduced to 25.
+
+For details specific to multi-GPU runs and batch size tuning please refer to ```comments.md```.
 
 ## Validation
 During training, validation is necessary in order to update the weight applied to
