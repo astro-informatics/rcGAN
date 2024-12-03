@@ -4,13 +4,29 @@ MMGAN is a novel mass-mapping method based on the regularised conditional genera
 
 ![MMGAN COSMOS convergence map reconstruction](/figures/MMGAN/cosmos_results.png)
 
+## Installation
 
-## Setup
-See ```docs/setup.md``` for basic environment setup instructions.
+After cloning the repository, if in a computing cluster, first run:
+``` bash
+source /share/apps/anaconda/3-2022.05/etc/profile.d/conda.sh
+```
 
-## Reproducing the our Results
+To install the conda dependencies setting the correct channels:
+``` bash
+conda create --name cGAN --file conda_requirements.txt --channel pytorch --channel nvidia --channel conda-forge --channel defaults
+```
+
+Then activate the conda environment and install the pip requirements: 
+``` bash
+conda activate cGAN
+pip install -r pypi_requirements.txt
+```
+
+## Reproducing our Results
 ### 
-See ```docs/mass_mapping.md``` for instructions on how to setup and reproduce our COSMOS results.
+See ```docs/mass_mapping.md``` for detailed instructions on how to setup and reproduce the results from our paper on [MMGAN](https://arxiv.org/abs/2410.24197).
+
+Alternatively, we have provided a [zenodo file]https://zenodo.org/records/14226221 with the weights of our trained model, as well as a number of simulations. 
 
 ## Questions and Concerns
 If you have any questions, or run into any issues, don't hesitate to reach out at jessica.whitney.22@ucl.ac.uk
