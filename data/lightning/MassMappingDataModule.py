@@ -1,6 +1,5 @@
 import numpy as np
 from torch.utils.data import DataLoader
-from utils.parse_args import create_arg_parser
 import pytorch_lightning as pl
 from typing import Optional
 from data.datasets.MM_data import (
@@ -195,7 +194,7 @@ class MMDataTransform:
         # Normalization step.
         normalized_gamma, mean, std = transforms.normalise_complex(pt_gamma)
         normalized_gt = transforms.normalize(
-            pt_gt, 0.00015744006243248638, 0.02968584954283938
+            pt_gt, self.args.kappa_mean, self.args.kappa_std
         )  # Shape (1, H, W)
         normalized_ks, mean_ks, std_ks = transforms.normalize_instance(pt_ks)
         normalized_ks = transforms.normalize(pt_ks, mean_ks, std_ks)
