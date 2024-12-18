@@ -1,4 +1,14 @@
 # Reproducing our mass-mapping results
+
+This .md file has all the basic information required to reproduce the results from the [MMGAN paper](https://arxiv.org/abs/2410.24197).
+
+## Setup Instructions
+Install the required modules via anaconda:
+```
+conda create --name <env> --file requirements.txt
+```
+Note that you may need to change the PyTorch version, depending on your CUDA distribution.
+
 ## Update Config
 Update ```configs/mass_map.yml``` with the path to your data, where you want to store checkpoints, and with the path to additional data such as masks.
 
@@ -14,7 +24,7 @@ Alternatively, you may use a different logger. See PyTorch Lightning's [document
 Parameters and environmental variables
 WANDB_CACHE_DIR
 WANDB_DATA_DIR
-will need to be set using the following command:
+will need to be updated to your desired directory in the .sh files in ```mass_map_utils/jobs``` using the following command:
 ``` bash
 export WANDB_DIR=<directory_name>/wandb/logs
 export WANDB_CACHE_DIR=<directory_name>/wandb/.cache/wandb
@@ -45,7 +55,7 @@ where ```Y``` is the epoch to resume from.
 By default, we save the previous 50 epochs. Ensure that your checkpoint path points to a location with sufficient disk space.
 If disk space is a concern, 50 can be reduced to 25.
 
-For details specific to multi-GPU runs and batch size tuning please refer to ```comments.md```.
+For details specific to multi-GPU runs and batch size tuning please refer to ```docs/comments.md```.
 
 ## Validation
 During training, validation is necessary in order to update the weight applied to
@@ -75,6 +85,24 @@ To reproduce our cosmos results run the following command to generate samples:
 ```python /scripts/mass_map/cosmos_plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output
 ```
 and plot via ```mass_map_utils/notebooks/cosmos_samples/ipynb```.
+
+# General Mass-Mapping
+
+If you would like to use MMGAN for your own mass-mapping problems there are a number of things to configure.
+
+## Config
+
+We chose to normalise across the entire dataset, rather than on an instance case. Therefore we recommend, making a copy of ```configs/mass_map.yml```
+with updated directory paths, as well as an updated kappa_mean and kappa_std configured to your dataset. 
+We provide a script ```mass_map_utils/scripts/normalisation.py``` in order to calculate these value.
+
+## Data
+
+Currently, we provide two functions to add noise to the mock shear maps. We recommend using the realistic_noise_maker 
+function found in ```data/lightning/MassMappingDataModule.py```, and replacing the standard deviation with that of
+your dataset. Currently it is configured for the COSMOS data, with a standard deviation calculated using the COSMOS galaxy
+catalog.
+
 
 ## Questions and Concerns
 If you have any questions, or run into any issues, don't hesitate to reach out at jessica.whitney.22@ucl.ac.uk
