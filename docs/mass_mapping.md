@@ -92,9 +92,12 @@ If you would like to use MMGAN for your own mass-mapping problems there are a nu
 
 ## Config
 
-We chose to normalise across the entire dataset, rather than on an instance case. Therefore we recommend, making a copy of ```configs/mass_map.yml```
+We chose to normalise across the entire dataset, rather than on an instance by instance case. Therefore we recommend, making a copy of ```configs/mass_map.yml```
 with updated directory paths, as well as an updated kappa_mean and kappa_std configured to your dataset. 
-We provide a script ```mass_map_utils/scripts/normalisation.py``` in order to calculate these value.
+We provide a script ```mass_map_utils/scripts/normalisation.py``` in order to calculate these values.
+
+To find the optimal batch size, we have created a script in ```examples```, where the config file should be updated to a test version of the configuration 
+you plan on using.
 
 ## Data
 
