@@ -5,7 +5,6 @@ import sys
 import yaml
 import json
 import types
-
 sys.path.append("/home/jjwhit/rcGAN")
 from data.lightning.MassMappingDataModule import MMDataTransform
 from mass_map_utils.scripts.ks_utils import (backward_model, rmse, pearsoncoeff, psnr, snr,)
@@ -31,7 +30,7 @@ std2 = np.load(
     cfg.cosmos_dir_path + "cosmos_std2.npy", allow_pickle=True
 )
 
-kernel = MMDataTransform.compute_fourier_kernel(300)
+kernel = MMDataTransform.compute_fourier_kernel(cfg.im_size)
 np_kss = {}
 
 r_ks = []
@@ -48,7 +47,7 @@ r_std_sims = []
 all_psnr_vals = []
 within_std_count = []
 
-# Loop over all 1000 maps in our testing set
+# Change the range of this loop to be the size of your validation set.
 for map in range(1, 1001):
     np_gts = np.load(data_dir + f"np_gt_{map}.npy")
     np_samps = np.load(data_dir + f"np_samps_{map}.npy")
@@ -56,7 +55,7 @@ for map in range(1, 1001):
     np_stds = np.load(data_dir + f"np_stds_{map}.npy")
 
     gamma_sim = MMDataTransform.forward_model(np_gts, kernel) + (
-        std1 * np.random.randn(300, 300) + 1.0j * std2 * np.random.randn(300, 300)
+        std1 * np.random.randn(cfg.im_size, cfg.im_size) + 1.0j * std2 * np.random.randn(cfg.im_size, cfg.im_size)
     )
     gamma_sim *= mask
     backward = backward_model(gamma_sim, kernel)
