@@ -11,7 +11,7 @@ from data.lightning.MassMappingDataModule import MMDataTransform
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
-from utils.mri import transforms
+from mass_map_utils.scripts import transforms
 from scipy import ndimage
 
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         mmGAN_model.eval()
 
         cosmos_map = np.load(cfg.cosmo_dir_path + 'cosmos_shear_cropped.npy', allow_pickle=True)
-        ks = MMDataTransform.backward_model(cosmos_map, MMDataTransform.compute_fourier_kernel(300))
+        ks = MMDataTransform.backward_model(cosmos_map, MMDataTransform.compute_fourier_kernel(cfg.im_size))
         pt_ks = transforms.to_tensor(ks)
         pt_ks = pt_ks.permute(2,0,1)
         cosmos_map = transforms.to_tensor(cosmos_map)

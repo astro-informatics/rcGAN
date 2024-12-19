@@ -11,7 +11,7 @@ from data.lightning.MassMappingDataModule import MMDataModule
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
 from models.lightning.mmGAN import mmGAN
-from utils.mri.math import tensor_to_complex_np
+from mass_map_utils.scripts.transforms import tensor_to_complex_np
 from scipy import ndimage
 
 

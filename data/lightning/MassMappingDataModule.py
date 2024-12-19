@@ -7,7 +7,7 @@ from data.datasets.MM_data import (
     MassMappingDataset_Train,
     MassMappingDataset_Val,
 )
-from utils.mri import transforms
+from mass_map_utils.scripts import transforms
 from typing import Tuple
 import pathlib
 import torch
