@@ -2,7 +2,8 @@
 checkpoint_dir: /share/gpu0/jjwhit/mass_map/mm_models/ # Where model will save checkpoints
 data_path: /share/gpu0/jjwhit/kappa_cosmos_simulations/cropped_dataset/ # Path to simulation dataset
 cosmo_dir_path: /home/jjwhit/rcGAN/mass_map_utils/cosmos/ # Path to cosmos information such as mask
-save_path: /share/gpu0/jjwhit/samples/real_output/ # where figures and samples will be saved
+save_path: /share/gpu0/jjwhit/samples/ # where figures and samples will be saved
+fig_path: /share/gpu0/jjwhit/plots/
 
 # Define the experience
 experience: mass_mapping
