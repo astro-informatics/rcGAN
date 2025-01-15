@@ -13,7 +13,9 @@ Note that you may need to change the PyTorch version, depending on your CUDA dis
 Update ```configs/mass_map.yml``` with the path to your data, where you want to store checkpoints, and with the path to additional data such as masks.
 
 ## Data Setup
-All of the scripts required are in the ```mass_map_utils``` folder. We include some preprocessing scripts, currently configured for the kappaTNG mock weak lensing maps.
+All of the scripts required are in the ```mass_map_utils``` folder. For our training we used the [kappaTNG mock weak lensing suite](https://columbialensing.github.io/#tng) and the [Schrabback et al.](https://www.aanda.org/articles/aa/abs/2010/08/aa13577-09/aa13577-09.html) COSMOS shape catalog to build a set of COSMOS-like convergence maps. To build the same dataset yourself run the ```mass_map_utils/jobs/preprocessing/create_dataset.sh``` bash file. This will run a series of scripts which will create the mock convergence maps, crop them down to 300x300 pixel maps, and then normalise the dataset. No shear maps are saved in the pre-processing step, they are all created on the fly by MMGAN during training.
+
+If you wish to modify the dataset creation process, the python scripts themselves can be found in ```mass_map_utils/scripts```.
 
 # Logging
 By default, our model is tracked by Weights and Biases platform. See [their documentation](https://docs.wandb.ai/quickstart) for instructions on how to setup environment variables.
