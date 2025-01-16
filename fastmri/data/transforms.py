@@ -250,6 +250,7 @@ def normalize_instance(
     Returns:
         torch.Tensor: Normalized tensor
     """
+    #MANUAL MEAN STD ADDED HERE
     mean = data.mean()
     std = data.std()
 

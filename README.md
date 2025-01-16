@@ -1,72 +1,47 @@
-# A Regularized Conditional GAN for Posterior Sampling in Inverse Problems [[arXiv]](https://arxiv.org/abs/2210.13389)
-## Setup
-See ```docs/setup.md``` for basic environment setup instructions.
+# Generative modelling for mass-mapping with fast uncertainty quantification [[arXiv]](https://arxiv.org/abs/2410.24197)
+
+MMGAN is a novel mass-mapping method based on the regularised conditional generative adversarial network (GAN) framework by [Bendel et al.](https://arxiv.org/abs/2210.13389). Designed to quickly generate approximate posterior samples of the convergence field from shear data, MMGAN offers a fully data-driven approach to mass-mapping. These posterior samples allow for the creation of detailed convergence map reconstructions with associated uncertainty maps, making MMGAN a cutting-edge tool for cosmological analysis.
+
+![MMGAN COSMOS convergence map reconstruction](/figures/MMGAN/cosmos_results.png)
+
+## Installation
+
+After cloning the repository, if in a computing cluster, first run:
+``` bash
+source /share/apps/anaconda/3-2022.05/etc/profile.d/conda.sh
+```
+
+To install the conda dependencies setting the correct channels:
+``` bash
+conda create --name cGAN --file conda_requirements.txt --channel pytorch --channel nvidia --channel conda-forge --channel defaults
+```
+
+Then activate the conda environment and install the pip requirements: 
+``` bash
+conda activate cGAN
+pip install -r pypi_requirements.txt
+```
 
 ## Reproducing our Results
-### MRI
-See ```docs/mri.md``` for instructions on how to setup and reproduce our MRI results.
+### 
+See ```docs/mass_mapping.md``` for detailed instructions on how to setup and reproduce the results from our paper on [MMGAN](https://arxiv.org/abs/2410.24197).
 
-## Extending the Code
-See ```docs/new_applications.md``` for basic instructions on how to extend the code to your application.
+Alternatively, we have provided a [zenodo file]https://zenodo.org/records/14226221 with the weights of our trained model, as well as a number of simulations. 
 
 ## Questions and Concerns
-If you have any questions, or run into any issues, don't hesitate to reach out at bendel.8@osu.edu.
-
-## TODO
-- [x] Migrate to PyTorch Lightning
-- [x] Reimplement MRI rcGAN
-- [x] Update MRI experiment to R=8
-- [ ] Reimplement inpainting rcGAN
-- [ ] Extend to super resolution
+If you have any questions, or run into any issues, don't hesitate to reach out at jessica.whitney.22@ucl.ac.uk
 
 ## References
-This repository contains code from the following works, which should be cited:
+This repository was forked from [rcGAN](https://github.com/matt-bendel/rcGAN) by [Bendel et al.](https://arxiv.org/abs/2210.13389), with significant changes and modification made by Whitney et al.
 
-```
-@article{zbontar2018fastmri,
-  title={fastMRI: An open dataset and benchmarks for accelerated MRI},
-  author={Zbontar, Jure and Knoll, Florian and Sriram, Anuroop and Murrell, Tullie and Huang, Zhengnan and Muckley, Matthew J and Defazio, Aaron and Stern, Ruben and Johnson, Patricia and Bruno, Mary and others},
-  journal={arXiv preprint arXiv:1811.08839},
-  year={2018}
-}
-
-@article{devries2019evaluation,
-  title={On the evaluation of conditional GANs},
-  author={DeVries, Terrance and Romero, Adriana and Pineda, Luis and Taylor, Graham W and Drozdzal, Michal},
-  journal={arXiv preprint arXiv:1907.08175},
-  year={2019}
-}
-
-@inproceedings{Karras2020ada,
-  title={Training Generative Adversarial Networks with Limited Data},
-  author={Tero Karras and Miika Aittala and Janne Hellsten and Samuli Laine and Jaakko Lehtinen and Timo Aila},
-  booktitle={Proc. NeurIPS},
-  year={2020}
-}
-
-@inproceedings{zhao2021comodgan,
-  title={Large Scale Image Completion via Co-Modulated Generative Adversarial Networks},
-  author={Zhao, Shengyu and Cui, Jonathan and Sheng, Yilun and Dong, Yue and Liang, Xiao and Chang, Eric I and Xu, Yan},
-  booktitle={International Conference on Learning Representations (ICLR)},
-  year={2021}
-}
-
-@misc{zeng2022github,
-    howpublished = {Downloaded from \url{https://github.com/zengxianyu/co-mod-gan-pytorch}},
-    month = sep,
-    author={Yu Zeng},
-    title = {co-mod-gan-pytorch},
-    year = 2022
-}
-```
 
 ## Citation
 If you find this code helpful, please cite our paper:
 ```
-@journal{bendel2022arxiv,
-  author = {Bendel, Matthew and Ahmad, Rizwan and Schniter, Philip},
-  title = {A Regularized Conditional {GAN} for Posterior Sampling in Inverse Problems},
-  year = {2022},
-  journal={arXiv:2210.13389}
+@journal{2024arxiv,
+  author = {Whitney, Jessica and Liaudat, Tobías and Price, Matthew and Mars, Matthijs and McEwen, Jason},
+  title = {Generative modelling for mass-mapping with fast uncertainty quantification},
+  year = {2024},
+  journal={arXiv:2410.24197}
 }
 ```

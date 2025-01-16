@@ -1,11 +1,15 @@
 # Extending rcGAN
-#### Note: This process is likely to change in the near future. Whenever it does, these docs will be updated.
+
+If you are looking to apply MMGAN to your own mass-mapping problem please look at ```docts/mass_mapping.md```. 
+Otherwise, if you would like to apply rcGAN to a new type of problem follow these initial steps.
 
 ## Config
 First, create a new config folder for your application:
 ```
 ├── configs
 │   ├── mri.yml
+│   ├── mass_mapping.yml
+│   ├── radio.yml
 │   ├── myapplication.yml
 ```
 How you set this up is up to you!

@@ -13,6 +13,8 @@ __pycache__/
 *.DS_Store
 data/*.DS_Store
 
+*.err
+*.out
 
 # Distribution / packaging
 .Python
@@ -135,3 +137,46 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+mock_c_map_2.png
+mock_c_map.png
+mock_observation_2.png
+mock_observation.png
+jobs/validate_test/avg_err_std_1_v2.png
+jobs/validate_test/avg_err_std_2_v2.png
+jobs/validate_test/avg_err_std_3_v2.png
+jobs/validate_test/avg_err_std_4_v2.png
+jobs/validate_test/avg_err_std_5_v2.png
+jobs/validate_test/diversity_1_v2.png
+jobs/validate_test/diversity_2_v2.png
+jobs/validate_test/diversity_3_v2.png
+jobs/validate_test/diversity_4_v2.png
+jobs/validate_test/diversity_5_v2.png
+jobs/validate_test/generated_samples_plots.npy
+jobs/validate_test/P_ascent_1_v2.png
+jobs/validate_test/P_ascent_2_v2.png
+jobs/validate_test/P_ascent_3_v2.png
+jobs/validate_test/P_ascent_4_v2.png
+jobs/validate_test/P_ascent_5_v2.png
+jobs/validate_test/P_ascent_zoom_1_v2.png
+jobs/validate_test/P_ascent_zoom_2_v2.png
+jobs/validate_test/P_ascent_zoom_3_v2.png
+jobs/validate_test/P_ascent_zoom_4_v2.png
+jobs/validate_test/P_ascent_zoom_5_v2.png
+jobs/validate_test/square_1.png
+jobs/validate_test/square_2.png
+jobs/validate_test/square_3.png
+jobs/validate_test/square_4.png
+jobs/validate_test/square_5.png
+jobs/validate_test/zoomed_overview_1.png
+jobs/validate_test/zoomed_overview_2.png
+jobs/validate_test/zoomed_overview_3.png
+jobs/validate_test/zoomed_overview_4.png
+jobs/validate_test/zoomed_overview_5.png
+jobs/validate_test/val_test_cGAN_538273.err
+jobs/validate_test/val_test_cGAN_538273.out
+jobs/validate_test/val_test_cGAN_540044.err
+jobs/validate_test/val_test_cGAN_540044.out
+jobs/validate_test/val_test_cGAN_540048.err
+jobs/validate_test/val_test_cGAN_540048.out
+jobs/validate_test/val_test_cGAN_540050.err
+jobs/validate_test/val_test_cGAN_540050.out

@@ -1,0 +1,37 @@
+#Change checkpoint and sense_map path
+checkpoint_dir: /share/gpu0/jjwhit/mass_map/mm_models/ # Where model will save checkpoints
+data_path: /share/gpu0/jjwhit/kappa_cosmos_simulations/cropped_dataset/ # Path to simulation dataset
+cosmo_dir_path: /home/jjwhit/rcGAN/mass_map_utils/cosmos/ # Path to cosmos information such as mask
+save_path: /share/gpu0/jjwhit/samples/ # where figures and samples will be saved
+fig_path: /share/gpu0/jjwhit/plots/
+
+# Define the experience
+experience: mass_mapping
+kappa_mean: 0.00015744006243248638 # Value calculated during preprocessing
+kappa_std: 0.02968584954283938 # Value calculated during preprocessing
+
+# Number of code vectors for each phase
+num_z_test: 32
+num_z_valid: 8
+num_z_train: 2
+
+# Data
+in_chans: 4  # Real+Imag parts from observation + Kaiser squires map
+out_chans: 1 # A real convergence map
+im_size: 300 # Pixel width/height (square iamges)
+
+# Optimizer:
+lr: 0.001
+beta_1: 0
+beta_2: 0.99
+
+# Loss weights
+gp_weight: 10
+adv_weight: 1e-5
+
+# Training
+batch_size: 9
+num_epochs: 100
+psnr_gain_tol: 0.25
+
+num_workers: 4

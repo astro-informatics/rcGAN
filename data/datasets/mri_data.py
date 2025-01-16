@@ -21,8 +21,6 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 from warnings import warn
 
-# TODO: There are a number of hard-coded paths in here, will need updated
-
 def et_query(
         root: etree.Element,
         qlist: Sequence[str],

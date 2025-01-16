@@ -1,0 +1,34 @@
+#Change checkpoint and sense_map path
+checkpoint_dir: /share/gpu0/mars/TNG_data/rcGAN/models/
+data_path: /share/gpu0/mars/TNG_data/rcGAN/fourier/
+
+# Define the experience
+experience: radio
+
+# Number of code vectors for each phase
+num_z_test: 32
+num_z_valid: 8
+num_z_train: 2
+
+# Data
+in_chans: 3  # Real+Imag parts from obs
+out_chans: 2
+im_size: 360 #384x384 pixel images
+
+
+# Optimizer:
+lr: 0.001
+beta_1: 0
+beta_2: 0.99
+
+# Loss weights
+gp_weight: 10
+adv_weight: 1e-5
+
+# Training
+batch_size: 1
+#Remember to increase this for full training
+num_epochs: 10
+psnr_gain_tol: 0.25
+
+num_workers: 4

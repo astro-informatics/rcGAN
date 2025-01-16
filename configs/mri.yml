@@ -2,6 +2,9 @@ checkpoint_dir: "/share/gpu0/tl3/MRI/mri_models/"
 data_path: "/share/gpu0/tl3/fastMRI_dataset"
 sense_maps_path: "/share/gpu0/tl3/MRI/sense_maps/"
 
+# Define the experience
+experience: mri
+
 # MRI Args
 num_of_top_slices: 8
 use-middle-slices: false
