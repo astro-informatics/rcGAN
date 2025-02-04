@@ -145,7 +145,7 @@ def psnr(a: np.ndarray, b: np.ndarray, mask: bool) -> float:
     b = b[mask == 1]
     mse = np.mean((a - b) ** 2)
     r = a.max()
-    return 10 * np.log10(r / mse)
+    return 10 * np.log10((r ** 2) / mse)
 
 
 def snr(a: np.ndarray, b: np.ndarray, mask: bool) -> float:
@@ -166,3 +166,9 @@ def snr(a: np.ndarray, b: np.ndarray, mask: bool) -> float:
     signal = np.mean(a**2)
     noise = np.mean((a - b) ** 2)
     return 10 * np.log10(signal / noise)
+
+# def ecp(samples, gt, lower_quant=5, upper_quant=5):
+#     lower = np.percentile(samples, lower_quant, axis=0)
+#     upper = np.percentile(samples, upper_quant, axis=0)
+#     inside_interval = (gt >= lower) & (gt <= upper)
+#     return np.mean(inside_interval)
