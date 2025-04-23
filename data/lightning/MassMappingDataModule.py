@@ -7,6 +7,7 @@ from data.datasets.MM_data import (
     MassMappingDataset_Test,
     MassMappingDataset_Train,
     MassMappingDataset_Val,
+    MassMappingDataset_Real
 )
 from utils.mri import transforms
 from typing import Tuple
@@ -15,9 +16,10 @@ import torch
 
 
 class MMDataTransform:
-    def __init__(self, args, test=False, theta=5.0, ngal=30):
+    def __init__(self, args, test=False, real_data=False, theta=5.0, ngal=30):
         self.args = args
         self.test = test
+        self.real_data = real_data # where there is no gt
         self.theta = theta
         self.im_size = args.im_size
         self.ngal = ngal
@@ -157,14 +159,14 @@ class MMDataTransform:
                 self.theta, self.im_size, self.ngal, kappa
             )
 
-    def __call__(self, kappa: np.ndarray) -> Tuple[float, float, float, float]:
+    def __call__(self, data: np.ndarray) -> Tuple[float, float, float, float]:
         """Transforms the data.
 
         Note: gt = ground truth. The ground truth is the original kappa simulation from kappaTNG.
         Gamma represents the observation.
 
         Args:
-            kappa (np.ndarray): Real-valued array.
+            data (np.ndarray): Real-valued array, that is either real data (gamma) or simulations (kappa) during training/validation/testing.
 
         Returns:
             (tuple) tuple containing:
@@ -174,16 +176,18 @@ class MMDataTransform:
                 std (float): Standard deviation value used for normalization.
 
         """
-        # Generate observation on the fly.
-        gamma = self.gamma_gen(
-            kappa
-        )  # real kappa here, but gamma_gen adds empty axis so gamma can be complex
+        if self.real_data:
+            gamma = data
+            kappa = None
+        else:
+            # Generate observation on the fly.
+            gamma = self.gamma_gen(
+                data
+            )  # real kappa here, but gamma_gen adds empty axis so gamma can be complex
+            kappa = data
+
         ks = self.backward_model(gamma, self.D)
 
-        # Format input gt data.
-        kappa = np.expand_dims(kappa, axis=-1)
-        pt_gt = torch.from_numpy(kappa)# Shape (H, W, 1)
-        pt_gt = pt_gt.permute(2, 0, 1)  # Shape (1, H, W)
         # Format observation data.
         pt_gamma = transforms.to_tensor(gamma)  # Shape (H, W, 2)
         pt_gamma = pt_gamma.permute(2, 0, 1)  # Shape (2, H, W)
@@ -192,11 +196,19 @@ class MMDataTransform:
         pt_ks = transforms.to_tensor(ks)  # Shape (H, W, 2)
         pt_ks = pt_ks.permute(2, 0, 1)  # Shape (2, H, W)
 
+        # Format input gt data.
+        if not self.real_data:
+            kappa = np.expand_dims(kappa, axis=-1)
+            pt_gt = torch.from_numpy(kappa)# Shape (H, W, 1)
+            pt_gt = pt_gt.permute(2, 0, 1)  # Shape (1, H, W)
+            normalized_gt = transforms.normalize(
+                pt_gt, 0.00015744006243248638, 0.02968584954283938
+            ).float()  # Shape (1, H, W)
+        else:
+            normalized_gt = torch.empty(1, 0, 0)
+
         # Normalization step.
         normalized_gamma, mean, std = transforms.normalise_complex(pt_gamma)
-        normalized_gt = transforms.normalize(
-            pt_gt, 0.00015744006243248638, 0.02968584954283938
-        )  # Shape (1, H, W)
         normalized_ks, mean_ks, std_ks = transforms.normalize_instance(pt_ks)
         normalized_ks = transforms.normalize(pt_ks, mean_ks, std_ks)
 
@@ -206,11 +218,8 @@ class MMDataTransform:
         if self.mask is not None:
             normalized_gamma[:, self.mask == 0] = 0.0
 
-        # Return normalized measurements, normalized gt, mean, and std.
-        # To unnormalize batch of images:
-        # unnorm_tensor = normalized_tensor * std[:, :, None, None] + mean[:, :, None, None]
-        return normalized_gamma.float(), normalized_gt.float(), mean, std
-
+        # Return normalized measurements, normalized gt, mean, and std.xs
+        return normalized_gamma.float(), normalized_gt, mean, std
 
 class MMDataModule(pl.LightningDataModule):
     """
@@ -228,7 +237,6 @@ class MMDataModule(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         # Assign train/val datasets for use in dataloaders
-
         train_data = MassMappingDataset_Train(
             data_dir=pathlib.Path(self.args.data_path) / "kappa_train",
             transform=MMDataTransform(self.args, test=False),
@@ -238,13 +246,16 @@ class MMDataModule(pl.LightningDataModule):
             data_dir=pathlib.Path(self.args.data_path) / "kappa_val",
             transform=MMDataTransform(self.args, test=True),
         )
-
+        
+        real_data = MassMappingDataset_Real(data_dir=pathlib.Path(self.args.data_path) / "cosmos",
+        transform=MMDataTransform(self.args, test=True, real_data=True),)
+        
         test_data = MassMappingDataset_Test(
             data_dir=pathlib.Path(self.args.data_path) / "kappa_test",
             transform=MMDataTransform(self.args, test=True),
-        )
+            )
 
-        self.train, self.validate, self.test = train_data, dev_data, test_data
+        self.train, self.validate, self.test, self.real = train_data, dev_data, test_data, real_data
 
     # define your dataloaders
     def train_dataloader(self):
@@ -268,6 +279,15 @@ class MMDataModule(pl.LightningDataModule):
     def test_dataloader(self):
         return DataLoader(
             dataset=self.test,
+            batch_size=self.args.batch_size,
+            num_workers=self.args.num_workers,
+            pin_memory=False,
+            drop_last=False,
+        )
+    
+    def real_dataloader(self):
+        return DataLoader(
+            dataset = self.real,
             batch_size=self.args.batch_size,
             num_workers=self.args.num_workers,
             pin_memory=False,

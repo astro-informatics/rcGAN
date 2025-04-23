@@ -106,3 +106,29 @@ class MassMappingDataset_Train(torch.utils.data.Dataset):
         data = np.load(self.examples[i], allow_pickle=True).astype(np.float64)
         # Tranform data and generate observations.
         return self.transform(data)
+
+class MassMappingDataset_Real(torch.utils.data.Dataset):
+    """For loading real observation shear maps where there is no available gt."""
+
+    def __init__(self, data_dir, transform):
+        """
+        Args:
+            data_dir (path): The path to the dataset.transform (callable): A callable object (class) that processes the raw data into the appropriate form.
+        """
+        self.transform = transform
+        self.examples = []
+
+        files = list(pathlib.Path(data_dir).iterdir())
+
+        np.random.seed()
+        np.random.shuffle(files)
+        self.examples = files
+    
+    def __len__(self):
+        """Returns no. of samples in dataset."""
+        return len(self.examples)
+
+    def __getitem__(self, i):
+        """Loads and returns a sample form the dataset at a given index."""
+        data = np.load(self.examples[i], allow_pickle=True).astype(np.complex128)
+        return self.transform(data)
