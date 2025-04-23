@@ -1,0 +1,6 @@
+[submodule "k-rcps"]
+	path = k-rcps
+	url = https://github.com/Sulam-Group/k-rcps.git
+[submodule "im2im-uq"]
+	path = im2im-uq
+	url = https://github.com/aangelopoulos/im2im-uq.git
