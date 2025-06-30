@@ -9,7 +9,7 @@ from data.datasets.MM_data import (
     MassMappingDataset_Val,
     MassMappingDataset_Real
 )
-from utils.mri import transforms
+from utils.mri.transforms import to_tensor, normalize, normalize_instance, normalise_complex
 from typing import Tuple
 import pathlib
 import torch
@@ -27,6 +27,7 @@ class MMDataTransform:
         self.std1 = None
         self.std2 = None
         self.D = self.compute_fourier_kernel(self.im_size)
+
 
         # Load mask and std dev for noise
         try:
@@ -156,7 +157,7 @@ class MMDataTransform:
             return self.realistic_noise_maker(kappa)
         else:
             return MMDataTransform.noise_maker(
-                self.theta, self.im_size, self.ngal, kappa
+                self.theta, self.im_size, self.ngal, kappa, self.D
             )
 
     def __call__(self, data: np.ndarray) -> Tuple[float, float, float, float]:
@@ -189,11 +190,11 @@ class MMDataTransform:
         ks = self.backward_model(gamma, self.D)
 
         # Format observation data.
-        pt_gamma = transforms.to_tensor(gamma)  # Shape (H, W, 2)
+        pt_gamma = to_tensor(gamma)  # Shape (H, W, 2)
         pt_gamma = pt_gamma.permute(2, 0, 1)  # Shape (2, H, W)
 
         # Pseudo-reconstruction of convergence field.
-        pt_ks = transforms.to_tensor(ks)  # Shape (H, W, 2)
+        pt_ks = to_tensor(ks)  # Shape (H, W, 2)
         pt_ks = pt_ks.permute(2, 0, 1)  # Shape (2, H, W)
 
         # Format input gt data.
@@ -201,16 +202,16 @@ class MMDataTransform:
             kappa = np.expand_dims(kappa, axis=-1)
             pt_gt = torch.from_numpy(kappa)# Shape (H, W, 1)
             pt_gt = pt_gt.permute(2, 0, 1)  # Shape (1, H, W)
-            normalized_gt = transforms.normalize(
+            normalized_gt = normalize(
                 pt_gt, 0.00015744006243248638, 0.02968584954283938
             ).float()  # Shape (1, H, W)
         else:
             normalized_gt = torch.empty(1, 0, 0)
 
         # Normalization step.
-        normalized_gamma, mean, std = transforms.normalise_complex(pt_gamma)
-        normalized_ks, mean_ks, std_ks = transforms.normalize_instance(pt_ks)
-        normalized_ks = transforms.normalize(pt_ks, mean_ks, std_ks)
+        normalized_gamma, mean, std = normalise_complex(pt_gamma)
+        normalized_ks, mean_ks, std_ks = normalize_instance(pt_ks)
+        normalized_ks = normalize(pt_ks, mean_ks, std_ks)
 
         normalized_gamma = torch.cat([normalized_gamma, normalized_ks], dim=0)
 
