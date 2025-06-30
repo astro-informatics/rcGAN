@@ -50,6 +50,7 @@ if __name__ == "__main__":
         mmGAN_model.eval()
 
         for i, data in enumerate(test_loader):
+            # if you want gamma, you can temporarily modify the data transform to save the gamma map, and then add it as a 5th term here
             y, x, mean, std = data
             y = y.cuda()
             x = x.cuda()
@@ -66,7 +67,6 @@ if __name__ == "__main__":
             avg_mmGAN = torch.mean(gens_mmGAN, dim=1)
 
             gt = mmGAN_model.reformat(x).squeeze(-1)
-            zfr = mmGAN_model.reformat(y)
 
             for j in range(y.size(0)):
                 np_avgs = {
@@ -89,13 +89,9 @@ if __name__ == "__main__":
                 np_gt = ndimage.rotate(
                     (gt[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(), 180
                 )
-                np_zfr = ndimage.rotate(
-                    torch.tensor(
-                        tensor_to_complex_np((zfr[j] * kappa_std + kappa_mean).cpu())
-                    ).numpy(),
-                    180,
-                ) # Rethink how we're normalising since zfr is complex and kappa_std is real
 
+                np_gamma = gamma[j].cpu().numpy()
+            
                 np_avgs["mmGAN"] = ndimage.rotate(
                     (avg_mmGAN[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(), 180
                 )
@@ -110,18 +106,19 @@ if __name__ == "__main__":
                 np_stds["mmGAN"] = np.std(np.stack(np_samps["mmGAN"]), axis=0)
 
                 # Save arrays - gt, avg, samps, std, zfr
-                np.save(f"/share/gpu0/jjwhit/samples/real_output/np_gt_{fig_count}.npy", np_gt)
-                np.save(f"/share/gpu0/jjwhit/samples/real_output/np_zfr_{fig_count}.npy", np_zfr)
+                np.save(f"/share/gpu0/jjwhit/samples/test_set/kappa/np_gt_{fig_count:04d}.npy", np_gt)
+                np.save(f"/share/gpu0/jjwhit/samples/test_set/gamma/np_gamma_{fig_count:04d}.npy", np_gamma)
+                # np.save(f"/share/gpu0/jjwhit/samples/test_set/gamma/np_gamma_{fig_count}.npy", np_zfr)
+                # np.save(
+                #     f"/share/gpu0/jjwhit/samples/real_output/np_avgs_{fig_count}.npy",
+                #     np_avgs["mmGAN"],
+                # )
+                # np.save(
+                #     f"/share/gpu0/jjwhit/samples/real_output/np_stds_{fig_count}.npy",
+                #     np_stds["mmGAN"],
+                # )
                 np.save(
-                    f"/share/gpu0/jjwhit/samples/real_output/np_avgs_{fig_count}.npy",
-                    np_avgs["mmGAN"],
-                )
-                np.save(
-                    f"/share/gpu0/jjwhit/samples/real_output/np_stds_{fig_count}.npy",
-                    np_stds["mmGAN"],
-                )
-                np.save(
-                    f"/share/gpu0/jjwhit/samples/real_output/np_samps_{fig_count}.npy",
+                    f"/share/gpu0/jjwhit/samples/test_set/recon/np_samps_{fig_count:04d}.npy",
                     np_samps["mmGAN"],
                 )
 
