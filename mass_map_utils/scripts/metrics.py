@@ -12,7 +12,7 @@ from mass_map_utils.scripts.ks_utils import (
     psnr,
 )
 
-data_dir = "/share/gpu0/jjwhit/samples/real_output/"
+data_dir = "/share/gpu0/jjwhit/samples/test_set/"
 
 mask = np.load(
     "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True
@@ -24,12 +24,26 @@ std2 = np.load(
     "/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_std2.npy", allow_pickle=True
 )
 
-def ecp(samples, gt, lower_quant, upper_quant, mask):
-    samples = samples[mask==1]
-    gt = gt[mask==1]
-    lower = np.percentile(samples, lower_quant)
-    upper = np.percentile(samples, upper_quant)
+def ecp(samples, gt, mask, level, lam=1.0):
+    """
+    Computes empirical coverage probability (for the unmasked pixels only).
+
+    Args:
+        samples (np.ndarray): The samples used to create a reconstruction. Shape [N, H, W]
+        gt (np.ndarray): Ground truth map
+        mask (np.ndarray): Survey mask. Array of boolean values.
+        level (float): Credibility level
+        lam (float): RCPS calibration scaling factor
+
+    Returns:    
+        ecp (float): fraction of unmasked ground truth pixels within the credible interval
+    """
+    lower_q = 100*(1-level)/2
+    upper_q = (100 - lower_q)
+    lower = np.percentile(samples, lower_q, axis=0)
+    upper = np.percentile(samples, upper_q, axis=0)
     inside_interval = (gt >= lower) & (gt <= upper)
+    inside_interval = inside_interval[mask==1]
     return np.mean(inside_interval)
 
 kernel = MMDataTransform.compute_fourier_kernel(300)
@@ -46,22 +60,20 @@ ecp_vals = {q: [] for q in range(5, 100, 5)}
 
 
 
-for map in range(1, 1001):
-    np_gts = np.load(data_dir + f"np_gt_{map}.npy")
-    np_samps = np.load(data_dir + f"np_samps_{map}.npy")
-    np_avgs = np.load(data_dir + f"np_avgs_{map}.npy")
-    np_stds = np.load(data_dir + f"np_stds_{map}.npy")
+# for map in range(1, 1001):
+for map in range(1, 3):
+    np_gts = np.load(data_dir + f"kappa/np_gt_{map:04d}.npy")
+    np_samps = np.load(data_dir + f"recon/np_samps_{map:04d}.npy")
+    np_gamma = np.load(data_dir + f"gamma/np_gamma_{map:04d}.npy")
 
-    gamma_sim = MMDataTransform.forward_model(np_gts, kernel) + (
-        std1 * np.random.randn(300, 300) + 1.0j * std2 * np.random.randn(300, 300)
-    )
-    gamma_sim *= mask
+    gamma_sim = mask * np_gamma
     backward = backward_model(gamma_sim, kernel)
-    np_kss = ndimage.gaussian_filter(backward, sigma=1 / 0.29)
+    # np_kss = ndimage.gaussian_filter(backward, sigma=1 / 0.29)
+    np_kss = np.flipud(ndimage.rotate(ndimage.gaussian_filter(backward, sigma=1/0.29), 270))
 
     gt = np_gts.real
     ks = np_kss.real
-    gan = np_avgs.real
+    gan = np.mean(np_samps, axis=0).real
 
     r_gan.append(pearsoncoeff(gt, gan, mask))
     r_ks.append(pearsoncoeff(gt, ks, mask))
@@ -87,9 +99,8 @@ for map in range(1, 1001):
     all_pearson_vals.append(pearson_vals)
 
     for q in ecp_vals.keys():
-        lower_quant = (100 - q) / 2
-        upper_quant = 100 - lower_quant
-        ecp_vals[q].append(ecp(np_avgs, gt, lower_quant, upper_quant, mask))
+        level = q/100
+        ecp_vals[q].append(ecp(np_samps.real, gt, mask, level=level))
 
 results_dict = {
     "r_ks_avg": float(np.mean(r_ks)),
@@ -107,7 +118,7 @@ results_dict = {
     "ecp_vals": {q: float(np.mean(ecp_vals[q])) for q in ecp_vals.keys()}
 }
 
-with open("results_dict_real_output", "w") as json_file:
+with open("results_dict_new", "w") as json_file:
     json.dump(results_dict, json_file)
 
 quantiles = list(ecp_vals.keys())
@@ -121,4 +132,4 @@ plt.ylabel("Empirical Coverage Probability")
 plt.title("ECP Plot")
 plt.legend()
 plt.grid()
-plt.savefig("/home/jjwhit/rcGAN/figures/ecp_plot.png")
+plt.savefig("/home/jjwhit/rcGAN/figures/ecp_plot_3.png")
