@@ -30,9 +30,17 @@ class RadioDataset_Test(torch.utils.data.Dataset):
             # if micro we do the normalisation in the transform
             pass
         elif norm == 'macro':
-            self.transform.mean_x, self.transform.std_x = self.x.mean(), self.x.std()
-            self.transform.mean_y, self.transform.std_y = self.y.mean(), self.y.std()
-            self.transform.mean_uv, self.transform.std_uv = self.uv.mean(), self.uv.std()
+            # load means and stds from train set
+            self.transform.mean_x  = np.load(data_dir.parent.joinpath("train/mean_x.npy"))
+            self.transform.std_x   = np.load(data_dir.parent.joinpath("train/std_x.npy"))
+            self.transform.mean_y  = np.load(data_dir.parent.joinpath("train/mean_y.npy"))
+            self.transform.std_y   = np.load(data_dir.parent.joinpath("train/std_y.npy"))
+            self.transform.mean_uv = np.load(data_dir.parent.joinpath("train/mean_uv.npy"))
+            self.transform.std_uv  = np.load(data_dir.parent.joinpath("train/std_uv.npy"))
+            
+#             self.transform.mean_x, self.transform.std_x = self.x.mean(), self.x.std()
+#             self.transform.mean_y, self.transform.std_y = self.y.mean(), self.y.std()
+#             self.transform.mean_uv, self.transform.std_uv = self.uv.mean(), self.uv.std()
 
     def __len__(self):
         """Returns the number of samples in the dataset."""
@@ -72,9 +80,17 @@ class RadioDataset_Val(torch.utils.data.Dataset):
             # if micro we do the normalisation in the transform
             pass
         elif norm == 'macro':
-            self.transform.mean_x, self.transform.std_x = self.x.mean(), self.x.std()
-            self.transform.mean_y, self.transform.std_y = self.y.mean(), self.y.std()
-            self.transform.mean_uv, self.transform.std_uv = self.uv.mean(), self.uv.std()
+            # load means and stds from train set
+            self.transform.mean_x  = np.load(data_dir.parent.joinpath("train/mean_x.npy"))
+            self.transform.std_x   = np.load(data_dir.parent.joinpath("train/std_x.npy"))
+            self.transform.mean_y  = np.load(data_dir.parent.joinpath("train/mean_y.npy"))
+            self.transform.std_y   = np.load(data_dir.parent.joinpath("train/std_y.npy"))
+            self.transform.mean_uv = np.load(data_dir.parent.joinpath("train/mean_uv.npy"))
+            self.transform.std_uv  = np.load(data_dir.parent.joinpath("train/std_uv.npy"))
+            
+#             self.transform.mean_x, self.transform.std_x = self.x.mean(), self.x.std()
+#             self.transform.mean_y, self.transform.std_y = self.y.mean(), self.y.std()
+#             self.transform.mean_uv, self.transform.std_uv = self.uv.mean(), self.uv.std()
 
     def __len__(self):
         """Returns the number of samples in the dataset."""
@@ -116,6 +132,16 @@ class RadioDataset_Train(torch.utils.data.Dataset):
             self.transform.mean_x, self.transform.std_x = self.x.mean(), np.mean(self.x.std(axis=(1,2)))
             self.transform.mean_y, self.transform.std_y = self.y.mean(), np.mean(self.y.std(axis=(1,2)))
             self.transform.mean_uv, self.transform.std_uv = self.uv.mean(),  np.mean(self.uv.std(axis=(1,2)))
+            
+            np.save(data_dir.joinpath("mean_x.npy"), self.transform.mean_x)
+            np.save(data_dir.joinpath("std_x.npy"), self.transform.std_x)
+            np.save(data_dir.joinpath("mean_y.npy"), self.transform.mean_y)
+            np.save(data_dir.joinpath("std_y.npy"), self.transform.std_y)
+            np.save(data_dir.joinpath("mean_uv.npy"), self.transform.mean_uv)
+            np.save(data_dir.joinpath("std_uv.npy"), self.transform.std_uv)
+            
+            
+            
 
     def __len__(self):
         """Returns the number of samples in the dataset."""

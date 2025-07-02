@@ -18,6 +18,8 @@ from pytorch_lightning.loggers import WandbLogger
 from data.lightning.MassMappingDataModule import MMDataModule
 from data.lightning.RadioDataModule import RadioDataModule
 from models.lightning.mmGAN import mmGAN
+from models.lightning.riGAN import riGAN
+from models.lightning.GriGAN import GriGAN
 from torch.utils.data import DataLoader
 
 def load_object(dct):
@@ -49,7 +51,11 @@ if __name__ == '__main__':
             model = mmGAN(cfg, args.exp_name, args.num_gpus)
         elif cfg.experience == 'radio':
             DM = RadioDataModule
-            model = mmGAN(cfg, args.exp_name, args.num_gpus)
+            if cfg.__dict__.get("gradient", False):
+                model = GriGAN(cfg, args.exp_name, args.num_gpus)
+            else:
+                model = riGAN(cfg, args.exp_name, args.num_gpus)
+
         else:
             print("No valid experience selected in config file. Options are 'mri', 'mass_mapping', 'radio'.")
             exit()
