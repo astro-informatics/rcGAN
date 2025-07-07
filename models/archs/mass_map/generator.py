@@ -9,7 +9,7 @@ LICENSE file in the root directory of this source tree.
 
 import torch
 from torch import nn
-import torchvision.transforms as transforms
+
 
 class ResidualBlock(nn.Module):
     def __init__(self, in_features):
@@ -107,54 +107,9 @@ class ConvUpBlock(nn.Module):
 
         return self.layers(concat_tensor)
 
-    
-class ConvUpBlock_alt_upsample(nn.Module):
-    def __init__(self, in_chans, out_chans):
-        """
-        Args:
-            in_chans (int): Number of channels in the input.
-            out_chans (int): Number of channels in the output.
-        """
-        super().__init__()
-
-        self.in_chans = in_chans
-        self.out_chans = out_chans
-        
-        self.conv_1 = nn.Conv2d(in_chans // 2, in_chans//2, kernel_size=3, padding=1)
-            
-        self.bn = nn.BatchNorm2d(in_chans // 2)
-        self.activation = nn.PReLU()
-
-        self.layers = nn.Sequential(
-            nn.Conv2d(in_chans, out_chans, kernel_size=3, padding=1),
-            nn.BatchNorm2d(out_chans),
-            nn.PReLU(),
-            ResidualBlock(out_chans),
-        )
-
-    def forward(self, input, skip_input):
-        """
-        Args:
-            input (torch.Tensor): Input tensor of shape [batch_size, self.in_chans, height, width]
-
-        Returns:
-            (torch.Tensor): Output tensor of shape [batch_size, self.out_chans, height, width]
-        """
-
-        
-        residual_skip = skip_input  # self.res_skip(skip_input)
-#         resize = transforms.Resize(size=residual_skip.size()[2:])
-#         upsampled = self.activation(self.bn(self.conv_1(resize(input))))
-        resized = torch.nn.functional.interpolate(input, size=skip_input.size()[2:], mode='nearest')
-#         resized = torch.nn.functional.interpolate(input, size=skip_input.size()[2:], mode='bicubic', align_corners=False, recompute_scale_factor=None, antialias=False)
-        upsampled = self.activation(self.bn(self.conv_1(resized)))
-        concat_tensor = torch.cat([residual_skip, upsampled], dim=1)
-
-        return self.layers(concat_tensor)
-
 
 class UNetModel(nn.Module):
-    def __init__(self, in_chans, out_chans, alt_upsample=False, chans=128, num_pool_layers=4):
+    def __init__(self, in_chans, out_chans, chans=128, num_pool_layers=4):
         """
         Args:
             in_chans (int): Number of channels in the input to the U-Net model.
@@ -196,21 +151,11 @@ class UNetModel(nn.Module):
         )
 
         self.up_sample_layers = nn.ModuleList()
-        
-        
         for i in range(self.num_pool_layers - 1):
-            if not alt_upsample:
-                self.up_sample_layers += [ConvUpBlock(self.chans * 2, self.chans // 2)]
-            else:
-                self.up_sample_layers += [ConvUpBlock_alt_upsample(self.chans * 2, self.chans // 2)]
-
+            self.up_sample_layers += [ConvUpBlock(self.chans * 2, self.chans // 2)]
             self.chans //= 2
 
-        if not alt_upsample:
-            self.up_sample_layers += [ConvUpBlock(self.chans * 2, self.chans)]
-        else:
-            self.up_sample_layers += [ConvUpBlock_alt_upsample(self.chans * 2, self.chans)]
-            
+        self.up_sample_layers += [ConvUpBlock(self.chans * 2, self.chans)]
         self.conv2 = nn.Sequential(
             nn.Conv2d(self.chans, self.chans // 2, kernel_size=1),
             nn.Conv2d(self.chans // 2, out_chans, kernel_size=1),
