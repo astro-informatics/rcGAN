@@ -14,6 +14,8 @@ import torchvision.transforms as transforms
 class GradBlock(nn.Module):
     def __init__(self, in_chans, out_chans, batch_norm=False):
         """
+        Gradient block that calculates the gradient of the L2 norm of the input image with respect to the dirty image and appends this to the input.
+
         Args:
             in_chans (int): Number of channels in the input.
             out_chans (int): Number of channels in the output.
@@ -36,10 +38,7 @@ class GradBlock(nn.Module):
         torch.fft.fft2(x, norm='ortho', out=x)
         return x
             
-    def forward(self, x, x_i, dirty_i, psf_i):
-        
-#         x_i = x[:,0]
-        
+    def forward(self, x, x_i, dirty_i, psf_i):        
         ft_psf = self.fft(psf_i)
         m = torch.real(self.ifft(self.fft(x_i) * ft_psf))
 
@@ -80,7 +79,6 @@ class ConvDownBlock(nn.Module):
         self.batch_norm = batch_norm
 
         self.conv_1 = nn.Conv2d(in_chans, out_chans, kernel_size=3, padding=1)
-        # self.conv_2 = nn.Conv2d(out_chans, out_chans, kernel_size=3, padding=1)
         self.res = ResidualBlock(out_chans)
         self.conv_3 = nn.Conv2d(out_chans, out_chans, kernel_size=3, padding=1, stride=2)
         self.bn = nn.BatchNorm2d(out_chans)
@@ -97,11 +95,11 @@ class ConvDownBlock(nn.Module):
 
         if self.batch_norm:
             out = self.activation(self.bn(self.conv_1(input)))
-            skip_out = self.res(out)  # self.activation(self.bn(self.conv_2(out)))
+            skip_out = self.res(out)  
             out = self.conv_3(skip_out)
         else:
             out = self.activation(self.conv_1(input))
-            skip_out = self.res(out)  # self.activation(self.conv_2(out))
+            skip_out = self.res(out)  
             out = self.conv_3(skip_out)
 
         return out, skip_out
@@ -139,7 +137,7 @@ class ConvUpBlock(nn.Module):
             (torch.Tensor): Output tensor of shape [batch_size, self.out_chans, height, width]
         """
 
-        residual_skip = skip_input  # self.res_skip(skip_input)
+        residual_skip = skip_input  
         upsampled = self.activation(self.bn(self.conv_1(input, output_size=residual_skip.size())))
         concat_tensor = torch.cat([residual_skip, upsampled], dim=1)
 
@@ -154,7 +152,7 @@ class ConvUpBlock(nn.Module):
             (torch.Tensor): Output tensor of shape [batch_size, self.out_chans, height, width]
         """
 
-        residual_skip = skip_input  # self.res_skip(skip_input)
+        residual_skip = skip_input  
         upsampled = self.activation(self.bn(self.conv_1(input, output_size=residual_skip.size())))
 
         return upsampled
@@ -207,11 +205,8 @@ class ConvUpBlock_alt_upsample(nn.Module):
         """
 
         
-        residual_skip = skip_input  # self.res_skip(skip_input)
-#         resize = transforms.Resize(size=residual_skip.size()[2:])
-#         upsampled = self.activation(self.bn(self.conv_1(resize(input))))
+        residual_skip = skip_input  
         resized = torch.nn.functional.interpolate(input, size=skip_input.size()[2:], mode='nearest')
-#         resized = torch.nn.functional.interpolate(input, size=skip_input.size()[2:], mode='bicubic', align_corners=False, recompute_scale_factor=None, antialias=False)
         upsampled = self.activation(self.bn(self.conv_1(resized)))
         concat_tensor = torch.cat([residual_skip, upsampled], dim=1)
 
@@ -229,21 +224,17 @@ class UNetModel(nn.Module):
         """
         super().__init__()
 
-        # self.preprocess_unet = UNET()
+       
         self.in_chans = in_chans
         self.out_chans = out_chans
         self.chans = chans
         self.num_pool_layers = num_pool_layers
 
         # create down_sampled dirty image and psf
-        self.ds_layer = nn.AvgPool2d((2,2), ceil_mode=True) #TODO maybe include padding here?
-        self.us_layer = nn.AvgPool2d((2,2), ceil_mode=False) #TODO maybe include padding here?
-#         self.down_sampled_input_layers = nn.ModuleList([ds_layer])
-#         for i in range(self.num_pool_layers - 1):
-#             self.down_sampled_input_layers.append(ds_layer)
+        self.ds_layer = nn.AvgPool2d((2,2), ceil_mode=True) 
+        self.us_layer = nn.AvgPool2d((2,2), ceil_mode=False)
             
 
-        
         self.grad_layers = nn.ModuleList([GradBlock(in_chans, self.chans, batch_norm=False)])
         self.down_sample_layers = nn.ModuleList([ConvDownBlock(self.chans + in_chans, self.chans*2, batch_norm=False)])
         self.chans *= 2
@@ -302,27 +293,9 @@ class UNetModel(nn.Module):
         Returns:
             (torch.Tensor): Output tensor of shape [batch_size, self.out_chans, height, width]
         """
-#         output = input
-#         stack = []
-#         # Apply down-sampling layers
-#         for layer in self.down_sample_layers:
-#             output, skip_out = layer(output)
-#             stack.append(skip_out)
-
-#         output = self.conv(output)
-
-#         # Apply up-sampling layers
-#         for layer in self.up_sample_layers:
-#             output = layer(output, stack.pop())
-
-#         return self.conv2(output)
-
-    
 
         output = input
         stack = []
-        # Apply down-sampling layers
-#         print(input.shape)
         
         downsampled_input = [output]
         up_sampled_input = [output]
@@ -330,39 +303,20 @@ class UNetModel(nn.Module):
             downsampled_input.append(self.ds_layer(downsampled_input[-1]))
             up_sampled_input.append(self.us_layer(up_sampled_input[-1]))
         
-
-        
         for i, layer in enumerate(self.down_sample_layers):
-#             print(i, 'pre_grad', output.shape)
             output = self.grad_layers[i](output, output[:,:1], downsampled_input[i][:,:1], downsampled_input[i][:,1:2])
-#             print(i, 'post_grad', output.shape)
-            output, skip_out = layer(output)
-#             print(i, 'post conv_down', output.shape, skip_out.shape)
-            
+            output, skip_out = layer(output)            
             
             stack.append(skip_out)
 
         i+=1
-#         print(i, output.shape)
         output = self.grad_layers[i](output,output[:,:1], downsampled_input[i][:,:1], downsampled_input[i][:,1:2])
-#         print(i, output.shape)
         output = self.conv(output)
-#         print(i, output.shape)
 
         # Apply up-sampling layers
         for i, layer in enumerate(self.up_sample_layers):
-#             print(i, output.shape, stack[-1].shape)
-
-            output = layer.forward_part_1(output, stack[-1])
-#             print(i, output.shape, stack[-1].shape)
-            
-            output = self.grad_layers[-(i+1)](output, output[:,:1], up_sampled_input[-(i+2)][:,:1], up_sampled_input[-(i+2)][:,1:2])
-#             print(i, output.shape, stack[-1].shape)
-            
+            output = layer.forward_part_1(output, stack[-1])            
+            output = self.grad_layers[-(i+1)](output, output[:,:1], up_sampled_input[-(i+2)][:,:1], up_sampled_input[-(i+2)][:,1:2])            
             output = layer.forward_part_2(output, stack.pop())
             
-            
-            
-#             print(i, output.shape)
-
         return self.conv2(output)

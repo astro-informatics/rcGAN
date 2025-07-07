@@ -53,30 +53,10 @@ class riGAN(pl.LightningModule):
         return z
 
     def reformat(self, samples):
-        # reformatted_tensor = torch.zeros(
-        #     size=(samples.size(0), self.resolution, self.resolution, 2), device=self.device
-        # )
-        # #Takes values from samples and assigns to reformatted tensor
-        # reformatted_tensor[:, :, :, 0] = samples[:, 0, :, :]
-        # reformatted_tensor[:, :, :, 1] = samples[:, 1, :, :]
-        # return reformatted_tensor
-
-        # New implementation
         reformatted_tensor = torch.swapaxes(torch.clone(samples), 3, 1)
         return reformatted_tensor
 
     def readd_measures(self, samples, measures):
-        # reformatted_tensor = self.reformat(samples)
-        # measures = fft2c_new(self.reformat(measures))
-        # reconstructed_kspace = fft2c_new(reformatted_tensor)
-        # # # reconstructed_kspace = mask * measures + (1 - mask) * reconstructed_kspace
-        # image = ifft2c_new(reconstructed_kspace)
-        # output_im = torch.zeros(size=samples.shape, device=self.device)
-        # output_im[:, 0, :, :] = image[:, :, :, 0]
-        # output_im[:, 1, :, :] = image[:, :, :, 1]
-        # return output_im
-
-        # New implementation
         return torch.clone(samples)
 
     def compute_gradient_penalty(self, real_samples, fake_samples, y):
@@ -87,8 +67,6 @@ class riGAN(pl.LightningModule):
         # Get random interpolation between real and fake samples
         interpolates = (alpha * real_samples + ((1 - alpha) * fake_samples)).requires_grad_(True)
         d_interpolates = self.discriminator(input=interpolates, y=y)
-        # fake = Tensor(real_samples.shape[0], 1, d_interpolates.shape[-1], d_interpolates.shape[-1]).fill_(1.0).to(
-        #     self.device)
         fake = Tensor(real_samples.shape[0], 1).fill_(1.0).to(
             self.device)
 
@@ -223,18 +201,6 @@ class riGAN(pl.LightningModule):
         psnr_1s = []
 
         for j in range(y.size(0)):
-            # S = sp.linop.Multiply((self.args.im_size, self.args.im_size), tensor_to_complex_np(maps[j].cpu()))
-
-            # ON CPU
-            # avg_sp_out = torch.tensor(S.H * tensor_to_complex_np(avg_gen[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
-            # single_sp_out = torch.tensor(S.H * tensor_to_complex_np(self.reformat(gens[:, 0])[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
-            # gt_sp_out = torch.tensor(S.H * tensor_to_complex_np(gt[j].cpu())).abs().unsqueeze(0).unsqueeze(0).to(self.device)
-
-            # ON GPU - Does not work with DDP
-            # avg_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(avg_gen[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
-            # single_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(self.reformat(gens[:, 0])[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
-            # gt_sp_out = complex_abs(sp.to_pytorch(S.H * sp.from_pytorch(gt[j], iscomplex=True))).unsqueeze(0).unsqueeze(0)
-
             psnr_8s.append(peak_signal_noise_ratio(avg_gen[j], gt[j]))
             psnr_1s.append(peak_signal_noise_ratio(self.reformat(gens[:, 0])[j], gt[j]))
 
@@ -272,13 +238,6 @@ class riGAN(pl.LightningModule):
                     ],
                     caption=["GT", f"Recon: PSNR (NP): {np_psnr:.2f}", "Error"]
                 )
-#                 self.logger.log_image(
-#                     key=f"epoch_{self.current_epoch}_img",
-#                     images=[
-#                         Image.fromarray(np.uint8(plot_avg_np*255), 'L'),
-#                     ],
-#                     caption=[f"Recon: PSNR (NP): {np_psnr:.2f}"]
-#                 )
 
             self.trainer.strategy.barrier()
 

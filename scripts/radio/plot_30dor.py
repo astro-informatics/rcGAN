@@ -9,7 +9,6 @@ import matplotlib.patches as patches
 import sys
 sys.path.append('/home/mars/git/rcGAN/')
 
-from data.lightning.MassMappingDataModule import MMDataModule
 from data.lightning.RadioDataModule import RadioDataModule
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
@@ -17,15 +16,10 @@ from models.lightning.riGAN import riGAN
 from models.lightning.GriGAN import GriGAN
 
 from utils.mri.math import tensor_to_complex_np
-import matplotlib.pyplot as plt
-from matplotlib import gridspec
-from scipy import ndimage
 import sys
 from datetime import date
 import pickle
 import os
-
-from utils.mri import transforms
 
 
 def load_object(dct):
@@ -43,11 +37,9 @@ if __name__ == "__main__":
         cfg = yaml.load(f, Loader=yaml.FullLoader)
         cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
-#     dm = MMDataModule(cfg)
     dm = RadioDataModule(cfg)
     fig_count = 5
     dm.setup()
-#     train_loader = dm.train_dataloader()
     test_loader = dm.test_dataloader()
 
     today = date.today()
@@ -56,9 +48,6 @@ if __name__ == "__main__":
     
     
     with torch.no_grad():
-#         mmGAN_model = mmGAN.load_from_checkpoint(
-#             checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
-
         if cfg.__dict__.get("gradient", False):
             mmGAN_model = GriGAN.load_from_checkpoint(
                 checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
@@ -81,28 +70,6 @@ if __name__ == "__main__":
             im, d, p, _, _ = np.load('/home/mars/src_aiai/notebooks/GAN_30Dor.npy')
             
             pt_y, pt_x, mean, std = dm.test.transform((im, d, p))
-#             mean, std = np.mean(d), np.std(d)
-#             x = im # (im - mean)/std
-#             y = d #(d - mean)/std
-#             uv = p #(p - np.mean(p))/np.std(p)
-#             mean = 0
-#             std = 1
-
-            
-            
-#             # Format input gt data.
-#             pt_x = transforms.to_tensor(x)[:, :, None] # Shape (H, W, 2)
-#             pt_x = pt_x.permute(2, 0, 1)  # Shape (2, H, W)
-#             # Format observation data.
-#             pt_y = transforms.to_tensor(y)[:, :, None] # Shape (H, W, 2)
-#             pt_y = pt_y.permute(2, 0, 1)  # Shape (2, H, W)
-#             # Format uv data
-#             pt_uv = transforms.to_tensor(uv)[:, :, None] # Shape (H, W, 1)
-#             pt_uv = pt_uv.permute(2, 0, 1)  # Shape (1, H, W)
-#             # Normalize everything based on measurements y
-
-#             pt_x = pt_x.float()
-#             pt_y = torch.cat([pt_y, pt_uv], dim=0).float()
             
             y = torch.tensor(pt_y[None,:]).cuda()
             x = torch.tensor(pt_x[None, :]).cuda()

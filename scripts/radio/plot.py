@@ -4,14 +4,12 @@ import types
 import json
 
 import numpy as np
-import matplotlib.patches as patches
 
 import sys
 sys.path.append('/home/mars/git/rcGAN/')
 
 print(sys.path)
 
-from data.lightning.MassMappingDataModule import MMDataModule
 from data.lightning.RadioDataModule import RadioDataModule
 from utils.parse_args import create_arg_parser
 from pytorch_lightning import seed_everything
@@ -19,9 +17,6 @@ from models.lightning.riGAN import riGAN
 from models.lightning.GriGAN import GriGAN
 
 from utils.mri.math import tensor_to_complex_np
-import matplotlib.pyplot as plt
-from matplotlib import gridspec
-from scipy import ndimage
 import sys
 from datetime import date
 import pickle
@@ -43,7 +38,6 @@ if __name__ == "__main__":
         cfg = yaml.load(f, Loader=yaml.FullLoader)
         cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
-#     dm = MMDataModule(cfg)
     dm = RadioDataModule(cfg)
     fig_count = 5
     dm.setup()
@@ -56,9 +50,6 @@ if __name__ == "__main__":
     
     
     with torch.no_grad():
-#         mmGAN_model = mmGAN.load_from_checkpoint(
-#             checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
-
         if cfg.__dict__.get("gradient", False):
             mmGAN_model = GriGAN.load_from_checkpoint(
                 checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
@@ -111,42 +102,5 @@ if __name__ == "__main__":
                 break
         pickle.dump([np.array(true), np.array(dirty), np.array(pred)], open(f"{pred_dir}/pred_train_{args.exp_name}_{today}.pkl", "wb"))
 
-        
-        
-        
-#         for i, data in enumerate(test_loader):
-#             print(f"{i}/{len(test_loader)}")
-#             y, x, mean, std = data
-#             y = y.cuda()
-#             x = x.cuda()
-#             mean = mean.cuda()
-#             std = std.cuda()
-
-#             gens_mmGAN = torch.zeros(size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 1)).cuda()
-
-#             for z in range(cfg.num_z_test):
-#                 gens_mmGAN[:, z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
-
-            
-#             avg_mmGAN = torch.mean(gens_mmGAN, dim=1)
-
-#             gt = mmGAN_model.reformat(x)
-#             zfr = mmGAN_model.reformat(y)
-            
-
-#             tensor_to_complex_np = lambda x: x
-#             for j in range(y.size(0)):
-            
-#                 true.append( torch.tensor(tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu())).numpy().real)
-#                 dirty.append( torch.tensor(tensor_to_complex_np((zfr[j] * std[j] + mean[j]).cpu())).numpy().real )
-#                 pred.append(torch.tensor(tensor_to_complex_np((gens_mmGAN[j] * std[j] + mean[j]).cpu())).numpy().real )
-                
-#                 if len(true) == 10:
-#                     # save a small set after 10 predictions
-#                     pickle.dump([np.array(true), np.array(dirty), np.array(pred)], open(f"{pred_dir}/pred_test_{args.exp_name}_{today}_small.pkl", "wb"))
-#                     break
-#         pickle.dump([np.array(true), np.array(dirty), np.array(pred)], open(f"{pred_dir}/pred_test_{args.exp_name}_{today}.pkl", "wb"))
-
-        
 
        	

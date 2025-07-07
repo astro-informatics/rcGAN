@@ -42,7 +42,6 @@ class ConvDownBlock(nn.Module):
         self.batch_norm = batch_norm
 
         self.conv_1 = nn.Conv2d(in_chans, out_chans, kernel_size=3, padding=1)
-        # self.conv_2 = nn.Conv2d(out_chans, out_chans, kernel_size=3, padding=1)
         self.res = ResidualBlock(out_chans)
         self.conv_3 = nn.Conv2d(out_chans, out_chans, kernel_size=3, padding=1, stride=2)
         self.bn = nn.BatchNorm2d(out_chans)
@@ -59,11 +58,11 @@ class ConvDownBlock(nn.Module):
 
         if self.batch_norm:
             out = self.activation(self.bn(self.conv_1(input)))
-            skip_out = self.res(out)  # self.activation(self.bn(self.conv_2(out)))
+            skip_out = self.res(out) 
             out = self.conv_3(skip_out)
         else:
             out = self.activation(self.conv_1(input))
-            skip_out = self.res(out)  # self.activation(self.conv_2(out))
+            skip_out = self.res(out)  
             out = self.conv_3(skip_out)
 
         return out, skip_out
@@ -101,7 +100,7 @@ class ConvUpBlock(nn.Module):
             (torch.Tensor): Output tensor of shape [batch_size, self.out_chans, height, width]
         """
 
-        residual_skip = skip_input  # self.res_skip(skip_input)
+        residual_skip = skip_input  
         upsampled = self.activation(self.bn(self.conv_1(input, output_size=residual_skip.size())))
         concat_tensor = torch.cat([residual_skip, upsampled], dim=1)
 
@@ -142,11 +141,8 @@ class ConvUpBlock_alt_upsample(nn.Module):
         """
 
         
-        residual_skip = skip_input  # self.res_skip(skip_input)
-#         resize = transforms.Resize(size=residual_skip.size()[2:])
-#         upsampled = self.activation(self.bn(self.conv_1(resize(input))))
+        residual_skip = skip_input  
         resized = torch.nn.functional.interpolate(input, size=skip_input.size()[2:], mode='nearest')
-#         resized = torch.nn.functional.interpolate(input, size=skip_input.size()[2:], mode='bicubic', align_corners=False, recompute_scale_factor=None, antialias=False)
         upsampled = self.activation(self.bn(self.conv_1(resized)))
         concat_tensor = torch.cat([residual_skip, upsampled], dim=1)
 
@@ -164,7 +160,6 @@ class UNetModel(nn.Module):
         """
         super().__init__()
 
-        # self.preprocess_unet = UNET()
         self.in_chans = in_chans
         self.out_chans = out_chans
         self.chans = chans

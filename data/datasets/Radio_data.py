@@ -37,10 +37,6 @@ class RadioDataset_Test(torch.utils.data.Dataset):
             self.transform.std_y   = np.load(data_dir.parent.joinpath("train/std_y.npy"))
             self.transform.mean_uv = np.load(data_dir.parent.joinpath("train/mean_uv.npy"))
             self.transform.std_uv  = np.load(data_dir.parent.joinpath("train/std_uv.npy"))
-            
-#             self.transform.mean_x, self.transform.std_x = self.x.mean(), self.x.std()
-#             self.transform.mean_y, self.transform.std_y = self.y.mean(), self.y.std()
-#             self.transform.mean_uv, self.transform.std_uv = self.uv.mean(), self.uv.std()
 
     def __len__(self):
         """Returns the number of samples in the dataset."""
@@ -88,9 +84,6 @@ class RadioDataset_Val(torch.utils.data.Dataset):
             self.transform.mean_uv = np.load(data_dir.parent.joinpath("train/mean_uv.npy"))
             self.transform.std_uv  = np.load(data_dir.parent.joinpath("train/std_uv.npy"))
             
-#             self.transform.mean_x, self.transform.std_x = self.x.mean(), self.x.std()
-#             self.transform.mean_y, self.transform.std_y = self.y.mean(), self.y.std()
-#             self.transform.mean_uv, self.transform.std_uv = self.uv.mean(), self.uv.std()
 
     def __len__(self):
         """Returns the number of samples in the dataset."""

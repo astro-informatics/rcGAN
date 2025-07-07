@@ -139,21 +139,11 @@ class CFIDMetric:
     def _get_embed_im(self, multi_coil_inp, mean, std):
         embed_ims = torch.zeros(size=(multi_coil_inp.size(0), 3, self.args.im_size, self.args.im_size)).cuda()
         for i in range(multi_coil_inp.size(0)):
-            # reformatted = torch.zeros(size=(8, self.args.im_size, self.args.im_size, 2)).cuda()
-            # reformatted[:, :, :, 0] = multi_coil_inp[i, 0:8, :, :]
-            # reformatted[:, :, :, 1] = multi_coil_inp[i, 8:16, :, :]
             reformatted = torch.zeros(size=(1, self.args.im_size, self.args.im_size, 1)).cuda()
             reformatted[:, :, :, 0] = multi_coil_inp[i, 0, :, :]
-#             reformatted[:, :, :, 1] = multi_coil_inp[i, 1, :, :]
 
             unnormal_im = reformatted * std[i] + mean[i]
-
-            #S = sp.linop.Multiply((self.args.im_size, self.args.im_size), maps[i])
-
-            # don't do this for radio
-#             im = torch.tensor(tensor_to_complex_np(unnormal_im.cpu())).real.cuda()
             im = unnormal_im[0, :, :, 0]
-    
             im = (im - torch.min(im)) / (torch.max(im) - torch.min(im))
 
             embed_ims[i, 0, :, :] = im
@@ -178,13 +168,6 @@ class CFIDMetric:
             std = std.cuda()
 
             with torch.no_grad():
-                # for j in range(condition.shape[0]):
-                #     new_y_true = fft2c_new(self.gan.reformat(condition)[j] * std[j] + mean[j])
-                #     s_maps = mr.app.EspiritCalib(tensor_to_complex_np(new_y_true.cpu()), calib_width=16,
-                #                                  device=sp.Device(3), show_pbar=False, crop=0.70,
-                #                                  kernel_width=6).run().get()
-
-                #     maps.append(s_maps)
 
                 for l in range(self.num_samps):
                     recon = self.gan(condition)
@@ -218,13 +201,6 @@ class CFIDMetric:
                     std = std.cuda()
 
                     with torch.no_grad():
-                        # for j in range(condition.shape[0]):
-                        #     new_y_true = fft2c_new(self.gan.reformat(condition)[j] * std[j] + mean[j])
-                        #     s_maps = mr.app.EspiritCalib(tensor_to_complex_np(new_y_true.cpu()), calib_width=16,
-                        #                                  device=sp.Device(3), show_pbar=False, crop=0.70,
-                        #                                  kernel_width=6).run().get()
-
-                        #     maps.append(s_maps)
 
                         for l in range(self.num_samps):
                             recon = self.gan(condition)
