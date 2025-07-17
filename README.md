@@ -26,7 +26,7 @@ pip install -r pypi_requirements.txt
 ### 
 See ```docs/mass_mapping.md``` for detailed instructions on how to setup and reproduce the results from our paper on [MMGAN](https://arxiv.org/abs/2410.24197).
 
-Alternatively, we have provided a [zenodo file]https://zenodo.org/records/14226221 with the weights of our trained model, as well as a number of simulations. 
+Alternatively, we have provided a [zenodo file](https://zenodo.org/records/14226221) with the weights of our trained model, as well as a number of simulations. 
 
 ## Questions and Concerns
 If you have any questions, or run into any issues, don't hesitate to reach out at jessica.whitney.22@ucl.ac.uk
