@@ -51,15 +51,15 @@ if __name__ == "__main__":
     
     with torch.no_grad():
         if cfg.__dict__.get("gradient", False):
-            mmGAN_model = GriGAN.load_from_checkpoint(
+            RIGAN_model = GriGAN.load_from_checkpoint(
                 checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
         else:
-            mmGAN_model = riGAN.load_from_checkpoint(
+            RIGAN_model = riGAN.load_from_checkpoint(
                 checkpoint_path=cfg.checkpoint_dir + args.exp_name + '/checkpoint_best.ckpt')
         
-        mmGAN_model.cuda()
+        RIGAN_model.cuda()
 
-        mmGAN_model.eval()
+        RIGAN_model.eval()
 
         true = []
         dirty = []
@@ -75,16 +75,16 @@ if __name__ == "__main__":
             mean = mean.cuda()
             std = std.cuda()
 
-            gens_mmGAN = torch.zeros(size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 1)).cuda()
+            gens_RIGAN = torch.zeros(size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 1)).cuda()
 
             for z in range(cfg.num_z_test):
-                gens_mmGAN[:, z, :, :, :] = mmGAN_model.reformat(mmGAN_model.forward(y))
+                gens_RIGAN[:, z, :, :, :] = RIGAN_model.reformat(RIGAN_model.forward(y))
 
             
-            avg_mmGAN = torch.mean(gens_mmGAN, dim=1)
+            avg_RIGAN = torch.mean(gens_RIGAN, dim=1)
 
-            gt = mmGAN_model.reformat(x)
-            zfr = mmGAN_model.reformat(y)
+            gt = RIGAN_model.reformat(x)
+            zfr = RIGAN_model.reformat(y)
             
 
             tensor_to_complex_np = lambda x: x
@@ -92,7 +92,7 @@ if __name__ == "__main__":
             
                 true.append( torch.tensor(tensor_to_complex_np((gt[j] * std[j] + mean[j]).cpu())).numpy().real)
                 dirty.append( torch.tensor(tensor_to_complex_np((zfr[j] * std[j] + mean[j]).cpu())).numpy().real )
-                pred.append(torch.tensor(tensor_to_complex_np((gens_mmGAN[j] * std[j] + mean[j]).cpu())).numpy().real )
+                pred.append(torch.tensor(tensor_to_complex_np((gens_RIGAN[j] * std[j] + mean[j]).cpu())).numpy().real )
                 
                 if len(true) == 10:
                     # save a small set after 10 predictions
