@@ -39,6 +39,7 @@ Alternatively, we have provided a [zenodo file](https://zenodo.org/records/14226
 
 Documentation for the RI-GAN method is currently in preparation, but we will provide a similar guide for reproducing the results from our paper on RI-GAN once it is ready. 
 
+
 ## Questions and Concerns
 If you have any questions, or run into any issues, don't hesitate to reach out at jessica.whitney.22@ucl.ac.uk for the MMGAN method and academic@matthijsmars.com for the RI-GAN method. 
 
@@ -47,6 +48,7 @@ This repository was forked from [rcGAN](https://github.com/matt-bendel/rcGAN) by
 
 
 ## Citation
+
 If you find this code helpful, please cite our papers:
 
 - **MMGAN:**
@@ -66,3 +68,4 @@ If you find this code helpful, please cite our papers:
       year = {},
       journal={in prep.}
     }
+
