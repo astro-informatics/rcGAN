@@ -4,11 +4,10 @@ import types
 import json
 
 import numpy as np
+import matplotlib.patches as patches
 
 import sys
 sys.path.append('/home/mars/git/rcGAN/')
-
-print(sys.path)
 
 from data.lightning.RadioDataModule import RadioDataModule
 from utils.parse_args import create_arg_parser
@@ -41,7 +40,6 @@ if __name__ == "__main__":
     dm = RadioDataModule(cfg)
     fig_count = 5
     dm.setup()
-    train_loader = dm.train_dataloader()
     test_loader = dm.test_dataloader()
 
     today = date.today()
@@ -67,14 +65,17 @@ if __name__ == "__main__":
        	
 #         cfg.num_z_test = 100
         
-        for i, data in enumerate(train_loader):
-            print(f"{i}/{len(test_loader)}")
-            y, x, mean, std = data
-            y = y.cuda()
-            x = x.cuda()
-            mean = mean.cuda()
-            std = std.cuda()
-
+        for i, data in enumerate([0]):
+            print(f"{i}/{len([0])}")
+            im, d, p, _, _ = np.load('/home/mars/src_aiai/notebooks/GAN_30Dor.npy')
+            
+            pt_y, pt_x, mean, std = dm.test.transform((im, d, p))
+            
+            y = torch.tensor(pt_y[None,:]).cuda()
+            x = torch.tensor(pt_x[None, :]).cuda()
+            mean = torch.tensor(np.array([mean])).cuda()
+            std = torch.tensor(np.array([std])).cuda()  
+            
             gens_RIGAN = torch.zeros(size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size, 1)).cuda()
 
             for z in range(cfg.num_z_test):
@@ -94,13 +95,13 @@ if __name__ == "__main__":
                 dirty.append( torch.tensor(tensor_to_complex_np((zfr[j] * std[j] + mean[j]).cpu())).numpy().real )
                 pred.append(torch.tensor(tensor_to_complex_np((gens_RIGAN[j] * std[j] + mean[j]).cpu())).numpy().real )
                 
-                if len(true) == 10:
-                    # save a small set after 10 predictions
-                    pickle.dump([np.array(true), np.array(dirty), np.array(pred)], open(f"{pred_dir}/pred_train_{args.exp_name}_{today}_small.pkl", "wb"))
-            
-            if len(true) >= 1900:
-                break
-        pickle.dump([np.array(true), np.array(dirty), np.array(pred)], open(f"{pred_dir}/pred_train_{args.exp_name}_{today}.pkl", "wb"))
+                pickle.dump([np.array(true), np.array(dirty), np.array(pred)], open(f"{pred_dir}/pred_30DOR_{args.exp_name}_{today}.pkl", "wb"))
+                
+                exit()
+         
 
+        
+
+        
 
        	
