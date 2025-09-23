@@ -89,6 +89,7 @@ if __name__ == "__main__":
         filename="checkpoint-{epoch}",
         every_n_epochs=1,
         save_top_k=20,
+        save_last=True,  # Always save the last checkpoint
     )
 
     try:
@@ -111,16 +112,15 @@ if __name__ == "__main__":
     # Set a free port for distributed training
     free_port = find_free_port()
     os.environ["MASTER_PORT"] = str(free_port)
+    os.environ["MASTER_ADDR"] = "localhost"
     print(f"Using MASTER_PORT: {free_port}")
 
-    try:
-        ddp_strategy = DDPStrategy(
-            find_unused_parameters=True, process_group_backend="nccl"
-        )
-    except Exception as e:
-        print("Error setting DDPStrategy:", e)
-        print("Falling back to ddp_spawn strategy.")
-        ddp_strategy = "ddp_spawn"
+    # Configure DDP strategy for better GPU utilization
+    ddp_strategy = DDPStrategy(
+        find_unused_parameters=False,  # Set to False for better performance
+        process_group_backend="nccl",
+        static_graph=True,  # Enable static graph optimization
+    )
 
     trainer = pl.Trainer(
         accelerator="gpu",
