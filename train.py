@@ -98,10 +98,26 @@ if __name__ == "__main__":
 
     # Configure DDP strategy with find_unused_parameters to avoid port conflicts
     from pytorch_lightning.strategies import DDPStrategy
+    import socket
 
-    ddp_strategy = DDPStrategy(
-        find_unused_parameters=True, process_group_backend="nccl"
-    )
+    # def find_free_port():
+    #     """Find a free port on localhost."""
+    #     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    #         s.bind(("", 0))
+    #         s.listen(1)
+    #         port = s.getsockname()[1]
+    #     return port
+
+    # # Set a free port for distributed training
+    # free_port = find_free_port()
+    # os.environ["MASTER_PORT"] = str(free_port)
+
+    try:
+        ddp_strategy = DDPStrategy(
+            find_unused_parameters=True, process_group_backend="nccl"
+        )
+    except torch.distributed.DistNetworkError:
+        ddp_strategy = "ddp_spawn"
 
     trainer = pl.Trainer(
         accelerator="gpu",
