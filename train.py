@@ -100,17 +100,18 @@ if __name__ == "__main__":
     from pytorch_lightning.strategies import DDPStrategy
     import socket
 
-    # def find_free_port():
-    #     """Find a free port on localhost."""
-    #     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    #         s.bind(("", 0))
-    #         s.listen(1)
-    #         port = s.getsockname()[1]
-    #     return port
+    def find_free_port():
+        """Find a free port on localhost."""
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind(("", 0))
+            s.listen(1)
+            port = s.getsockname()[1]
+        return port
 
-    # # Set a free port for distributed training
-    # free_port = find_free_port()
-    # os.environ["MASTER_PORT"] = str(free_port)
+    # Set a free port for distributed training
+    free_port = find_free_port()
+    os.environ["MASTER_PORT"] = str(free_port)
+    print(f"Using MASTER_PORT: {free_port}")
 
     try:
         ddp_strategy = DDPStrategy(
@@ -120,8 +121,6 @@ if __name__ == "__main__":
         print("Error setting DDPStrategy:", e)
         print("Falling back to ddp_spawn strategy.")
         ddp_strategy = "ddp_spawn"
-
-    ddp_strategy = "ddp_spawn"
 
     trainer = pl.Trainer(
         accelerator="gpu",
