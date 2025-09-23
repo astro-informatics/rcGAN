@@ -116,7 +116,9 @@ if __name__ == "__main__":
         ddp_strategy = DDPStrategy(
             find_unused_parameters=True, process_group_backend="nccl"
         )
-    except torch.distributed.DistNetworkError:
+    except Exception as e:
+        print("Error setting DDPStrategy:", e)
+        print("Falling back to ddp_spawn strategy.")
         ddp_strategy = "ddp_spawn"
 
     trainer = pl.Trainer(
