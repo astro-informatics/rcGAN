@@ -47,8 +47,11 @@ if __name__ == "__main__":
 
         # Set WANDB to offline mode if specified in config
         wandb_offline = getattr(cfg, "wandb_offline", True)
+        log_model = True
         if wandb_offline:
             os.environ["WANDB_MODE"] = "offline"
+            # Disable model saving in offline mode, as it is not supported
+            wandb_log_model = False
 
         # Load the correct model
         if cfg.experience == "mri":
@@ -73,7 +76,7 @@ if __name__ == "__main__":
     wandb_logger = WandbLogger(
         project=cfg.experience,
         name=args.exp_name,
-        log_model=True,
+        log_model=wandb_log_model,
         save_dir=cfg.checkpoint_dir + "wandb",
         offline=wandb_offline,
     )
