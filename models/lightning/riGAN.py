@@ -305,12 +305,12 @@ class riGAN(pl.LightningModule):
         opt_g = torch.optim.Adam(
             self.generator.parameters(),
             lr=self.args.lr,
-            betas=(self.args.beta_1, self.args.beta_2),
+            betas=(float(self.args.beta_1), float(self.args.beta_2)),
         )
         opt_d = torch.optim.Adam(
             self.discriminator.parameters(),
             lr=self.args.lr,
-            betas=(self.args.beta_1, self.args.beta_2),
+            betas=(float(self.args.beta_1), float(self.args.beta_2)),
         )
         return [opt_d, opt_g], []
 
