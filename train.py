@@ -96,10 +96,15 @@ if __name__ == "__main__":
     except:
         accumulate_grad_batches = 1
 
+    # Configure DDP strategy with find_unused_parameters to avoid port conflicts
+    from pytorch_lightning.strategies import DDPStrategy
+
+    ddp_strategy = DDPStrategy(find_unused_parameters=True)
+
     trainer = pl.Trainer(
         accelerator="gpu",
         devices=args.num_gpus,
-        strategy="ddp",
+        strategy=ddp_strategy,
         max_epochs=cfg.num_epochs,
         callbacks=[checkpoint_callback_epoch],
         num_sanity_val_steps=2,
