@@ -1,5 +1,5 @@
 #Change checkpoint and sense_map path
-checkpoint_dir: /lustre/fsstor/projects/rech/rbn/ulx23va/projects/unrolled_cGAN/trained_radio_cGAN_models/
+checkpoint_dir: /lustre/fsn1/projects/rech/rbn/ulx23va/projects/unrolled_cGAN/trained_radio_cGAN_models/
 data_path: /lustre/fswork/projects/rech/rbn/ulx23va/projects/unrolled_cGAN/datasets/new_radio_GAN/
 
 # Define the experience
@@ -32,7 +32,7 @@ gp_weight: 10
 adv_weight: 1e-5
 
 # Training
-batch_size: 8 # per GPU
+batch_size: 6 # per GPU
 accumulate_grad_batches: 1
 # Gradient accumulation is not automatic in pytorch v2>
 
