@@ -32,7 +32,7 @@ gp_weight: 10
 adv_weight: 1e-5
 
 # Training
-batch_size: 10 # per GPU
+batch_size: 6 # per GPU
 accumulate_grad_batches: 1
 # Gradient accumulation is not automatic in pytorch v2>
 
