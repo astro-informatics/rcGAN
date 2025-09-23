@@ -99,7 +99,9 @@ if __name__ == "__main__":
     # Configure DDP strategy with find_unused_parameters to avoid port conflicts
     from pytorch_lightning.strategies import DDPStrategy
 
-    ddp_strategy = DDPStrategy(find_unused_parameters=True)
+    ddp_strategy = DDPStrategy(
+        find_unused_parameters=True, process_group_backend="nccl"
+    )
 
     trainer = pl.Trainer(
         accelerator="gpu",
