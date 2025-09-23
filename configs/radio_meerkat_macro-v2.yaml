@@ -24,7 +24,7 @@ norm: macro # none, micro, macro
 
 # Optimizer:
 lr: 0.001
-beta_1: 0
+beta_1: 0.
 beta_2: 0.99
 
 # Loss weights
