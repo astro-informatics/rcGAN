@@ -49,6 +49,9 @@ class riGAN(pl.LightningModule):
         self.is_good_model = 0
         self.resolution = self.args.im_size
 
+        # Set manual optimization for multiple optimizers in Lightning 2.x
+        self.automatic_optimization = False
+
         self.save_hyperparameters()  # Save passed values
 
     def get_noise(self, num_vectors):
@@ -146,48 +149,53 @@ class riGAN(pl.LightningModule):
     def drift_penalty(self, real_pred):
         return 0.001 * torch.mean(real_pred**2)
 
-    def training_step(self, batch, batch_idx, optimizer_idx):
+    def training_step(self, batch, batch_idx):
         y, x, mean, std = batch
 
-        # train generator
-        if optimizer_idx == 1:
-            gens = torch.zeros(
-                size=(
-                    y.size(0),
-                    self.args.num_z_train,
-                    self.args.out_chans,
-                    self.args.im_size,
-                    self.args.im_size,
-                ),
-                device=self.device,
-            )
-            for z in range(self.args.num_z_train):
-                gens[:, z, :, :, :] = self.forward(y)
+        # Get optimizers
+        opt_d, opt_g = self.optimizers()
 
-            avg_recon = torch.mean(gens, dim=1)
+        # Train discriminator
+        x_hat = self.forward(y)
 
-            # adversarial loss is binary cross-entropy
-            g_loss = self.adversarial_loss_generator(y, gens)
-            g_loss += self.l1_std_p(avg_recon, gens, x)
+        real_pred = self.discriminator(input=x, y=y)
+        fake_pred = self.discriminator(input=x_hat, y=y)
 
-            self.log("g_loss", g_loss, prog_bar=True)
+        d_loss = self.adversarial_loss_discriminator(fake_pred, real_pred)
+        d_loss += self.gradient_penalty(x_hat, x, y)
+        d_loss += self.drift_penalty(real_pred)
 
-            return g_loss
+        opt_d.zero_grad()
+        self.manual_backward(d_loss)
+        opt_d.step()
 
-        # train discriminator
-        if optimizer_idx == 0:
-            x_hat = self.forward(y)
+        self.log("d_loss", d_loss, prog_bar=True)
 
-            real_pred = self.discriminator(input=x, y=y)
-            fake_pred = self.discriminator(input=x_hat, y=y)
+        # Train generator
+        gens = torch.zeros(
+            size=(
+                y.size(0),
+                self.args.num_z_train,
+                self.args.out_chans,
+                self.args.im_size,
+                self.args.im_size,
+            ),
+            device=self.device,
+        )
+        for z in range(self.args.num_z_train):
+            gens[:, z, :, :, :] = self.forward(y)
 
-            d_loss = self.adversarial_loss_discriminator(fake_pred, real_pred)
-            d_loss += self.gradient_penalty(x_hat, x, y)
-            d_loss += self.drift_penalty(real_pred)
+        avg_recon = torch.mean(gens, dim=1)
 
-            self.log("d_loss", d_loss, prog_bar=True)
+        # adversarial loss is binary cross-entropy
+        g_loss = self.adversarial_loss_generator(y, gens)
+        g_loss += self.l1_std_p(avg_recon, gens, x)
 
-            return d_loss
+        opt_g.zero_grad()
+        self.manual_backward(g_loss)
+        opt_g.step()
+
+        self.log("g_loss", g_loss, prog_bar=True)
 
     def validation_step(self, batch, batch_idx, external_test=False):
         y, x, mean, std = batch
