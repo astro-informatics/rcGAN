@@ -121,6 +121,8 @@ if __name__ == "__main__":
         print("Falling back to ddp_spawn strategy.")
         ddp_strategy = "ddp_spawn"
 
+    ddp_strategy = "ddp_spawn"
+
     trainer = pl.Trainer(
         accelerator="gpu",
         devices=args.num_gpus,
