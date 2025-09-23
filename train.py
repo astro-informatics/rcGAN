@@ -81,7 +81,10 @@ if __name__ == "__main__":
         offline=wandb_offline,
     )
 
-    os.makedirs(cfg.checkpoint_dir + args.exp_name + "/", exist_ok=True)
+    if not os.path.exists(
+        cfg.checkpoint_dir + args.exp_name + "/"
+    ):  # In case we don't have write permissions to create the directory
+        os.makedirs(cfg.checkpoint_dir + args.exp_name + "/", exist_ok=True)
     checkpoint_callback_epoch = ModelCheckpoint(
         monitor="epoch",
         mode="max",
