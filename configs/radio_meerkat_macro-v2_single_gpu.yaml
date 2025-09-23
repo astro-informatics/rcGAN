@@ -1,5 +1,5 @@
 #Change checkpoint and sense_map path
-checkpoint_dir: /lustre/fsstor/projects/rech/rbn/ulx23va/projects/unrolled_cGAN/trained_radio_cGAN_models/
+checkpoint_dir: /lustre/fsstor/projects/rech/rbn/ulx23va/projects/unrolled_cGAN/trained_radio_cGAN_models_single_gpu/
 data_path: /lustre/fswork/projects/rech/rbn/ulx23va/projects/unrolled_cGAN/datasets/new_radio_GAN/
 
 # Define the experience
