@@ -1,4 +1,4 @@
-#Mass Mapping
+# Mass Mapping
 
 import torch
 
@@ -9,37 +9,40 @@ from matplotlib import cm
 
 from PIL import Image
 from torch.nn import functional as F
-from utils.mri.fftc import ifft2c_new, fft2c_new #TODO: Unused imports.
+from utils.mri.fftc import ifft2c_new, fft2c_new  # TODO: Unused imports.
 from models.archs.radio.generator import UNetModel
 from models.archs.radio.discriminator import DiscriminatorModel
 from evaluation_scripts.metrics import psnr
 from torchmetrics.functional import peak_signal_noise_ratio
 
+
 class riGAN(pl.LightningModule):
     def __init__(self, args, exp_name, num_gpus):
         super().__init__()
-        self.args = args # This is the cfg object 
+        self.args = args  # This is the cfg object
         self.exp_name = exp_name
         self.num_gpus = num_gpus
 
-        self.in_chans = args.in_chans + 2  # Two extra dimensions of the added noise 
+        self.in_chans = args.in_chans + 2  # Two extra dimensions of the added noise
         self.out_chans = args.out_chans
 
         try:
             alt_upsample = self.args.alt_upsample
         except:
             alt_upsample = False
-            
+
+        # In lightning v2.0
+        self.validation_step_outputs = []
+
         self.generator = UNetModel(
-            in_chans=self.in_chans,
-            out_chans=self.out_chans,
-            alt_upsample=alt_upsample
+            in_chans=self.in_chans, out_chans=self.out_chans, alt_upsample=alt_upsample
         )
 
         self.discriminator = DiscriminatorModel(
-            in_chans=self.args.in_chans + self.args.out_chans, # Number of channels from x and y
+            in_chans=self.args.in_chans
+            + self.args.out_chans,  # Number of channels from x and y
             out_chans=self.out_chans,
-            input_im_size=self.args.im_size
+            input_im_size=self.args.im_size,
         )
 
         self.std_mult = 1
@@ -49,7 +52,9 @@ class riGAN(pl.LightningModule):
         self.save_hyperparameters()  # Save passed values
 
     def get_noise(self, num_vectors):
-        z = torch.randn(num_vectors, 2, self.resolution, self.resolution, device=self.device)
+        z = torch.randn(
+            num_vectors, 2, self.resolution, self.resolution, device=self.device
+        )
         return z
 
     def reformat(self, samples):
@@ -63,12 +68,15 @@ class riGAN(pl.LightningModule):
         """Calculates the gradient penalty loss for WGAN GP"""
         Tensor = torch.FloatTensor
         # Random weight term for interpolation between real and fake samples
-        alpha = Tensor(np.random.random((real_samples.size(0), 1, 1, 1))).to(self.device)
+        alpha = Tensor(np.random.random((real_samples.size(0), 1, 1, 1))).to(
+            self.device
+        )
         # Get random interpolation between real and fake samples
-        interpolates = (alpha * real_samples + ((1 - alpha) * fake_samples)).requires_grad_(True)
+        interpolates = (
+            alpha * real_samples + ((1 - alpha) * fake_samples)
+        ).requires_grad_(True)
         d_interpolates = self.discriminator(input=interpolates, y=y)
-        fake = Tensor(real_samples.shape[0], 1).fill_(1.0).to(
-            self.device)
+        fake = Tensor(real_samples.shape[0], 1).fill_(1.0).to(self.device)
 
         # Get gradient w.r.t. interpolates
         gradients = autograd.grad(
@@ -87,21 +95,23 @@ class riGAN(pl.LightningModule):
         num_vectors = y.size(0)
         noise = self.get_noise(num_vectors)
         samples = self.generator(torch.cat([y, noise], dim=1))
-        samples = self.readd_measures(samples, y)     
+        samples = self.readd_measures(samples, y)
         return samples
 
     def adversarial_loss_discriminator(self, fake_pred, real_pred):
         return fake_pred.mean() - real_pred.mean()
 
     def adversarial_loss_generator(self, y, gens):
-        fake_pred = torch.zeros(size=(y.shape[0], self.args.num_z_train), device=self.device)
+        fake_pred = torch.zeros(
+            size=(y.shape[0], self.args.num_z_train), device=self.device
+        )
         for k in range(y.shape[0]):
             cond = torch.zeros(
                 1,
                 self.args.in_chans,
                 self.args.im_size,
                 self.args.im_size,
-                device=self.device
+                device=self.device,
             )
             cond[0, :, :, :] = y[k, :, :, :]
             cond = cond.repeat(self.args.num_z_train, 1, 1, 1)
@@ -118,12 +128,15 @@ class riGAN(pl.LightningModule):
         elif self.current_epoch <= 22:
             adv_weight = 1e-4
 
-        return - adv_weight * gen_pred_loss.mean()
+        return -adv_weight * gen_pred_loss.mean()
 
     def l1_std_p(self, avg_recon, gens, x):
-        return F.l1_loss(avg_recon, x) - self.std_mult * np.sqrt(
-            2 / (np.pi * self.args.num_z_train * (self.args.num_z_train+ 1))
-            ) * torch.std(gens, dim=1).mean()
+        return (
+            F.l1_loss(avg_recon, x)
+            - self.std_mult
+            * np.sqrt(2 / (np.pi * self.args.num_z_train * (self.args.num_z_train + 1)))
+            * torch.std(gens, dim=1).mean()
+        )
 
     def gradient_penalty(self, x_hat, x, y):
         gradient_penalty = self.compute_gradient_penalty(x.data, x_hat.data, y.data)
@@ -131,7 +144,7 @@ class riGAN(pl.LightningModule):
         return self.args.gp_weight * gradient_penalty
 
     def drift_penalty(self, real_pred):
-        return 0.001 * torch.mean(real_pred ** 2)
+        return 0.001 * torch.mean(real_pred**2)
 
     def training_step(self, batch, batch_idx, optimizer_idx):
         y, x, mean, std = batch
@@ -143,10 +156,11 @@ class riGAN(pl.LightningModule):
                     y.size(0),
                     self.args.num_z_train,
                     self.args.out_chans,
-                    self.args.im_size, 
-                    self.args.im_size
+                    self.args.im_size,
+                    self.args.im_size,
                 ),
-                device=self.device)
+                device=self.device,
+            )
             for z in range(self.args.num_z_train):
                 gens[:, z, :, :, :] = self.forward(y)
 
@@ -156,7 +170,7 @@ class riGAN(pl.LightningModule):
             g_loss = self.adversarial_loss_generator(y, gens)
             g_loss += self.l1_std_p(avg_recon, gens, x)
 
-            self.log('g_loss', g_loss, prog_bar=True)
+            self.log("g_loss", g_loss, prog_bar=True)
 
             return g_loss
 
@@ -171,12 +185,12 @@ class riGAN(pl.LightningModule):
             d_loss += self.gradient_penalty(x_hat, x, y)
             d_loss += self.drift_penalty(real_pred)
 
-            self.log('d_loss', d_loss, prog_bar=True)
+            self.log("d_loss", d_loss, prog_bar=True)
 
             return d_loss
 
     def validation_step(self, batch, batch_idx, external_test=False):
-        y, x, mean, std= batch
+        y, x, mean, std = batch
 
         fig_count = 0
 
@@ -185,10 +199,20 @@ class riGAN(pl.LightningModule):
         else:
             num_code = self.args.num_z_valid
 
-        gens = torch.zeros(size=(y.size(0), num_code, self.args.out_chans, self.args.im_size, self.args.im_size),
-                           device=self.device)
+        gens = torch.zeros(
+            size=(
+                y.size(0),
+                num_code,
+                self.args.out_chans,
+                self.args.im_size,
+                self.args.im_size,
+            ),
+            device=self.device,
+        )
         for z in range(num_code):
-            gens[:, z, :, :, :] = self.forward(y) * std[:, None, None, None] + mean[:, None, None, None] 
+            gens[:, z, :, :, :] = (
+                self.forward(y) * std[:, None, None, None] + mean[:, None, None, None]
+            )
 
         avg = torch.mean(gens, dim=1)
         avg_gen = self.reformat(avg)
@@ -214,8 +238,12 @@ class riGAN(pl.LightningModule):
         mag_single_gen = torch.cat(mag_single_list, dim=0)
         mag_gt = torch.cat(mag_gt_list, dim=0)
 
-        self.log('psnr_8_step', psnr_8s.mean(), on_step=True, on_epoch=False, prog_bar=True)
-        self.log('psnr_1_step', psnr_1s.mean(), on_step=True, on_epoch=False, prog_bar=True)
+        self.log(
+            "psnr_8_step", psnr_8s.mean(), on_step=True, on_epoch=False, prog_bar=True
+        )
+        self.log(
+            "psnr_1_step", psnr_1s.mean(), on_step=True, on_epoch=False, prog_bar=True
+        )
 
         if batch_idx == 0:
             if self.global_rank == 0 and self.current_epoch % 1 == 0 and fig_count == 0:
@@ -224,7 +252,9 @@ class riGAN(pl.LightningModule):
                 avg_gen_np = mag_avg_gen[0, :, :, 0].cpu().numpy()
                 gt_np = mag_gt[0, :, :, 0].cpu().numpy()
 
-                plot_avg_np = (avg_gen_np - np.min(avg_gen_np)) / (np.max(avg_gen_np) - np.min(avg_gen_np))
+                plot_avg_np = (avg_gen_np - np.min(avg_gen_np)) / (
+                    np.max(avg_gen_np) - np.min(avg_gen_np)
+                )
                 plot_gt_np = (gt_np - np.min(gt_np)) / (np.max(gt_np) - np.min(gt_np))
 
                 np_psnr = psnr(gt_np, avg_gen_np)
@@ -232,20 +262,28 @@ class riGAN(pl.LightningModule):
                 self.logger.log_image(
                     key=f"epoch_{self.current_epoch}_img",
                     images=[
-                        Image.fromarray(np.uint8(plot_gt_np*255), 'L'),
-                        Image.fromarray(np.uint8(plot_avg_np*255), 'L'),
-                        Image.fromarray(np.uint8(cm.jet(5*np.abs(plot_gt_np - plot_avg_np))*255))
+                        Image.fromarray(np.uint8(plot_gt_np * 255), "L"),
+                        Image.fromarray(np.uint8(plot_avg_np * 255), "L"),
+                        Image.fromarray(
+                            np.uint8(cm.jet(5 * np.abs(plot_gt_np - plot_avg_np)) * 255)
+                        ),
                     ],
-                    caption=["GT", f"Recon: PSNR (NP): {np_psnr:.2f}", "Error"]
+                    caption=["GT", f"Recon: PSNR (NP): {np_psnr:.2f}", "Error"],
                 )
 
             self.trainer.strategy.barrier()
 
-        return {'psnr_8': psnr_8s.mean(), 'psnr_1': psnr_1s.mean()}
+        output = {"psnr_8": psnr_8s.mean(), "psnr_1": psnr_1s.mean()}
+        self.validation_step_outputs.append(output)
+        return output
 
-    def validation_epoch_end(self, validation_step_outputs):
-        avg_psnr = self.all_gather(torch.stack([x['psnr_8'] for x in validation_step_outputs]).mean()).mean()
-        avg_single_psnr = self.all_gather(torch.stack([x['psnr_1'] for x in validation_step_outputs]).mean()).mean()
+    def on_validation_epoch_end(self):
+        avg_psnr = self.all_gather(
+            torch.stack([x["psnr_8"] for x in self.validation_step_outputs]).mean()
+        ).mean()
+        avg_single_psnr = self.all_gather(
+            torch.stack([x["psnr_1"] for x in self.validation_step_outputs]).mean()
+        ).mean()
 
         avg_psnr = avg_psnr.cpu().numpy()
         avg_single_psnr = avg_single_psnr.cpu().numpy()
@@ -260,18 +298,19 @@ class riGAN(pl.LightningModule):
         else:
             self.is_good_model = 0
 
+        self.validation_step_outputs.clear()  # free memory
         self.trainer.strategy.barrier()
 
     def configure_optimizers(self):
         opt_g = torch.optim.Adam(
             self.generator.parameters(),
             lr=self.args.lr,
-            betas=(self.args.beta_1, self.args.beta_2)
+            betas=(self.args.beta_1, self.args.beta_2),
         )
         opt_d = torch.optim.Adam(
             self.discriminator.parameters(),
             lr=self.args.lr,
-            betas=(self.args.beta_1, self.args.beta_2)
+            betas=(self.args.beta_1, self.args.beta_2),
         )
         return [opt_d, opt_g], []
 
