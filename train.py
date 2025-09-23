@@ -61,7 +61,7 @@ if __name__ == "__main__":
             dm = MMDataModule(cfg)
             model = mmGAN(cfg, args.exp_name, args.num_gpus)
         elif cfg.experience == "radio":
-            cfg.num_workers = args.num_gpus  # set number of workers to same as gpu
+            # cfg.num_workers = args.num_gpus  # set number of workers to same as gpu
             dm = RadioDataModule(cfg)
             if cfg.__dict__.get("gradient", False):
                 model = GriGAN(cfg, args.exp_name, args.num_gpus)
