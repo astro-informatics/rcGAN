@@ -8,6 +8,7 @@ from tqdm import tqdm
 from scipy import ndimage
 
 import sys
+
 sys.path.append("/home/jjwhit/rcGAN/")
 
 from mass_map_utils.scripts.ks_utils import pearsoncoeff, psnr, snr, rmse
@@ -19,6 +20,7 @@ from pytorch_lightning import seed_everything
 
 def load_object(dct):
     return types.SimpleNamespace(**dct)
+
 
 if __name__ == "__main__":
     torch.set_float32_matmul_precision("medium")
@@ -41,9 +43,9 @@ if __name__ == "__main__":
     best_rmse = 10000000
     start_epoch = 80  # Will start saving models after 80 epochs
     end_epoch = cfg.num_epochs
-    mask = np.load(
-        cfg.cosmo_dir_path + "cosmos_mask.npy", allow_pickle=True
-    ).astype(bool)
+    mask = np.load(cfg.cosmo_dir_path + "cosmos_mask.npy", allow_pickle=True).astype(
+        bool
+    )
 
     psnr_vals = []
     snr_vals = []
@@ -84,24 +86,32 @@ if __name__ == "__main__":
 
                 gens = torch.zeros(
                     size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size)
-                ).cuda() 
+                ).cuda()
                 for z in range(cfg.num_z_test):
-                    gens[:, z, :, :] = model.reformat(model.forward(y)).squeeze(-1) # remove dimension that used to handle real/complex
+                    gens[:, z, :, :] = model.reformat(model.forward(y)).squeeze(
+                        -1
+                    )  # remove dimension that used to handle real/complex
 
                 torch_reconstruction = torch.mean(gens, dim=1)
-                torch_truth = model.reformat(x).squeeze(-1) # also removing extra dimension here too
+                torch_truth = model.reformat(x).squeeze(
+                    -1
+                )  # also removing extra dimension here too
                 kappa_mean = cfg.kappa_mean
                 kappa_std = cfg.kappa_std
 
                 for j in range(y.size(0)):
                     reconstruction = ndimage.rotate(
                         (torch_reconstruction[j] * kappa_std + kappa_mean)
-                        .squeeze().cpu()
+                        .squeeze()
+                        .cpu()
                         .numpy(),
                         180,
                     )
                     truth = ndimage.rotate(
-                        (torch_truth[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(),
+                        (torch_truth[j] * kappa_std + kappa_mean)
+                        .squeeze()
+                        .cpu()
+                        .numpy(),
                         180,
                     )
                     reconstruction = np.real(
@@ -152,11 +162,17 @@ if __name__ == "__main__":
     for epoch in range(80, end_epoch):
         try:
             if epoch != best_epoch_rmse:
-                os.remove(cfg.checkpoint_dir + args.exp_name + f'/checkpoint-epoch={epoch}.ckpt')
+                os.remove(
+                    cfg.checkpoint_dir
+                    + args.exp_name
+                    + f"/checkpoint-epoch={epoch}.ckpt"
+                )
         except:
             pass
 
     os.rename(
-        cfg.checkpoint_dir + args.exp_name + f"/checkpoint-epoch={best_epoch_rmse}.ckpt",
+        cfg.checkpoint_dir
+        + args.exp_name
+        + f"/checkpoint-epoch={best_epoch_rmse}.ckpt",
         cfg.checkpoint_dir + args.exp_name + f"/checkpoint_best.ckpt",
     )
