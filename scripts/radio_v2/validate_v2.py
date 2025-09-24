@@ -7,7 +7,9 @@ import numpy as np
 import shutil
 import sys
 
-sys.path.append("/home/mars/git/rcGAN/")
+sys.path.append(
+    "/lustre/fswork/projects/rech/rbn/ulx23va/projects/unrolled_cGAN/repos/rcGAN/"
+)
 
 from tqdm import tqdm
 from data.lightning.RadioDataModule import RadioDataModule
