@@ -37,6 +37,9 @@ if __name__ == "__main__":
     dm.setup()
     test_loader = dm.test_dataloader()
 
+    # Lambda computed using RCPS method
+    lambda_hat = 3.268634080886841
+
     with torch.no_grad():
         mmGAN_model = mmGAN.load_from_checkpoint(
             # checkpoint_path=cfg.checkpoint_dir + args.exp_name + "/checkpoint_best.ckpt"
@@ -50,7 +53,7 @@ if __name__ == "__main__":
         mmGAN_model.eval()
 
         for i, data in enumerate(test_loader):
-            y, x, mean, std, gamma = data
+            y, x, mean, std = data
             y = y.cuda()
             x = x.cuda()
             mean = mean.cuda()
@@ -66,6 +69,7 @@ if __name__ == "__main__":
             avg_mmGAN = torch.mean(gens_mmGAN, dim=1)
 
             gt = mmGAN_model.reformat(x).squeeze(-1)
+            zfr = mmGAN_model.reformat(y)
 
             for j in range(y.size(0)):
                 np_avgs = {
@@ -88,12 +92,16 @@ if __name__ == "__main__":
                 np_gt = ndimage.rotate(
                     (gt[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(), 180
                 )
+                np_zfr = ndimage.rotate(
+                    torch.tensor(
+                        tensor_to_complex_np((zfr[j] * kappa_std + kappa_mean).cpu())
+                    ).numpy(),
+                    180,
+                ) # Rethink how we're normalising since zfr is complex and kappa_std is real
 
-                np_gamma = gamma[j].cpu().numpy()
-            
-                # np_avgs["mmGAN"] = ndimage.rotate(
-                #     (avg_mmGAN[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(), 180
-                # )
+                np_avgs["mmGAN"] = ndimage.rotate(
+                    (avg_mmGAN[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(), 180
+                )
                 for z in range(cfg.num_z_test):
                     np_samps["mmGAN"].append(
                         ndimage.rotate(
@@ -102,24 +110,30 @@ if __name__ == "__main__":
                         )
                     )
 
-                # np_stds["mmGAN"] = np.std(np.stack(np_samps["mmGAN"]), axis=0)
+                np_stds["mmGAN"] = np.std(np.stack(np_samps["mmGAN"]), axis=0)
+
+                # Calibrated upper and lower bounds
+                np_uqs = lambda_hat * np_stds["mmGAN"]
 
                 # Save arrays - gt, avg, samps, std, zfr
-                np.save(f"/share/gpu0/jjwhit/samples/hpd/kappa/np_gt_{fig_count:04d}.npy", np_gt)
-                np.save(f"/share/gpu0/jjwhit/samples/hpd/gamma/np_gamma_{fig_count:04d}.npy", np_gamma)
-                # np.save(f"/share/gpu0/jjwhit/samples/test_set/gamma/np_gamma_{fig_count}.npy", np_zfr)
-                # np.save(
-                #     f"/share/gpu0/jjwhit/samples/real_output/np_avgs_{fig_count}.npy",
-                #     np_avgs["mmGAN"],
-                # )
-                # np.save(
-                #     f"/share/gpu0/jjwhit/samples/real_output/np_stds_{fig_count}.npy",
-                #     np_stds["mmGAN"],
-                # )
+                np.save(f"/share/gpu0/jjwhit/samples/rcps/np_gt_{fig_count}.npy", np_gt)
+                np.save(f"/share/gpu0/jjwhit/samples/rcps/np_zfr_{fig_count}.npy", np_zfr)
                 np.save(
-                    f"/share/gpu0/jjwhit/samples/hpd/recon/np_samps_{fig_count:04d}.npy",
+                    f"/share/gpu0/jjwhit/samples/rcps/np_avgs_{fig_count}.npy",
+                    np_avgs["mmGAN"],
+                )
+                np.save(
+                    f"/share/gpu0/jjwhit/samples/rcps/np_stds_{fig_count}.npy",
+                    np_stds["mmGAN"],
+                )
+                np.save(
+                    f"/share/gpu0/jjwhit/samples/rcps/np_samps_{fig_count}.npy",
                     np_samps["mmGAN"],
                 )
+                np.save(
+                    f"/share/gpu0/jjwhit/samples/rcps/np_uqs_{fig_count}.npy", np_uqs
+                )
+
 
                 if fig_count == args.num_figs:
                     sys.exit()

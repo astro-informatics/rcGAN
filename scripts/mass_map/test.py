@@ -161,13 +161,13 @@ if __name__ == "__main__":
             print(
                 f"SSIM: {np.mean(ssims):.4f} \pm {np.std(ssims) / np.sqrt(len(ssims)):.4f}"
             )
-            print(
-                f"LPIPS: {np.mean(lpipss):.4f} \pm {np.std(lpipss) / np.sqrt(len(lpipss)):.4f}"
-            )
-            print(
-                f"DISTS: {np.mean(distss):.4f} \pm {np.std(distss) / np.sqrt(len(distss)):.4f}"
-            )
-            print(f"APSD: {np.mean(apsds):.1f}")
+            # print(
+            #     f"LPIPS: {np.mean(lpipss):.4f} \pm {np.std(lpipss) / np.sqrt(len(lpipss)):.4f}"
+            # )
+            # print(
+            #     f"DISTS: {np.mean(distss):.4f} \pm {np.std(distss) / np.sqrt(len(distss)):.4f}"
+            # )
+            # print(f"APSD: {np.mean(apsds):.1f}")
 
     cfids = []
     m_comps = []

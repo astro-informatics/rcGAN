@@ -144,7 +144,8 @@ def psnr(a: np.ndarray, b: np.ndarray, mask: bool) -> float:
     a = a[mask == 1]
     b = b[mask == 1]
     mse = np.mean((a - b) ** 2)
-    r = a.max()
+    # r = a.max()
+    r = 1
     return 10 * np.log10((r ** 2) / mse)
 
 

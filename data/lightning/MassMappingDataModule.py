@@ -219,7 +219,7 @@ class MMDataTransform:
         if self.mask is not None:
             normalized_gamma[:, self.mask == 0] = 0.0
 
-        # Return normalized measurements, normalized gt, mean, and std.xs
+        # Return normalized measurements, normalized gt, mean, and std dev
         return normalized_gamma.float(), normalized_gt, mean, std
 
 class MMDataModule(pl.LightningDataModule):
