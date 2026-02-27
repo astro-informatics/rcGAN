@@ -51,7 +51,79 @@ class mmGAN(pl.LightningModule):
 
     def readd_measures(self, samples, measures):
         return torch.clone(samples)
+    
 
+    def _crps_core(self, gens, x):
+        """ Calculates core terms shared in the normal, fair, and alpha CRPS losses.
+
+        Args:
+            gens: (B, M, C, H, W)
+            x:    (B, C, H, W)
+        Returns:
+            abs_diff_truth: (B, M, C, H, W) |X_m - x_true|
+            abs_diff_samps:   (B, M, M, C, H, W) |X_m - X_m'|
+        """
+        B, M, C, H, W = gens.shape
+
+        # |X_m - y|
+        x_exp = x.unsqueeze(1)
+        abs_diff_truth = torch.abs(gens - x_exp) 
+
+        # |X_m - X_m'|
+        abs_diff_samps = torch.abs(gens.unsqueeze(2) - gens.unsqueeze(1))  # (B, M, M, C, H, W)
+        return abs_diff_truth, abs_diff_samps
+    
+    def normal_crps_loss(self, gens, x):
+        """Calculates the continuous ranked probability score (CRPS) loss.
+        CRPS = E|X_m - y| - 0.5 E|X_m - X_m'|
+        
+        Args:
+            gens (torch.tensor): The generated approx. posterior samples, shape (batch_size, num_samples, channels, height, width).
+            x (torch.tensor): The ground truth samples, shape (batch_size, channels, height, width).
+        
+        Returns:
+            torch.tensor: The CRPS loss value.
+        """
+        abs_diff_truth, abs_diff_samps = self._crps_core(gens, x)
+        crps = abs_diff_truth.mean(dim=1) - 0.5 * abs_diff_samps.mean(dim=(1, 2))
+        return crps.mean()
+
+    def fair_crps_loss(self, gens, x):
+        """Calculates the continuous ranked probability score (CRPS) loss with an adjustement term for small sample sizes.
+        Fair CRPS = E|X_m - y| - (M-1)/M E|X_m - X_m'|
+        
+        Args:
+            gens (torch.tensor): The generated approx. posterior samples, shape (batch_size, num_samples, channels, height, width).
+            x (torch.tensor): The ground truth samples, shape (batch_size, channels, height, width).
+        
+        Returns:
+            torch.tensor: The fair CRPS loss value.
+        """
+        abs_diff_truth, abs_diff_samps = self._crps_core(gens, x)
+
+        M = gens.shape[1]
+        fair_crps = abs_diff_truth.mean(dim=1) - ((M - 1) / M) * abs_diff_samps.mean(dim=(1, 2))
+        return fair_crps.mean()
+    
+    def alpha_fair_crps_loss(self, gens, x, alpha):
+        """Calculates the continuous ranked probability score (CRPS) loss using a balance between the normal and fair CRPS losses.
+        Alpha Fair CRPS = alpha * fair_crps + (1 - alpha) * normal_crps
+
+        Args:
+            gens (torch.tensor): The generated approx. posterior samples, shape (batch_size, num_samples, channels, height, width).
+            x (torch.tensor): The ground truth samples, shape (batch_size, channels, height, width).
+            alpha (float): The balance parameter between the normal and fair CRPS losses.
+        Returns:
+            torch.tensor: The alpha-fair CRPS loss value.
+        """
+        normal_crps = self.normal_crps_loss(gens, x)
+        fair_crps = self.fair_crps_loss(gens, x)
+
+        alpha_fair_crps = alpha * fair_crps + (1 - alpha) * normal_crps
+        return alpha_fair_crps
+
+
+    # also d loss
     def compute_gradient_penalty(self, real_samples, fake_samples, y):
         """Calculates the gradient penalty loss for WGAN GP"""
         Tensor = torch.FloatTensor
@@ -85,6 +157,8 @@ class mmGAN(pl.LightningModule):
         samples = self.readd_measures(samples, y)     
         return samples
 
+
+    # disc loss
     def adversarial_loss_discriminator(self, fake_pred, real_pred):
         return fake_pred.mean() - real_pred.mean()
 
