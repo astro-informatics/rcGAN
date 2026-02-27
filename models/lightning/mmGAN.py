@@ -21,6 +21,9 @@ class mmGAN(pl.LightningModule):
         self.exp_name = exp_name
         self.num_gpus = num_gpus
 
+        self.crps_mode = "standard" # "standard", "fair", or "alpha_fair"
+        self.crps_alpha = 0.5 # Only used if crps_mode is "alpha_fair"
+
         self.in_chans = args.in_chans + 2  # Two extra dimensions of the added noise 
         self.out_chans = args.out_chans
 
@@ -51,7 +54,6 @@ class mmGAN(pl.LightningModule):
 
     def readd_measures(self, samples, measures):
         return torch.clone(samples)
-    
 
     def _crps_core(self, gens, x):
         """ Calculates core terms shared in the normal, fair, and alpha CRPS losses.
@@ -102,7 +104,7 @@ class mmGAN(pl.LightningModule):
         abs_diff_truth, abs_diff_samps = self._crps_core(gens, x)
 
         M = gens.shape[1]
-        fair_crps = abs_diff_truth.mean(dim=1) - ((M - 1) / M) * abs_diff_samps.mean(dim=(1, 2))
+        fair_crps = abs_diff_truth.mean(dim=1) - ((M - 1) / M) * 0.5 * abs_diff_samps.mean(dim=(1, 2))
         return fair_crps.mean()
     
     def alpha_fair_crps_loss(self, gens, x, alpha):
@@ -116,11 +118,45 @@ class mmGAN(pl.LightningModule):
         Returns:
             torch.tensor: The alpha-fair CRPS loss value.
         """
-        normal_crps = self.normal_crps_loss(gens, x)
-        fair_crps = self.fair_crps_loss(gens, x)
+        abs_diff_truth, abs_diff_samps = self._crps_core(gens, x)
+        M = gens.shape[1]
+        eps = (1.0 - alpha) / M
 
-        alpha_fair_crps = alpha * fair_crps + (1 - alpha) * normal_crps
-        return alpha_fair_crps
+        # build pairwise term
+        term_pair = (
+            abs_diff_truth.unsqueeze(2)
+            + abs_diff_truth.unsqueeze(1)
+            - (1.0 - eps) * abs_diff_samps
+        )  # (B, M, M, C, H, W)
+
+        # mask diagonal terms i.e. m = m'
+        mask = ~torch.eye(M, device=gens.device, dtype=torch.bool)
+        mask = mask.view(1, M, M, 1, 1, 1)
+        term_pair = term_pair.masked_fill(~mask, 0.0)
+
+        afcrps = term_pair.sum(dim=(1, 2)) / (2.0 * M * (M - 1))
+
+        return afcrps.mean()
+    
+    def crps_loss(self, gens, x):
+        """Function to select which CRPS loss to use based on the specified mode.
+        Options to choose from are "standard", "fair", and "alpha_fair".
+
+        Args:
+            gens (torch.tensor): The generated approx. posterior samples, shape (batch_size, num_samples, channels, height, width).
+            x (torch.tensor): The ground truth samples, shape (batch_size, channels, height, width).
+        
+        Returns:
+            torch.tensor: The selected CRPS loss value.
+        """
+        if self.crps_mode == "standard":
+            return self.normal_crps_loss(gens, x)
+        elif self.crps_mode == "fair":
+            return self.fair_crps_loss(gens, x)
+        elif self.crps_mode == "alpha_fair":
+            return self.alpha_fair_crps_loss(gens, x, self.crps_alpha)
+        else:
+            raise ValueError(f"Invalid CRPS mode: {self.crps_mode}")
 
 
     # also d loss
@@ -219,11 +255,13 @@ class mmGAN(pl.LightningModule):
             for z in range(self.args.num_z_train):
                 gens[:, z, :, :, :] = self.forward(y)
 
-            avg_recon = torch.mean(gens, dim=1)
+            # avg_recon = torch.mean(gens, dim=1)
 
             # adversarial loss is binary cross-entropy
             g_loss = self.adversarial_loss_generator(y, gens)
-            g_loss += self.l1_std_p(avg_recon, gens, x)
+            # g_loss += self.l1_std_p(avg_recon, gens, x)
+            g_loss += self.crps_loss(gens, x)
+
 
             self.log('g_loss', g_loss, prog_bar=True)
 
