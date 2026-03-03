@@ -75,68 +75,6 @@ def ecp(samples, gt, mask, level, lam=1.0):
     inside_interval = inside_interval[mask==1]
     return np.mean(inside_interval)
 
-# def bisection_lambda_ecp(ecp_func, samples, gt, mask, level, start_interval, tol=0.00001, verbose=True):
-    """
-    Bisection method to find the best scaling factor lambda such that we calibrate our model uncertainties.
-
-    Args:
-        ecp_func (function): A function to calculate the ECP.
-        samples (np.ndarray): The samples used to create a reconstruction.
-        gt (np.ndarray): Ground truth map/
-        masl (np.ndarray): Survey mask.
-        level (float): Credibility level for ECP (& desired coverage level).
-        start_interval (tuple): (lambda_min, lambda_max).
-        tol (float): Tolerance range about the desired coverage level.
-        verbose (bool): Print debug info.
-    
-    Returns:
-    lambda_opt (float): Lambda value that returns desired coverage level.
-    """
-    lam_low, lam_high = start_interval
-
-    def compute_mean_ecp(lam):
-        ecp_vals = []
-        for i in range(len(gt)):
-            ecp_val = ecp_func(samples[i], gt[i], mask, level, lam)
-            ecp_vals.append(ecp_val)
-        return np.mean(ecp_vals)
-
-    ecp_low = compute_mean_ecp(lam_low) - level
-    ecp_high = compute_mean_ecp(lam_high) - level
-    
-    if np.sign(ecp_low) == np.sign(ecp_high):
-        raise ValueError("Bisection function requires one lambda to be over-coverage and one to be under-coverage")
-
-    iter_count = 0
-    records = []
-    while True:
-        lam_mid = (lam_low + lam_high) * 0.5
-        ecp_mid = compute_mean_ecp(lam_mid)
-        diff = ecp_mid - level
-        iter_count += 1
-
-        records.append({
-            "iteration": iter_count,
-            "lambda": lam_mid,
-            "ecp": ecp_mid,
-            "diff": diff
-        })
-
-        if verbose:
-            print(f"[Iter{iter_count}] λ={lam_mid:.8f}, ECP={ecp_mid:.5f}, diff={diff:.5e}")
-        if abs(diff) < tol:
-            if verbose:
-                print(f"Converged at λ={lam_mid:.8f} in {iter_count} iterations.")
-            break 
-        if np.sign(diff) == np.sign(ecp_low):
-            lam_low = lam_mid
-            ecp_low = diff
-        else:
-            lam_high = lam_mid  
-            ecp_high = diff   
-    with open("bisection_results.json", "w") as json_file:
-        json.dump(records, json_file, indent=4)
-    return lam_mid, ecp_mid 
 def bisection_lambda_ecp_hoeffding(
     coverage_func,
     samples,
@@ -223,34 +161,6 @@ all_samps = np.stack(all_samps)
 
 for level in levels:
     print(f"Starting at level {level}:")
-    # prev_ecp = None
-    # prev_lam = None
-    # bracket_found = False
-    # results[level] = {}
-    # for lam in lambdas:
-    #     # ecp_vals = [ecp(all_samps[i], all_gts[i], mask, level, lam) for i in range(100)]
-    #     # mean_ecp = float(np.mean(ecp_vals))
-    #     lcb = compute_coverage_lcb(lam)
-    #     results[level][str(round(lam, 8))] = {
-    #         "level": level,
-    #         "lambda": lam,
-    #         "empirical_coverage": mean_ecp,
-    #     }
-    #     print(f"lambda={lam:.8f} => ECP: {mean_ecp:.4f}")
-
-    #     # Checking if we should start bisection algorithm
-    #     if prev_ecp is not None and not bracket_found:
-    #         # if (prev_ecp < level and mean_ecp > level) or (prev_ecp > level and mean_ecp < level):
-    #         if (prev_lcb < level and lcb > level) or (prev_ecp > level and lcb < level):
-    #             lam_low = prev_lam
-    #             lam_high = lam
-    #             bracket_found = True
-    #             print(f"Bracket found between λ={lam_low:.6f} and λ={lam_high:.6f}")
-    #             break
-    #     prev_ecp = mean_ecp
-    #     prev_lam = lam
-    # if not bracket_found:
-    #     raise RuntimeError("No bracketing λ pair found around target coverage. Consider expanding the lambda range.")
     prev_val = None
     prev_lam = None
     bracket_found = False
