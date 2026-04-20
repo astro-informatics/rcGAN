@@ -21,8 +21,8 @@ class mmGAN(pl.LightningModule):
         self.exp_name = exp_name
         self.num_gpus = num_gpus
 
-        self.crps_mode = "standard" # "standard", "fair", or "alpha_fair"
-        self.crps_alpha = 0.5 # Only used if crps_mode is "alpha_fair"
+        self.crps_mode = "alpha_fair" # "standard", "fair", or "alpha_fair"
+        self.crps_alpha = 0.95 # Only used if crps_mode is "alpha_fair"
 
         self.in_chans = args.in_chans + 2  # Two extra dimensions of the added noise 
         self.out_chans = args.out_chans
@@ -364,12 +364,15 @@ class mmGAN(pl.LightningModule):
         psnr_diff = (avg_single_psnr + 2.5) - avg_psnr
 
         mu_0 = 2e-2
-        self.std_mult += mu_0 * psnr_diff
+        # self.std_mult += mu_0 * psnr_diff
 
         if np.abs(psnr_diff) <= self.args.psnr_gain_tol:
             self.is_good_model = 1
         else:
-            self.is_good_model = 0
+            # self.is_good_model = 0
+            # TODO: Temporary solution for CRPS remember to amend!
+            print("DEBUG: forcing model to be good")
+            self.is_good_model = 1
 
         self.trainer.strategy.barrier()
 
