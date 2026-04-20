@@ -50,6 +50,11 @@ if __name__ == "__main__":
             x = x.cuda()
             mean = mean.cuda()
             std = std.cuda()
+            # observation (first 2 channels) and KS map (last 2 channels)
+            y_obs = y[:, :2, :, :]
+            ks  = y[:, 2:, :, :]
+            y_obs = y_obs.permute(0, 2, 3, 1).contiguous()
+            ks = ks.permute(0, 2, 3, 1).contiguous()
 
             gens_mmGAN = torch.zeros(
                 size=(y.size(0), cfg.num_z_test, cfg.im_size, cfg.im_size)
@@ -64,18 +69,9 @@ if __name__ == "__main__":
             zfr = mmGAN_model.reformat(y)
 
             for j in range(y.size(0)):
-                np_avgs = {
-                    "mmGAN": None,
-                }
-
-                np_samps = {
-                    "mmGAN": [],
-                }
-
-                np_stds = {
-                    "mmGAN": None,
-                }
-
+                np_avgs = {"mmGAN": None,}
+                np_samps = { "mmGAN": [],}
+                np_stds = { "mmGAN": None,}
                 np_gt = None
 
                 kappa_mean = cfg.kappa_mean
@@ -84,12 +80,19 @@ if __name__ == "__main__":
                 np_gt = ndimage.rotate(
                     (gt[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(), 180
                 )
+
                 np_zfr = ndimage.rotate(
                     torch.tensor(
-                        tensor_to_complex_np((zfr[j] * kappa_std + kappa_mean).cpu())
+                        tensor_to_complex_np((y_obs[j] * kappa_std + kappa_mean).cpu())
                     ).numpy(),
                     180,
                 ) # Rethink how we're normalising since zfr is complex and kappa_std is real
+                np_ks = ndimage.rotate(
+                    torch.tensor(
+                        tensor_to_complex_np((ks[j] * kappa_std + kappa_mean).cpu())
+                    ).numpy(),
+                    180,
+                )
 
                 np_avgs["mmGAN"] = ndimage.rotate(
                     (avg_mmGAN[j] * kappa_std + kappa_mean).squeeze().cpu().numpy(), 180
@@ -115,6 +118,7 @@ if __name__ == "__main__":
                     cfg.save_path + f"np_stds_{fig_count}.npy",
                     np_stds["mmGAN"],
                 )
+                np.save(cfg.save_path + f"np_ks_{fig_count}.npy", np_ks)
                 np.save(
                     cfg.save_path + f"np_samps_{fig_count}.npy",
                     np_samps["mmGAN"],
