@@ -21,7 +21,7 @@ class mmGAN(pl.LightningModule):
         self.exp_name = exp_name
         self.num_gpus = num_gpus
 
-        self.crps_mode = "alpha_fair" # "standard", "fair", or "alpha_fair"
+        self.crps_mode = "standard" # "standard", "fair", or "alpha_fair"
         self.crps_alpha = 0.95 # Only used if crps_mode is "alpha_fair"
 
         self.in_chans = args.in_chans + 2  # Two extra dimensions of the added noise 
