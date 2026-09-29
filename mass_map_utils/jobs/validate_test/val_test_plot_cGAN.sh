@@ -12,8 +12,8 @@
 #SBATCH --gres=gpu:a100:1            # requesting GPUs
 #SBATCH --mail-use=jessica.whitney.22@ucl.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --output=vtp_real_out_%j.out
-#SBATCH --error=vtp_real_out_%j.err
+#SBATCH --output=vtp_crps_mixed_%j.out
+#SBATCH --error=vtp_crps_mixed_%j.err
 
 
 
@@ -36,8 +36,8 @@ echo $WANDB_CONFIG_DIR
 cd /home/jjwhit/rcGAN
 
 #Remember to change exp-name to the batch you want to validate
-srun python -u ./scripts/mass_map/validate.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output 
-srun python -u ./scripts/mass_map/test.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output
-srun python -u ./scripts/mass_map/plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output --num-figs 10
-srun python -u ./scripts/mass_map/cosmos_plot.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output
-srun python -u ./mass_map_utils/scripts/metrics.py --config ./configs/mass_map.yml --exp-name mmgan_training_real_output
+srun python -u ./scripts/mass_map/validate.py --config ./configs/mass_map.yml --exp-name mmgan_training_crps
+# srun python -u ./scripts/mass_map/test.py --config ./configs/mass_map.yml --exp-name mmgan_crps_mixed
+# srun python -u ./scripts/mass_map/plot.py --config ./configs/mass_map.yml --exp-name mmgan_crps_mixed --num-figs 100
+## srun python -u ./scripts/mass_map/cosmos_plot.py --config ./configs/mass_map.yml --exp-name mmgan_crps_mixed
+# srun python -u ./mass_map_utils/scripts/metrics.py --config ./configs/mass_map.yml --exp-name mmgan_crps_mixed

@@ -24,13 +24,13 @@ shear_mean=[]
 im_size=cfg.im_size
 
 mask =  np.load(
-    cfg.cosmos_dir_path + 'cosmos_mask.npy', allow_pickle=True
+    cfg.cosmo_dir_path + 'cosmos_mask.npy', allow_pickle=True
 ).astype(bool)
 std1 = np.load(
-    cfg.cosmos_dir_path + 'cosmos_std1.npy', allow_pickle=True
+    cfg.cosmo_dir_path + 'cosmos_std1.npy', allow_pickle=True
 )
 std2 = np.load(
-    cfg.cosmos_dir_path + 'cosmos_std2.npy', allow_pickle=True
+    cfg.cosmo_dir_path + 'cosmos_std2.npy', allow_pickle=True
 )
 kernel = MM.compute_fourier_kernel(im_size)
 

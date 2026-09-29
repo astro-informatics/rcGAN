@@ -66,12 +66,17 @@ if __name__ == "__main__":
                 print(e)
                 continue
 
-            if model.is_good_model == 0:
-                print("NO GOOD: SKIPPING...")
-                continue
+            # if model.is_good_model == 0:
+            #     print("NO GOOD: SKIPPING...")
+            #     continue
 
             model = model.cuda()
             model.eval()
+
+            epoch_psnr = []
+            epoch_snr = []
+            epoch_rmse = []
+            epoch_pearson = []
 
             for i, data in tqdm(
                 enumerate(val_loader), desc="Evaluating samples", total=len(val_loader)
@@ -110,28 +115,37 @@ if __name__ == "__main__":
                     truth = np.real(truth)
 
                     pearson_val = pearsoncoeff(truth, reconstruction, mask)
-                    pearson_vals.append((epoch, pearson_val))
-                    if pearson_val > best_pearson:
-                        best_epoch_pearson = epoch
-                        best_pearson = pearson_val
-
                     psnr_val = psnr(truth, reconstruction, mask)
-                    psnr_vals.append((epoch, psnr_val))
-                    if psnr_val > best_psnr:
-                        best_epoch_psnr = epoch
-                        best_psnr = psnr_val
-
                     snr_val = snr(truth, reconstruction, mask)
-                    snr_vals.append((epoch, snr_val))
-                    if snr_val > best_snr:
-                        best_epoch_snr = epoch
-                        best_snr = snr_val
-
                     rmse_val = rmse(truth, reconstruction, mask)
-                    rmse_vals.append((epoch, rmse_val))
-                    if rmse_val < best_rmse:
-                        best_epoch_rmse = epoch
-                        best_rmse = rmse_val
+
+                    epoch_pearson.append(pearson_val)
+                    epoch_psnr.append(psnr_val)
+                    epoch_snr.append(snr_val)
+                    epoch_rmse.append(rmse_val)
+            mean_psnr = np.mean(epoch_psnr)
+            mean_snr = np.mean(epoch_snr)
+            mean_rmse = np.mean(epoch_rmse)
+            mean_pearson = np.mean(epoch_pearson)
+            psnr_vals.append((epoch, mean_psnr))
+            snr_vals.append((epoch, mean_snr))
+            rmse_vals.append((epoch, mean_rmse))
+            pearson_vals.append((epoch, mean_pearson))
+            if mean_psnr > best_psnr:
+                best_epoch_psnr = epoch
+                best_psnr = mean_psnr
+
+            if mean_snr > best_snr:
+                best_epoch_snr = epoch
+                best_snr = mean_snr
+
+            if mean_pearson > best_pearson:
+                best_epoch_pearson = epoch
+                best_pearson = mean_pearson
+
+            if mean_rmse < best_rmse:
+                best_epoch_rmse = epoch
+                best_rmse = mean_rmse
 
     print(f"BEST EPOCH FOR PSNR: {best_epoch_psnr}")
     print(f"BEST EPOCH FOR SNR: {best_epoch_snr}")
@@ -149,12 +163,12 @@ if __name__ == "__main__":
         print(f"{epoch} | {psnr} | {snr} | {rmse} | {r}")
 
     # Toggle this if you don't want other epochs to be deleted
-    for epoch in range(80, end_epoch):
-        try:
-            if epoch != best_epoch_rmse:
-                os.remove(cfg.checkpoint_dir + args.exp_name + f'/checkpoint-epoch={epoch}.ckpt')
-        except:
-            pass
+    # for epoch in range(80, end_epoch):
+    #     try:
+    #         if epoch != best_epoch_rmse:
+    #             os.remove(cfg.checkpoint_dir + args.exp_name + f'/checkpoint-epoch={epoch}.ckpt')
+    #     except:
+    #         pass
 
     os.rename(
         cfg.checkpoint_dir + args.exp_name + f"/checkpoint-epoch={best_epoch_rmse}.ckpt",
