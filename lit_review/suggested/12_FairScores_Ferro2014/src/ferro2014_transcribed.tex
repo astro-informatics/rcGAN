@@ -1,0 +1,432 @@
+% ============================================================================
+% Ferro, C. A. T. (2014). Fair scores for ensemble forecasts.
+% Q. J. R. Meteorol. Soc. 140: 1917--1923. doi:10.1002/qj.2270
+%
+% FULL-TEXT TRANSCRIPTION (no official LaTeX source exists). Transcribed by
+% Claude from paper.pdf. Equation, definition, theorem and table numbers match
+% the published paper. Figures are described, not reproduced; reference list
+% omitted (see paper.pdf). Blocks marked [TRANSCRIBER NOTE] are NOT in the
+% paper. Verify any equation you rely on against paper.pdf.
+%
+% ORIENTATION: all scores here are NEGATIVELY oriented (lower = better).
+% Notation: ensemble x = (x_1,...,x_m), m members; observation y.
+% ============================================================================
+\documentclass{article}
+\usepackage{amsmath,amssymb,amsthm}
+\newtheorem*{definition1}{Definition 1}
+\newtheorem*{definition2}{Definition 2}
+\newtheorem*{definition3}{Definition 3}
+\newtheorem*{definition4}{Definition 4}
+\newtheorem*{theorem1}{Theorem 1}
+\newtheorem*{example1}{Example 1}
+\newtheorem*{example2}{Example 2}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\dd}{\mathrm{d}}
+\begin{document}
+
+\title{Fair scores for ensemble forecasts}
+\author{C. A. T. Ferro}
+\date{}
+\maketitle
+
+\begin{abstract}
+The notion of fair scores for ensemble forecasts was introduced recently to
+reward ensembles with members that behave as though they and the verifying
+observation are sampled from the same distribution. In the case of forecasting
+binary outcomes, a characterization is given of a general class of fair scores
+for ensembles that are interpreted as random samples. This is also used to
+construct classes of fair scores for ensembles that forecast multicategory and
+continuous outcomes. The usual Brier, ranked probability and continuous ranked
+probability scores for ensemble forecasts are shown to be unfair, while adjusted
+versions of these scores are shown to be fair. A definition of fairness is also
+proposed for ensembles with members that are interpreted as being dependent and
+it is shown that fair scores exist only for some forms of dependence.
+\end{abstract}
+
+\section{Introduction}
+There are many ways to evaluate the performance of ensemble forecasts (e.g.\
+Weigel, 2012). One approach converts ensembles to probability distributions and
+then applies techniques for evaluating probability forecasts. This approach
+evaluates not only the original ensemble, however, but also the
+post-processing scheme used to create the probability forecast. We focus on
+techniques for evaluating the ensemble alone. Existing techniques of this type
+include rank histograms, conditional exceedance probabilities, generalized
+discrimination and assessments of spread--skill relationships. As Weigel (2012)
+notes, however, none of these techniques awards each individual ensemble its
+own score; they measure attributes such as reliability that can be calculated
+only for a set of (usually many) ensembles.
+
+Scoring rules quantify the performance of each forecast individually. We follow
+Murphy (1997) and define a scoring rule to be any function of a single forecast
+and verifying observation, whatever the type of forecast. If $x$ is a scalar
+point forecast and $y$ a verifying observation, a common scoring rule is the
+squared error $(x-y)^2$. If $y$ is binary ($y=1$ when an event occurs, $y=0$
+otherwise) and $p\in[0,1]$ is a probability forecast, then $(p-y)^2$ defines
+the quadratic or Brier score (Brier, 1950). Both are \emph{negatively oriented}:
+lower values correspond to better forecasts. Performance of a set of forecasts
+is often summarized by the mean score.
+
+A common idea is to apply scoring rules for probability forecasts to the
+empirical distribution function of the ensemble members; e.g.\ the Brier score
+with $p$ set to the proportion of members predicting the event. Regrettably,
+this typically favours ensembles with members that behave as though they and
+the verifying observation are sampled from \emph{different} distributions.
+Example: let $\Pr(y=1)=1/4$ and let the ensemble have one binary member $x$.
+Compare (a) $x$ an independent draw from the same distribution as $y$, and
+(b) $x$ with $\Pr(x=1)=0$ (always zero; overconfident). The Brier score favours
+(b): $E\{(0-y)^2\}=1/4$, whereas (a) receives $E\{(x-y)^2\}=3/8$.
+
+Fricker \emph{et al.}\ (2013) introduced fair scoring rules to overcome this
+problem. Section 2 formalizes fair scoring rules for ensembles interpreted as
+random samples, characterises a wide class for binary outcomes, and uses it to
+generate fair scores for multiple categories and continuous outcomes. Section 3
+discusses ensembles with dependent members. Section 4 summarises.
+
+\section{Independent ensemble members}
+\subsection{Fair scoring rules}
+A scoring rule $s(p,y)$ for probability forecasts is \emph{proper} if its
+expectation with respect to any distribution $q$ for $y$ is optimized when
+$p=q$. A scoring rule $s(x,y)$ for point forecasts is \emph{consistent} for a
+functional $f$ if its expectation with respect to any $q$ is optimized when
+$x=f(q)$ (e.g.\ squared error is consistent for the mean).
+
+[Discussion, summarised:] If an ensemble is interpreted as the forecaster's
+belief distribution (equal mass on each member) a proper score would be fair;
+if interpreted as specific quantiles, a consistent score would be fair (e.g.\
+Br\"ocker (2012): the CRPS of the empirical distribution function of an
+$m$-member ensemble is consistent for the quantiles $(i-1/2)/m$,
+$i=1,\dots,m$). More often, an ensemble is interpreted as a sample from a
+distribution of possible outcomes. We interpret the ensemble $\bx$ as a random
+sample whose members are independent realizations from some underlying
+ensemble distribution. There are no scoring rules that \emph{elicit} random
+samples, because the expectation of $s(\bx,y)$ w.r.t.\ $q$ is a deterministic
+function of $\bx$, so the optimizing member values can always be issued instead.
+Fricker \emph{et al.}\ (2013) proposed instead:
+
+\begin{definition1}
+A scoring rule, $s(\bx,y)$, is \emph{fair} for random sample ensembles, $\bx$,
+if its expectation with respect to both the ensemble distribution, $p$, and any
+distribution, $q$, for the verifying observation, $y$, is optimized when $p=q$.
+The scoring rule is \emph{strictly fair} if its expectation is uniquely
+optimized when $p=q$.
+\end{definition1}
+
+Equivalently: the expectation of $s(\bx,y)$ with respect to the ensemble
+distribution $p$ is a (strictly) proper scoring rule for the probability
+forecast $p$. Fair scores evaluate the underlying ensemble distribution; unfair
+scores favour ensembles generated from imperfect distributions $p\neq q$.
+
+The only fair scoring rules for ensembles with one member ($m=1$) are trivial:
+given $s(x,y)$ and any $q$, let $X$ be the set of $x$ values optimizing the
+expected score. Choosing $p$ with support contained in $X$ optimizes the
+expectation; if $\mathrm{supp}(q)\not\subseteq X$ the expected score is not
+optimized at $p=q$; if $\mathrm{supp}(q)\subseteq X$, any $p$ with the same
+support as $q$ optimizes it.
+
+Two restrictions:
+\begin{definition2}
+A scoring rule, $s(\bx,y)$, is \emph{ensemble-symmetric} if
+$s(\bx,y)=s(\pi(\bx),y)$ for all ensembles $\bx$, verifying observations $y$,
+and permutations $\pi(\bx)$ of $\bx$.
+\end{definition2}
+Equivalently, $s$ depends on $\bx=(x_1,\dots,x_m)$ only through its order
+statistics, or only through the empirical distribution function
+$\frac1m\sum_{i=1}^m I(x_i\le x)$, where $I(A)=1$ if $A$ is true and $0$
+otherwise.
+
+\begin{definition3}
+A scoring rule, $s(\bx,y)$, is \emph{finite} if $|s(\bx,y)|<\infty$ for all
+ensembles $\bx$ and verifying observations $y$.
+\end{definition3}
+This ensures the expectation w.r.t.\ the ensemble distribution is regular
+(Gneiting and Raftery, 2007).
+
+\subsection{Binary outcomes}
+Let $x_1,\dots,x_m$ and $y$ take values in $\{0,1\}$; $p=\Pr(x_i=1)$,
+$q=\Pr(y=1)$. Ensemble-symmetric rules depend on $\bx$ only through the number
+of members equal to 1. Write $s_{i,j}$ for the score when $\sum_{l=1}^m x_l=i$
+and $y=j$, $i=0,\dots,m$, $j=0,1$ (dependence on $m$ suppressed).
+
+\begin{theorem1}
+The negatively oriented, finite, ensemble-symmetric scoring rule defined by
+$\{s_{i,j}: i=0,1,\dots,m;\ j=0,1\}$ is fair for random sample ensembles of
+size $m$ if
+\begin{equation}\tag{1}
+  (m-i)(s_{i+1,0}-s_{i,0}) = i\,(s_{i-1,1}-s_{i,1})
+\end{equation}
+for $i=0,1,\dots,m$ and $s_{i+1,0}\ge s_{i,0}$ for $i=0,1,\dots,m-1$.
+\end{theorem1}
+
+Notes:
+\begin{enumerate}
+\item The undefined $s_{-1,1}$ ($i=0$) and $s_{m+1,0}$ ($i=m$) in (1) can be
+ignored: read the RHS as zero when $i=0$ and the LHS as zero when $i=m$.
+\item Theorem 1 remains true with ``positively oriented'' and
+$s_{i+1,0}\le s_{i,0}$.
+\item The equality constraints (1) are \emph{necessary} for fairness; the
+inequalities $s_{i+1,0}\ge s_{i,0}$ (which via (1) imply
+$s_{i+1,1}\le s_{i,1}$) are merely sufficient, but desirable.
+\item If at least one inequality is strict, the expectation w.r.t.\ the
+ensemble distribution is strictly proper for $p$, so $s(\bx,y)$ is strictly
+fair. The only fair-but-not-strictly-fair rules in Theorem 1 are the trivial
+ones with $s_{i,0}=s_{0,0}$ and $s_{i,1}=s_{m,1}$ for all $i$.
+\item Fair rules are trivial when $m=1$: Theorem 1 requires $s_{1,0}=s_{0,0}$
+and $s_{0,1}=s_{1,1}$.
+\item Fairness requires $s_{1,0}=s_{0,0}$ and $s_{m-1,1}=s_{m,1}$: ensembles in
+which all but one member is correct score the same as perfect forecasts
+(necessary because of the discreteness of $\sum x_l$; otherwise a forecaster
+could hedge by setting $p=0$ when $q$ is small).
+\item The equality constraints (1) are the discrete analogue of the relationship
+(Savage, 1971) satisfied by proper scoring rules $s(p,y)$ for continuous $p$:
+\[
+  (1-p)\frac{\dd}{\dd p}s(p,0) = -p\frac{\dd}{\dd p}s(p,1).
+\]
+Approximating $p$ by $i/m$, $\dd s(p,0)/\dd p$ by $m(s_{i+1,0}-s_{i,0})$ and
+$\dd s(p,1)/\dd p$ by $m(s_{i,1}-s_{i-1,1})$ recovers (1).
+\end{enumerate}
+
+There are $m+1$ degrees of freedom in the fair scoring rules of Theorem 1.
+Imposing complement symmetry ($s_{i,0}=s_{m-i,1}$), $s_{0,0}=s_{m,1}=0$ for
+perfect forecasts and $s_{m,0}=s_{0,1}=1$ for completely wrong forecasts leaves
+$\lfloor m/2\rfloor-1$ degrees of freedom when $m>1$.
+
+\begin{table}[h]
+\centering
+\caption*{Table 1. Scores $s_{i,j}$ for negatively oriented fair scoring rules
+when $m=2,3,4$. The constant $a$ may be any number in $[0,1/4]$.}
+\begin{tabular}{c|cc|cc|cc}
+ & \multicolumn{2}{c|}{$m=2$} & \multicolumn{2}{c|}{$m=3$} & \multicolumn{2}{c}{$m=4$}\\
+$i$ & $j=0$ & $j=1$ & $j=0$ & $j=1$ & $j=0$ & $j=1$\\\hline
+0 & 0 & 1 & 0 & 1 & 0 & 1\\
+1 & 0 & 0 & 0 & 1/3 & 0 & $1-3a$\\
+2 & 1 & 0 & 1/3 & 0 & $a$ & $a$\\
+3 &   &   & 1 & 0 & $1-3a$ & 0\\
+4 &   &   &   &   & 1 & 0
+\end{tabular}
+\end{table}
+
+The usual ensemble Brier score (probability = proportion of members forecasting
+the event) is
+\begin{equation}\tag{2}
+  s_{i,j} = \left(\frac{i}{m}-j\right)^2 .
+\end{equation}
+It does not satisfy (1), so it is \textbf{not fair}. Ferro (2007) and Ferro
+\emph{et al.}\ (2008) proposed an adjusted Brier score, an unbiased estimator
+of the score that would be obtained as ensemble size $\to\infty$:
+\begin{equation}\tag{3}
+  s_{i,j} = \left(\frac{i}{m}-j\right)^2 - \frac{i(m-i)}{m^2(m-1)} ,
+\end{equation}
+which satisfies Theorem 1 and so \textbf{is fair} for $m>1$. It is
+complement-symmetric, scores 0 and 1 for perfect and completely wrong
+forecasts, lies in $[0,1]$, and is $\le$ (2) with equality iff $i=0$ or $m$:
+the original score unfairly penalises ensembles by not accounting for finite
+ensemble size.
+
+\emph{Figure 1} [described]: expected adjusted (black) vs original (grey)
+Brier scores for $m=2,4,8$ against $p$, for $q=1/2$ and $q=1/4$. The expected
+original score is minimised at $p\neq q$ unless $q\in\{0,1/2,1\}$; the expected
+adjusted score is always minimised at $p=q$ (and does not depend on $m$).
+The original score favours overconfident ensembles: for $q=0.25$ its
+expectation is optimised at $p=0$ ($m=2$), $p=0.17$ ($m=4$), $p=0.21$ ($m=8$).
+In a seasonal precipitation example (Ferro 2007) adjusted scores are typically
+$\sim$5\% smaller; rankings rarely change.
+
+\subsection{Multiple categories and continuous outcomes}
+\textbf{Multicategory.} Suppose $n$ possible outcomes $1,\dots,n$; ensemble
+distribution $(p_1,\dots,p_n)$ with $p_k=\Pr(x_i=k)$, observation distribution
+$(q_1,\dots,q_n)$ with $q_k=\Pr(y=k)$. Let $y_k=I(y=k)$ and
+$\bx_k=(x_{k,1},\dots,x_{k,m})$ with $x_{k,i}=I(x_i=k)$. For each $k$ let
+$s_k(\bx_k,y_k)$ be a fair, finite, ensemble-symmetric, negatively oriented
+scoring rule as in Theorem 1. Then
+\begin{equation}\tag{4}
+  s(\bx,y) = \sum_{k=1}^n s_k(\bx_k,y_k)
+\end{equation}
+is a fair, finite, ensemble-symmetric scoring rule for $\bx$. If
+$s_k(\bx_k,y_k)=s^k_{i,j}$ when $\sum_l x_{k,l}=i$, $y_k=j$, we need only that
+$s^k_{i,j}$ satisfy Theorem 1 for each $k$. Taking $s^k_{i,j}$ = adjusted Brier
+score (3) gives the adjusted multicategory Brier score of Ferro \emph{et al.}\
+(2008); redefining $y_k=I(y\le k)$, $x_{k,i}=I(x_i\le k)$ gives their fair
+adjusted ranked probability score.
+
+\textbf{Continuous outcomes.} Let ensemble members and observation be real;
+$p$ and $q$ the densities of the ensemble distribution and of $y$. Let
+$y_t=I(y\le t)$ and $\bx_t=(x_{t,1},\dots,x_{t,m})$, $x_{t,i}=I(x_i\le t)$:
+the binary observation and ensemble forecast for the event $\{y\le t\}$. For
+each threshold $t$ let $s_t(\bx_t,y_t)$ be fair, finite, ensemble-symmetric,
+negatively oriented (Theorem 1). If $|s_t(\bx_t,y_t)|$ is bounded for all
+$\bx_t,y_t,t$ and $r$ is any probability density on $\mathbb{R}$, then by
+Fubini's Theorem
+\begin{equation}\tag{5}
+  s(\bx,y) = \int_{-\infty}^{\infty} s_t(\bx_t,y_t)\,r(t)\,\dd t
+\end{equation}
+is a fair, finite, ensemble-symmetric scoring rule for continuous outcomes.
+Taking $s_t$ equal to the adjusted Brier score (3) (with $\sum_l x_{t,l}=i$,
+$y_t=j$) makes (5) a weighted version ($r$ weighting thresholds) of the
+\textbf{adjusted (fair) CRPS} of Ferro \emph{et al.}\ (2008) and Fricker
+\emph{et al.}\ (2013), which may be written
+\[
+  s(\bx,y) = \sum_{i=1}^{k+1} s_{i-1,0}\int_{z_{(i)}}^{z_{(i+1)}} r(t)\,\dd t
+  \;+\; \sum_{i=k+1}^{m+1} s_{i-1,1}\int_{z_{(i+1)}}^{z_{(i+2)}} r(t)\,\dd t ,
+\]
+where $z_{(i)}$ is the $i$th order statistic of the set
+$\{-\infty,x_1,\dots,x_m,y,\infty\}$ and $k$ is such that $z_{(k+2)}=y$. The
+unweighted version of Ferro \emph{et al.}\ (2008) is $r(t)=1$ for all $t$.
+Substituting the original Brier score (2) for $s_t$ gives the original
+(unfair) ensemble CRPS.
+
+\paragraph{[TRANSCRIBER NOTE --- not in the paper] Kernel form.}
+With $r\equiv1$ and $F_m(t)=\frac1m\sum_i I(x_i\le t)$, (3) gives
+$s_t=(F_m(t)-y_t)^2 - F_m(t)(1-F_m(t))/(m-1)$. Using
+$\int(F_m-I(y\le t))^2\dd t=\frac1m\sum_i|x_i-y|-\frac1{2m^2}\sum_{i,j}|x_i-x_j|$
+and $\int F_m(1-F_m)\,\dd t=\frac{1}{2m^2}\sum_{i,j}|x_i-x_j|$:
+\[
+  \mathrm{CRPS}(\bx,y)=\frac1m\sum_{i=1}^m|x_i-y|-\frac{1}{2m^2}\sum_{i,j=1}^m|x_i-x_j|,
+  \qquad
+  \mathrm{fCRPS}(\bx,y)=\frac1m\sum_{i=1}^m|x_i-y|-\frac{1}{2m(m-1)}\sum_{i,j=1}^m|x_i-x_j|,
+\]
+matching AIFS-CRPS eqs (1)--(2). $E_p[\mathrm{fCRPS}]=E|X-y|-\tfrac12E|X-X'|$
+(the population CRPS of $p$), since $\frac{1}{m(m-1)}\sum_{i\ne j}|x_i-x_j|$ is
+unbiased for $E|X-X'|$; the standard ensemble CRPS instead has expectation
+$E|X-y|-\frac{m-1}{2m}E|X-X'|$, rewarding under-dispersion.
+
+\emph{Figure 2} [described]: expected adjusted (black) vs original (grey)
+CRPS for $m=2,4,8$ when $y\sim N(0,\beta^2)$ and $x_i$ are i.i.d.\
+$N(0,\alpha^2)$, plotted against $\alpha$ for $\beta=1$ (solid) and
+$\beta=1/2$ (dashed). The expectation of the original CRPS (computable from
+Gneiting and Raftery, 2007) is minimised at $\alpha<\beta$; the adjusted CRPS
+is always minimised at $\alpha=\beta$ (and does not depend on $m$). The original
+CRPS favours overconfident (under-dispersed) ensembles: for $\beta=1$ it is
+minimised at $\alpha=0.38$ ($m=2$), $0.63$ ($m=4$), $0.79$ ($m=8$).
+
+\begin{table}[h]
+\centering
+\caption*{Table 2. Original and adjusted CRPS (mm\,month$^{-1}$, estimated
+standard errors in brackets) for two seasonal precipitation forecasts.}
+\begin{tabular}{lcc}
+ & Original & Adjusted\\\hline
+ECMWF & 51 (8.8) & 49 (8.8)\\
+M\'et\'eo-France & 42 (6.5) & 39 (6.5)
+\end{tabular}
+\end{table}
+Adjusted scores are about 5\% smaller; ordering unchanged; differences small
+relative to standard errors.
+
+\section{Dependent ensemble members}
+Interpreting ensembles as random samples is often a good approximation, but we
+may be told, or choose, to interpret members as dependent. If the $m$ members
+are not i.i.d., consider their joint distribution $p_m$. Since $q$ is
+one-dimensional we cannot require $p_m=q$. We consider only
+\emph{exchangeable} members (joint distribution symmetric in its $m$
+arguments; includes independence), each with the same marginal $p$.
+
+\begin{definition4}
+A scoring rule, $s(\bx,y)$, is \emph{fair for exchangeable ensembles}, $\bx$,
+if its expectation with respect to both the joint distribution of the ensemble
+members, $p_m$, and any distribution, $q$, for the verifying observation, $y$,
+is optimized when $p=q$, where $p$ is the marginal distribution of $p_m$.
+\end{definition4}
+
+For $m=1$ only trivial fair rules exist; perfectly dependent members behave as
+one member. Even without perfect dependence, only trivial fair rules may exist:
+
+\begin{example1}
+Binary outcomes, $m=2$. Let $q=\Pr(y=1)$, $p=\Pr(x_1=1)=\Pr(x_2=1)$ the
+marginal, and $\Pr(x_1=1,x_2=1)=p^c$ with constant $1<c<\infty$ ($c=2$:
+independent). With ensemble-symmetric $s_{i,j}$ ($x_1+x_2=i$, $y=j$), fairness
+requires the expected score
+\[
+  (1-q)\{p^c s_{2,0}+2(p-p^c)s_{1,0}+(1-2p+p^c)s_{0,0}\}
+  + q\{p^c s_{2,1}+2(p-p^c)s_{1,1}+(1-2p+p^c)s_{0,1}\}
+\]
+to be optimized at $p=q$. If $c\neq2$ (dependent members), this holds for
+$0<q<1$ only if $s_{0,0}=s_{1,0}=s_{2,0}$ and $s_{0,1}=s_{1,1}=s_{2,1}$:
+i.e.\ only for trivial rules that do not depend on the ensemble.
+\end{example1}
+
+\begin{example2}
+Binary outcomes, $q=\Pr(y=1)$, $p=\Pr(x_i=1)$, and
+$\mathrm{corr}(x_i,x_j)=c<1$ for all $i\neq j$, with $c$ independent of $p$.
+Then the negatively oriented scoring rule
+\begin{equation}\tag{6}
+  s_{i,j} = \left(\frac{i}{m}-j\right)^2 - \left(1+\frac{cm}{1-c}\right)\frac{i(m-i)}{m^2(m-1)}
+\end{equation}
+is fair. (Proof: its expected value is $p^2-2pq+q$, minimised at $p=q$.) When
+$c=0$ it reduces to the adjusted Brier score (3), which is therefore fair for
+ensembles with pairwise \emph{uncorrelated} members, not only independent ones.
+\end{example2}
+
+No single (non-trivial) scoring rule is fair for all exchangeable ensembles: we
+must specify the dependence structure and check whether a fair rule exists. If
+none exists, a ``nearly fair'' rule (expectation optimised at $p$ within a small
+distance of $q$) could be used; left for future research. The dependence
+structure is rarely stated, and a fair rule cannot be chosen from a dependence
+structure estimated from the ensemble being verified (e.g.\ replacing $c$ in
+(6) by an estimate breaks fairness). Recommendation: verify ensembles under one
+or more interpretations of interest; if an ensemble will be used as a random
+sample, use the fair scores of Section 2; if its empirical distribution will be
+used as a probability forecast, use proper scores on the empirical distribution
+(typically an inappropriate interpretation).
+
+\section{Summary and discussion}
+A scoring rule for an ensemble forecast is fair if the expectation of the score
+with respect to the distributions of both the ensemble members and the
+verifying observation is optimized when these distributions coincide. With one
+member, the only fair rules are trivial, so verification measures may favour
+under-dispersed ensembles. Fair rules exist for $m>1$ i.i.d.\ members, for which
+ensemble-symmetric rules are argued for. For binary outcomes a general class of
+fair rules is characterised (Theorem 1), including an adjusted ensemble Brier
+score; classes of fair rules for multicategory and continuous outcomes are
+constructed, including adjusted RPS and CRPS. Fair rules can exist for
+dependent members but are specific to the dependence structure and do not exist
+for some forms of dependence. Since the correct dependence structure is
+typically unknown, ensembles should be verified using scores fair for
+dependence structures of interest, including independence.
+
+\appendix
+\section*{Appendix: proof of Theorem 1}
+We need conditions on $s_{i,j}$ making $s(\bx,y)$ fair, i.e.\ making its
+expectation w.r.t.\ the ensemble distribution a proper scoring rule for $p$.
+With independent members, $\Pr(x_i=1)=1-\Pr(x_i=0)=p$, the expectation is
+\begin{equation}\tag{A1}
+  s_m(p,y) = \sum_{i=0}^m \binom{m}{i} p^i(1-p)^{m-i} s_{i,y},
+\end{equation}
+regular since $|s_{i,y}|<\infty$. Following Savage (1971), Gneiting and Raftery
+(2007) showed that any regular, negatively oriented scoring rule $s(p,y)$ is
+proper iff
+\begin{equation}\tag{A2}
+  s(p,y) = G(p) + (y-p)G'(p)
+\end{equation}
+for a concave $G$ (strictly concave for strict propriety), $G'$ its derivative
+if differentiable. With $\Pr(y=1)=q$,
+\[
+  s_m(p,q) = \sum_{i=0}^m\binom{m}{i}p^i(1-p)^{m-i}\{(1-q)s_{i,0}+q\,s_{i,1}\},
+  \qquad s(p,q) = G(p)+(q-p)G'(p).
+\]
+Evaluating at $q=p$ requires
+\begin{equation}\tag{A3}
+  G(p) = \sum_{i=0}^m\binom{m}{i}p^i(1-p)^{m-i}\{(1-p)s_{i,0}+p\,s_{i,1}\},
+\end{equation}
+so $G$ is differentiable. For propriety, $s_m(p,q)$ must be minimised at $p=q$
+for all $0\le q\le1$. Its derivative w.r.t.\ $p$ at $p=q$ is
+\[
+  \sum_{i=0}^m\binom{m}{i}q^i(1-q)^{m-i}\{(m-i)(s_{i+1,0}-s_{i,0}) - i(s_{i-1,1}-s_{i,1})\},
+\]
+which is zero for all $0<q<1$ iff the equality constraints (1) hold; these are
+therefore necessary. Differentiating (A3),
+\[
+  G'(p) = \sum_{i=0}^m\binom{m}{i}\{(1-p)s_{i,0}+p\,s_{i,1}\}\frac{\dd}{\dd p}p^i(1-p)^{m-i}
+  + \sum_{i=0}^m\binom{m}{i}p^i(1-p)^{m-i}(s_{i,1}-s_{i,0}).
+\]
+The first sum is the derivative of $s_m(p,q)$ w.r.t.\ $p$ at $q=p$, zero under
+(1), leaving
+\begin{equation}\tag{A4}
+  G'(p) = \sum_{i=0}^m\binom{m}{i}p^i(1-p)^{m-i}(s_{i,1}-s_{i,0}).
+\end{equation}
+Hence $G(p)+(y-p)G'(p)=s_m(p,y)$, the form (A2); it remains to find conditions
+for $G$ concave. By (A4), $G'(p)=s_m(p,1)-s_m(p,0)$. If $s_{i+1,0}\ge s_{i,0}$
+for $i=0,\dots,m-1$, then (1) implies $s_{i+1,1}\le s_{i,1}$ as well; so as $p$
+increases $s_m(p,1)$ decreases and $s_m(p,0)$ increases, so $G'(p)$ decreases,
+i.e.\ $G$ is concave. If $s_{i+1,0}>s_{i,0}$ for at least one $i$, $G$ is
+strictly concave. \qed
+
+\end{document}

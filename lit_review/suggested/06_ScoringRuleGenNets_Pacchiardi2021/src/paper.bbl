@@ -1,0 +1,487 @@
+\begin{thebibliography}{67}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Arjovsky et~al.(2017)Arjovsky, Chintala, and
+  Bottou]{arjovsky2017wasserstein}
+Martin Arjovsky, Soumith Chintala, and L{\'e}on Bottou.
+\newblock Wasserstein generative adversarial networks.
+\newblock In \emph{International conference on machine learning}, pages
+  214--223. PMLR, 2017.
+
+\bibitem[Arora et~al.(2017)Arora, Ge, Liang, Ma, and
+  Zhang]{arora2017generalization}
+Sanjeev Arora, Rong Ge, Yingyu Liang, Tengyu Ma, and Yi~Zhang.
+\newblock Generalization and equilibrium in generative adversarial nets
+  ({GAN}s).
+\newblock In \emph{International Conference on Machine Learning}, pages
+  224--232. PMLR, 2017.
+
+\bibitem[Arora et~al.(2018)Arora, Risteski, and Zhang]{arora2017gans}
+Sanjeev Arora, Andrej Risteski, and Yi~Zhang.
+\newblock Do {GAN}s learn the distribution? {S}ome theory and empirics.
+\newblock In \emph{International Conference on Learning Representations}, 2018.
+\newblock URL \url{https://openreview.net/forum?id=BJehNfW0-}.
+
+\bibitem[Bellemare et~al.(2017)Bellemare, Danihelka, Dabney, Mohamed,
+  Lakshminarayanan, Hoyer, and Munos]{bellemare2017cramer}
+Marc~G Bellemare, Ivo Danihelka, Will Dabney, Shakir Mohamed, Balaji
+  Lakshminarayanan, Stephan Hoyer, and R{\'e}mi Munos.
+\newblock The {C}ramer distance as a solution to biased {W}asserstein
+  gradients.
+\newblock \emph{arXiv preprint arXiv:1705.10743}, 2017.
+
+\bibitem[Bihlo(2021)]{bihlo2021generative}
+Alex Bihlo.
+\newblock A generative adversarial network approach to (ensemble) weather
+  prediction.
+\newblock \emph{Neural Networks}, 139:\penalty0 1--16, 2021.
+
+\bibitem[Bi{\'n}kowski et~al.(2018)Bi{\'n}kowski, Sutherland, Arbel, and
+  Gretton]{binkowski2018demystifying}
+Miko{\l}aj Bi{\'n}kowski, Danica~J Sutherland, Michael Arbel, and Arthur
+  Gretton.
+\newblock Demystifying {MMD GANs}.
+\newblock In \emph{International Conference on Learning Representations}, 2018.
+
+\bibitem[Bouchacourt et~al.(2016)Bouchacourt, Mudigonda, and
+  Nowozin]{bouchacourt2016disco}
+Diane Bouchacourt, Pawan~K Mudigonda, and Sebastian Nowozin.
+\newblock {DISCO} nets: {DISsimilarity COefficient} networks.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  29:\penalty0 352--360, 2016.
+
+\bibitem[Bradley(2005)]{bradley2005basic}
+Richard~C Bradley.
+\newblock Basic properties of strong mixing conditions. a survey and some open
+  questions.
+\newblock \emph{Probability surveys}, 2:\penalty0 107--144, 2005.
+
+\bibitem[Brophy et~al.(2023)Brophy, Wang, She, and Ward]{brophy2021generative}
+Eoin Brophy, Zhengwei Wang, Qi~She, and Tom\'{a}s Ward.
+\newblock Generative adversarial networks in time series: A systematic
+  literature review.
+\newblock \emph{ACM Comput. Surv.}, 55\penalty0 (10), feb 2023.
+\newblock ISSN 0360-0300.
+\newblock \doi{10.1145/3559540}.
+\newblock URL \url{https://doi.org/10.1145/3559540}.
+
+\bibitem[Ch{\'e}rief-Abdellatif and Alquier(2020)]{cherief2020mmd}
+Badr-Eddine Ch{\'e}rief-Abdellatif and Pierre Alquier.
+\newblock {MMD-B}ayes: Robust {B}ayesian estimation via maximum mean
+  discrepancy.
+\newblock In \emph{Symposium on Advances in Approximate Bayesian Inference},
+  pages 1--21. PMLR, 2020.
+
+\bibitem[Cho et~al.(2014)Cho, van Merri{\"e}nboer, Bahdanau, and
+  Bengio]{cho2014properties}
+Kyunghyun Cho, Bart van Merri{\"e}nboer, Dzmitry Bahdanau, and Yoshua Bengio.
+\newblock On the properties of neural machine translation: Encoder{--}decoder
+  approaches.
+\newblock In \emph{Proceedings of {SSST}-8, Eighth Workshop on Syntax,
+  Semantics and Structure in Statistical Translation}, pages 103--111, Doha,
+  Qatar, October 2014. Association for Computational Linguistics.
+\newblock \doi{10.3115/v1/W14-4012}.
+\newblock URL \url{https://aclanthology.org/W14-4012}.
+
+\bibitem[Clare et~al.(2021)Clare, Jamil, and Morcrette]{clare2021combining}
+Mariana~CA Clare, Omar Jamil, and Cyril~J Morcrette.
+\newblock Combining distribution-based neural networks to predict weather \\
+  probabilities.
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  147\penalty0 (741):\penalty0 4337--4357, 2021.
+
+\bibitem[Dawid(1984)]{dawid1984present}
+A~Philip Dawid.
+\newblock Present position and potential developments: Some personal views
+  statistical theory the prequential approach.
+\newblock \emph{Journal of the Royal Statistical Society: Series A (General)},
+  147\penalty0 (2):\penalty0 278--290, 1984.
+
+\bibitem[Dawid and Musio(2013)]{dawid2013estimation}
+A~Philip Dawid and Monica Musio.
+\newblock Estimation of spatial processes using local scoring rules.
+\newblock \emph{AStA Advances in Statistical Analysis}, 97\penalty0
+  (2):\penalty0 173--179, 2013.
+
+\bibitem[Dawid and Musio(2015)]{dawid2015bayesian}
+A~Philip Dawid and Monica Musio.
+\newblock Bayesian model selection based on proper scoring rules.
+\newblock \emph{Bayesian analysis}, 10\penalty0 (2):\penalty0 479--499, 2015.
+
+\bibitem[Dawid et~al.(2016)Dawid, Musio, and Ventura]{dawid2016minimum}
+A~Philip Dawid, Monica Musio, and Laura Ventura.
+\newblock Minimum scoring rule inference.
+\newblock \emph{Scandinavian Journal of Statistics}, 43\penalty0 (1):\penalty0
+  123--138, 2016.
+
+\bibitem[Dawid and Musio(2014)]{dawid2014theory}
+Alexander~Philip Dawid and Monica Musio.
+\newblock Theory and applications of proper scoring rules.
+\newblock \emph{Metron}, 72\penalty0 (2):\penalty0 169--183, 2014.
+
+\bibitem[Domowitz and White(1982)]{domowitz1982}
+Ian Domowitz and Halbert White.
+\newblock Misspecified models with dependent observations.
+\newblock \emph{Journal of Econometrics}, 20\penalty0 (1):\penalty0 35--58,
+  1982.
+\newblock ISSN 0304-4076.
+\newblock \doi{https://doi.org/10.1016/0304-4076(82)90102-6}.
+\newblock URL
+  \url{https://www.sciencedirect.com/science/article/pii/0304407682901026}.
+
+\bibitem[Dueben and Bauer(2018)]{dueben2018challenges}
+Peter~D Dueben and Peter Bauer.
+\newblock Challenges and design choices for global weather and climate models
+  based on machine learning.
+\newblock \emph{Geoscientific Model Development}, 11\penalty0 (10):\penalty0
+  3999--4009, 2018.
+
+\bibitem[Dziugaite et~al.(2015)Dziugaite, Roy, and
+  Ghahramani]{dziugaite2015training}
+Gintare~Karolina Dziugaite, Daniel~M Roy, and Zoubin Ghahramani.
+\newblock Training generative neural networks via maximum mean discrepancy
+  optimization.
+\newblock In \emph{Proceedings of the Thirty-First Conference on Uncertainty in
+  Artificial Intelligence}, pages 258--267, 2015.
+
+\bibitem[Gagne et~al.(2020)Gagne, Christensen, Subramanian, and
+  Monahan]{gagne2020machine}
+David~John Gagne, Hannah~M Christensen, Aneesh~C Subramanian, and Adam~H
+  Monahan.
+\newblock Machine learning for stochastic parameterization: Generative
+  adversarial networks in the {Lorenz'}96 model.
+\newblock \emph{Journal of Advances in Modeling Earth Systems}, 12\penalty0
+  (3):\penalty0 e2019MS001896, 2020.
+
+\bibitem[Gneiting and Katzfuss(2014)]{gneiting2014probabilistic}
+Tilmann Gneiting and Matthias Katzfuss.
+\newblock Probabilistic forecasting.
+\newblock \emph{Annual Review of Statistics and Its Application}, 1:\penalty0
+  125--151, 2014.
+
+\bibitem[Gneiting and Raftery(2007)]{gneiting2007strictly}
+Tilmann Gneiting and Adrian~E Raftery.
+\newblock Strictly proper scoring rules, prediction, and estimation.
+\newblock \emph{Journal of the American statistical Association}, 102\penalty0
+  (477):\penalty0 359--378, 2007.
+
+\bibitem[Goodfellow(2016)]{goodfellow2016nips}
+Ian Goodfellow.
+\newblock Nips 2016 tutorial: Generative adversarial networks.
+\newblock \emph{arXiv preprint arXiv:1701.00160}, 2016.
+
+\bibitem[Goodfellow et~al.(2014)Goodfellow, Pouget-Abadie, Mirza, Xu,
+  Warde-Farley, Ozair, Courville, and Bengio]{goodfellow2014generative}
+Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley,
+  Sherjil Ozair, Aaron Courville, and Yoshua Bengio.
+\newblock Generative adversarial nets.
+\newblock \emph{Advances in neural information processing systems}, 27, 2014.
+
+\bibitem[Gretton et~al.(2012)Gretton, Borgwardt, Rasch, Sch{\"o}lkopf, and
+  Smola]{gretton2012kernel}
+Arthur Gretton, Karsten~M Borgwardt, Malte~J Rasch, Bernhard Sch{\"o}lkopf, and
+  Alexander Smola.
+\newblock A kernel two-sample test.
+\newblock \emph{The Journal of Machine Learning Research}, 13\penalty0
+  (1):\penalty0 723--773, 2012.
+
+\bibitem[Gritsenko et~al.(2020)Gritsenko, Salimans, van~den Berg, Snoek, and
+  Kalchbrenner]{gritsenko2020spectral}
+Alexey Gritsenko, Tim Salimans, Rianne van~den Berg, Jasper Snoek, and Nal
+  Kalchbrenner.
+\newblock A spectral energy distance for parallel speech synthesis.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  33:\penalty0 13062--13072, 2020.
+
+\bibitem[Gulrajani et~al.(2017)Gulrajani, Ahmed, Arjovsky, Dumoulin, and
+  Courville]{gulrajani2017improved}
+Ishaan Gulrajani, Faruk Ahmed, Martin Arjovsky, Vincent Dumoulin, and Aaron
+  Courville.
+\newblock Improved training of {W}asserstein {GAN}s.
+\newblock In \emph{Proceedings of the 31st International Conference on Neural
+  Information Processing Systems}, pages 5769--5779, 2017.
+
+\bibitem[Hersbach(2000)]{hersbach2000decomposition}
+Hans Hersbach.
+\newblock Decomposition of the continuous ranked probability score for ensemble
+  prediction systems.
+\newblock \emph{Weather and Forecasting}, 15\penalty0 (5):\penalty0 559--570,
+  2000.
+
+\bibitem[Isola et~al.(2017)Isola, Zhu, Zhou, and Efros]{isola2017image}
+Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, and Alexei~A Efros.
+\newblock Image-to-image translation with conditional adversarial networks.
+\newblock In \emph{Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 1125--1134, 2017.
+
+\bibitem[Issa et~al.(2023)Issa, Horvath, Lemercier, and Salvi]{issa2023non}
+Zacharia Issa, Blanka Horvath, Maud Lemercier, and Cristopher Salvi.
+\newblock Non-adversarial training of neural {SDE}s with signature kernel
+  scores.
+\newblock In \emph{Thirty-seventh Conference on Neural Information Processing
+  Systems}, 2023.
+\newblock URL \url{https://openreview.net/forum?id=ixcsBZw5pl}.
+
+\bibitem[Kingma and Welling(2014)]{kingma2013auto}
+Diederik~P. Kingma and Max Welling.
+\newblock Auto-encoding variational {B}ayes.
+\newblock In Yoshua Bengio and Yann LeCun, editors, \emph{2nd International
+  Conference on Learning Representations, {ICLR} 2014, Banff, AB, Canada, April
+  14-16, 2014, Conference Track Proceedings}, 2014.
+\newblock URL \url{http://arxiv.org/abs/1312.6114}.
+
+\bibitem[Koochali et~al.(2021)Koochali, Dengel, and Ahmed]{koochali2021}
+Alireza Koochali, Andreas Dengel, and Sheraz Ahmed.
+\newblock If you like it, {GAN} it—probabilistic multivariate times series
+  forecast with {GAN}.
+\newblock \emph{Engineering Proceedings}, 5\penalty0 (1):\penalty0 40, Jul
+  2021.
+\newblock ISSN 2673-4591.
+\newblock \doi{10.3390/engproc2021005040}.
+\newblock URL \url{http://dx.doi.org/10.3390/engproc2021005040}.
+
+\bibitem[Kwon and Park(2019)]{kwon2019predicting}
+Yong-Hoon Kwon and Min-Gyu Park.
+\newblock Predicting future frames using retrospective cycle gan.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition}, pages 1811--1820, 2019.
+
+\bibitem[Leutbecher and Palmer(2008)]{leutbecher2008ensemble}
+Martin Leutbecher and Tim~N Palmer.
+\newblock Ensemble forecasting.
+\newblock \emph{Journal of computational physics}, 227\penalty0 (7):\penalty0
+  3515--3539, 2008.
+
+\bibitem[Li et~al.(2017)Li, Chang, Cheng, Yang, and P{\'o}czos]{li2017mmd}
+Chun-Liang Li, Wei-Cheng Chang, Yu~Cheng, Yiming Yang, and Barnab{\'a}s
+  P{\'o}czos.
+\newblock {MMD GAN}: Towards deeper understanding of moment matching network.
+\newblock In \emph{NIPS}, 2017.
+
+\bibitem[Li et~al.(2015)Li, Swersky, and Zemel]{li2015generative}
+Yujia Li, Kevin Swersky, and Rich Zemel.
+\newblock Generative moment matching networks.
+\newblock In \emph{International Conference on Machine Learning}, pages
+  1718--1727. PMLR, 2015.
+
+\bibitem[Lorenz(1963)]{lorenz1963deterministic}
+Edward~N Lorenz.
+\newblock Deterministic nonperiodic flow.
+\newblock \emph{Journal of atmospheric sciences}, 20\penalty0 (2):\penalty0
+  130--141, 1963.
+
+\bibitem[Lorenz(1996)]{lorenz1996predictability}
+Edward~N Lorenz.
+\newblock Predictability: A problem partly solved.
+\newblock In \emph{Proc. Seminar on predictability}, volume~1, 1996.
+
+\bibitem[McCarthy(1956)]{mccarthy1956measures}
+John McCarthy.
+\newblock Measures of the value of information.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 42\penalty0
+  (9):\penalty0 654--655, 1956.
+
+\bibitem[Mirza and Osindero(2014)]{mirza2014conditional}
+Mehdi Mirza and Simon Osindero.
+\newblock Conditional generative adversarial nets.
+\newblock \emph{arXiv preprint arXiv:1411.1784}, 2014.
+
+\bibitem[Nguyen et~al.(2020)Nguyen, Arbel, L{\"u}, and
+  Forbes]{nguyen2020approximate}
+Hien~Duy Nguyen, Julyan Arbel, Hongliang L{\"u}, and Florence Forbes.
+\newblock Approximate {B}ayesian computation via the energy statistic.
+\newblock \emph{IEEE Access}, 8:\penalty0 131683--131698, 2020.
+
+\bibitem[Nowozin et~al.(2016)Nowozin, Cseke, and Tomioka]{nowozin2016f}
+Sebastian Nowozin, Botond Cseke, and Ryota Tomioka.
+\newblock {f-GAN}: Training generative neural samplers using variational
+  divergence minimization.
+\newblock In \emph{Proceedings of the 30th International Conference on Neural
+  Information Processing Systems}, pages 271--279, 2016.
+
+\bibitem[Olaf et~al.(2015)Olaf, Philipp, and Thomas]{ronneberger2015unet}
+Ronneberger Olaf, Fischer Philipp, and Brox Thomas.
+\newblock U-{N}et: Convolutional networks for biomedical image segmentation,
+  2015.
+
+\bibitem[Pacchiardi and Dutta(2022)]{pacchiardi2022likelihood}
+Lorenzo Pacchiardi and Ritabrata Dutta.
+\newblock Likelihood-free inference with generative neural networks via scoring
+  rule minimization.
+\newblock \emph{arXiv preprint arXiv:2205.15784}, 2022.
+
+\bibitem[Palmer(2012)]{palmer2012towards}
+TN~Palmer.
+\newblock Towards the probabilistic {E}arth-system simulator: a vision for the
+  future of climate and weather prediction.
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  138\penalty0 (665):\penalty0 841--861, 2012.
+
+\bibitem[Papamakarios et~al.(2021)Papamakarios, Nalisnick, Rezende, Mohamed,
+  and Lakshminarayanan]{papamakarios2019normalizing}
+George Papamakarios, Eric Nalisnick, Danilo~Jimenez Rezende, Shakir Mohamed,
+  and Balaji Lakshminarayanan.
+\newblock Normalizing flows for probabilistic modeling and inference.
+\newblock \emph{Journal of Machine Learning Research}, 22\penalty0
+  (57):\penalty0 1--64, 2021.
+\newblock URL \url{http://jmlr.org/papers/v22/19-1028.html}.
+
+\bibitem[Park et~al.(2016)Park, Jitkrittum, and Sejdinovic]{park2016k2}
+Mijung Park, Wittawat Jitkrittum, and Dino Sejdinovic.
+\newblock K2-{ABC}: Approximate {B}ayesian computation with kernel embeddings.
+\newblock In \emph{Artificial Intelligence and Statistics}, 2016.
+
+\bibitem[Paszke et~al.(2019)Paszke, Gross, Massa, Lerer, Bradbury, Chanan,
+  Killeen, Lin, Gimelshein, Antiga, Desmaison, Kopf, Yang, DeVito, Raison,
+  Tejani, Chilamkurthy, Steiner, Fang, Bai, and Chintala]{pytorch}
+Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory
+  Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban
+  Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan
+  Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu~Fang, Junjie Bai, and Soumith
+  Chintala.
+\newblock Py{T}orch: An imperative style, high-performance deep learning
+  library.
+\newblock In H.~Wallach, H.~Larochelle, A.~Beygelzimer, F.~d'Alch\'{e} Buc,
+  E.~Fox, and R.~Garnett, editors, \emph{Advances in Neural Information
+  Processing Systems 32}, pages 8024--8035. Curran Associates, Inc., 2019.
+
+\bibitem[P{\"o}tscher and Prucha(1989)]{potscher1989uniform}
+Benedikt~M P{\"o}tscher and Ingmar~R Prucha.
+\newblock A uniform law of large numbers for dependent and heterogeneous data
+  processes.
+\newblock \emph{Econometrica: Journal of the Econometric Society}, pages
+  675--683, 1989.
+
+\bibitem[Radev et~al.(2020)Radev, Mertens, Voss, Ardizzone, and
+  K{\"o}the]{radev2020bayesflow}
+Stefan~T Radev, Ulf~K Mertens, Andreas Voss, Lynton Ardizzone, and Ullrich
+  K{\"o}the.
+\newblock {B}ayes{F}low: Learning complex stochastic models with invertible
+  neural networks.
+\newblock \emph{IEEE Transactions on Neural Networks and Learning Systems},
+  2020.
+
+\bibitem[Rasp et~al.(2020)Rasp, Dueben, Scher, Weyn, Mouatadid, and
+  Thuerey]{rasp2020weatherbench}
+Stephan Rasp, Peter~D Dueben, Sebastian Scher, Jonathan~A Weyn, Soukayna
+  Mouatadid, and Nils Thuerey.
+\newblock {WeatherBench}: a benchmark data set for data-driven weather
+  forecasting.
+\newblock \emph{Journal of Advances in Modeling Earth Systems}, 12\penalty0
+  (11):\penalty0 e2020MS002203, 2020.
+
+\bibitem[Rasul et~al.(2021)Rasul, Sheikh, Schuster, Bergmann, and
+  Vollgraf]{rasul2021multivariate}
+Kashif Rasul, Abdul-Saboor Sheikh, Ingmar Schuster, Urs~M Bergmann, and Roland
+  Vollgraf.
+\newblock Multivariate probabilistic time series forecasting via conditioned
+  normalizing flows.
+\newblock In \emph{International Conference on Learning Representations}, 2021.
+\newblock URL \url{https://openreview.net/forum?id=WiGQBFuVRv}.
+
+\bibitem[Ravuri et~al.(2021)Ravuri, Lenc, Willson, Kangin, Lam, Mirowski,
+  Fitzsimons, Athanassiadou, Kashem, Madge, et~al.]{ravuri2021skillful}
+Suman Ravuri, Karel Lenc, Matthew Willson, Dmitry Kangin, Remi Lam, Piotr
+  Mirowski, Megan Fitzsimons, Maria Athanassiadou, Sheleem Kashem, Sam Madge,
+  et~al.
+\newblock Skilful precipitation nowcasting using deep generative models of
+  radar.
+\newblock \emph{Nature}, 597\penalty0 (7878):\penalty0 672--677, 2021.
+
+\bibitem[Richardson and Weiss(2018)]{richardson2018gans}
+Eitan Richardson and Yair Weiss.
+\newblock On {GANs} and {GMMs}.
+\newblock In \emph{Proceedings of the 32nd International Conference on Neural
+  Information Processing Systems}, pages 5852--5863, 2018.
+
+\bibitem[Rizzo and Sz{\'e}kely(2016)]{rizzo2016energy}
+Maria~L Rizzo and G{\'a}bor~J Sz{\'e}kely.
+\newblock Energy distance.
+\newblock \emph{Wiley interdisciplinary reviews: Computational statistics},
+  8\penalty0 (1):\penalty0 27--38, 2016.
+
+\bibitem[Salimans et~al.(2016)Salimans, Goodfellow, Zaremba, Cheung, Radford,
+  and Chen]{salimans2016improved}
+Tim Salimans, Ian Goodfellow, Wojciech Zaremba, Vicki Cheung, Alec Radford, and
+  Xi~Chen.
+\newblock Improved techniques for training {GAN}s.
+\newblock \emph{Advances in neural information processing systems}, 29, 2016.
+
+\bibitem[Savage(1971)]{savage1971elicitation}
+Leonard~J Savage.
+\newblock Elicitation of personal probabilities and expectations.
+\newblock \emph{Journal of the American Statistical Association}, 66\penalty0
+  (336):\penalty0 783--801, 1971.
+
+\bibitem[Scher(2018)]{scher2018toward}
+Sebastian Scher.
+\newblock Toward data-driven weather and climate forecasting: Approximating a
+  simple general circulation model with deep learning.
+\newblock \emph{Geophysical Research Letters}, 45\penalty0 (22):\penalty0
+  12--616, 2018.
+
+\bibitem[Scher and Messori(2019)]{scher2019weather}
+Sebastian Scher and Gabriele Messori.
+\newblock Weather and climate forecasting with neural networks: using general
+  circulation models ({GCMs}) with different complexity as a study ground.
+\newblock \emph{Geoscientific Model Development}, 12\penalty0 (7):\penalty0
+  2797--2809, 2019.
+
+\bibitem[Scher and Messori(2021)]{scher2021ensemble}
+Sebastian Scher and Gabriele Messori.
+\newblock Ensemble methods for neural network-based weather forecasts.
+\newblock \emph{Journal of Advances in Modeling Earth Systems}, 13\penalty0
+  (2), 2021.
+
+\bibitem[Scheuerer and Hamill(2015)]{scheuerer2015variogram}
+Michael Scheuerer and Thomas~M Hamill.
+\newblock Variogram-based proper scoring rules for probabilistic forecasts of
+  multivariate quantities.
+\newblock \emph{Monthly Weather Review}, 143\penalty0 (4):\penalty0 1321--1334,
+  2015.
+
+\bibitem[Skouras(1998)]{skouras1998optimal}
+Konstantinos Skouras.
+\newblock \emph{On the optimal performance of forecasting systems: The
+  prequential approach.}
+\newblock University of London, University College London (United Kingdom),
+  1998.
+
+\bibitem[Vahidi et~al.(2024)Vahidi, Schosser, Wimmer, Li, Bischl,
+  H{\"u}llermeier, and Rezaei]{vahidi2023probabilistic}
+Amirhossein Vahidi, Simon Schosser, Lisa Wimmer, Yawei Li, Bernd Bischl, Eyke
+  H{\"u}llermeier, and Mina Rezaei.
+\newblock Probabilistic self-supervised representation learning via scoring
+  rules minimization.
+\newblock In \emph{The Twelfth International Conference on Learning
+  Representations}, 2024.
+\newblock URL \url{https://openreview.net/forum?id=skcTCdJz0f}.
+
+\bibitem[Vaswani et~al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez,
+  Kaiser, and Polosukhin]{vaswani2017attention}
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+  Aidan~N Gomez, {\L}ukasz Kaiser, and Illia Polosukhin.
+\newblock Attention is all you need.
+\newblock \emph{Advances in neural information processing systems}, 30, 2017.
+
+\bibitem[Weyn et~al.(2019)Weyn, Durran, and Caruana]{weyn2019can}
+Jonathan~A Weyn, Dale~R Durran, and Rich Caruana.
+\newblock Can machines learn to predict weather? {U}sing deep learning to
+  predict gridded 500-{hPa }geopotential height from historical weather data.
+\newblock \emph{Journal of Advances in Modeling Earth Systems}, 11\penalty0
+  (8):\penalty0 2680--2693, 2019.
+
+\bibitem[Yoon et~al.(2019)Yoon, Jarrett, and van~der Schaar]{yoon2019}
+Jinsung Yoon, Daniel Jarrett, and Mihaela van~der Schaar.
+\newblock Time-series generative adversarial networks.
+\newblock In H.~Wallach, H.~Larochelle, A.~Beygelzimer, F.~d'Alch\'{e} Buc,
+  E.~Fox, and R.~Garnett, editors, \emph{Advances in Neural Information
+  Processing Systems}, volume~32. Curran Associates, Inc., 2019.
+\newblock URL
+  \url{https://proceedings.neurips.cc/paper/2019/file/c9efe5f26cd17ba6216bbe2a7d26d490-Paper.pdf}.
+
+\end{thebibliography}

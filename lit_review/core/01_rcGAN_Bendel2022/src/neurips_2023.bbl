@@ -1,0 +1,271 @@
+\begin{thebibliography}{10}
+
+\bibitem{Lehmann:Book:06}
+E.~L. Lehmann and G.~Casella, {\em Theory of point estimation}.
+\newblock Springer Science \& Business Media, 2006.
+
+\bibitem{Blau:CVPR:18}
+Y.~Blau and T.~Michaeli, ``The perception-distortion tradeoff,'' in {\em Proc.
+  IEEE Conf. Comp. Vision Pattern Recog.}, pp.~6228--6237, 2018.
+
+\bibitem{Sonderby:ICLR:17}
+C.~K. S{\o}nderby, J.~Caballero, L.~Theis, W.~Shi, and F.~Husz{\'a}r,
+  ``Amortised {MAP} inference for image super-resolution,'' in {\em Proc. Int.
+  Conf. on Learn. Rep.}, 2017.
+
+\bibitem{Mehrabi:CS:21}
+N.~Mehrabi, F.~Morstatter, N.~Saxena, K.~Lerman, and A.~Galstyan, ``A survey on
+  bias and fairness in machine learning,'' {\em ACM Comput. Surveys}, vol.~54,
+  no.~6, pp.~1--35, 2021.
+
+\bibitem{Sanchez:NIPSW:20}
+T.~Sanchez, I.~Krawczuk, Z.~Sun, and V.~Cevher, ``Uncertainty-driven adaptive
+  sampling via {GAN}s,'' in {\em Proc. Neural Inf. Process. Syst. Workshop},
+  2020.
+
+\bibitem{Chang:ICLR:19}
+C.-H. Chang, E.~Creager, A.~Goldenberg, and D.~Duvenaud, ``Explaining image
+  classifiers by counterfactual generation,'' in {\em Proc. Int. Conf. on
+  Learn. Rep.}, 2019.
+
+\bibitem{Isola:CVPR:17}
+P.~Isola, J.-Y. Zhu, T.~Zhou, and A.~A. Efros, ``Image-to-image translation
+  with conditional adversarial networks,'' in {\em Proc. IEEE Conf. Comp.
+  Vision Pattern Recog.}, pp.~1125--1134, 2017.
+
+\bibitem{Adler:18}
+J.~Adler and O.~{\"O}ktem, ``Deep {B}ayesian inversion,'' {\em
+  arXiv:1811.05910}, 2018.
+
+\bibitem{Zhao:ICLR:21}
+S.~Zhao, J.~Cui, Y.~Sheng, Y.~Dong, X.~Liang, E.~I.-C. Chang, and Y.~Xu,
+  ``Large scale image completion via co-modulated generative adversarial
+  networks,'' in {\em Proc. Int. Conf. on Learn. Rep.}, 2021.
+
+\bibitem{Zhao:MIA:18}
+H.~Zhao, H.~Li, S.~Maurer-Stroh, and L.~Cheng, ``Synthesizing retinal and
+  neuronal images with generative adversarial nets,'' {\em Med. Image
+  Analysis}, vol.~49, 07 2018.
+
+\bibitem{Edupuganti:TMI:20}
+V.~Edupuganti, M.~Mardani, S.~Vasanawala, and J.~Pauly, ``Uncertainty
+  quantification in deep {MRI} reconstruction,'' {\em IEEE Trans. Med. Imag.},
+  vol.~40, pp.~239--250, Jan. 2021.
+
+\bibitem{Tonolini:JMLR:20}
+F.~Tonolini, J.~Radford, A.~Turpin, D.~Faccio, and R.~Murray-Smith,
+  ``Variational inference for computational imaging inverse problems,'' {\em J.
+  Mach. Learn. Res.}, vol.~21, no.~179, pp.~1--46, 2020.
+
+\bibitem{Sohn:NIPS:15}
+K.~Sohn, H.~Lee, and X.~Yan, ``Learning structured output representation using
+  deep conditional generative models,'' in {\em Proc. Neural Inf. Process.
+  Syst. Conf.}, 2015.
+
+\bibitem{Ardizzone:19}
+L.~Ardizzone, C.~L{\"u}th, J.~Kruse, C.~Rother, and U.~K{\"o}the, ``Guided
+  image generation with conditional invertible neural networks,'' {\em
+  arXiv:1907.02392}, 2019.
+
+\bibitem{Winkler:19}
+C.~Winkler, D.~Worrall, E.~Hoogeboom, and M.~Welling, ``Learning likelihoods
+  with conditional normalizing flows,'' {\em arXiv preprint arXiv:1912.00042},
+  2019.
+
+\bibitem{Sun:AAAI:21}
+H.~Sun and K.~L. Bouman, ``Deep probabilistic imaging: {U}ncertainty
+  quantification and multi-modal solution characterization for computational
+  imaging,'' in {\em Proc. AAAI Conf. Artificial Intell.}, vol.~35,
+  pp.~2628--2637, 2021.
+
+\bibitem{Welling:ICML:11}
+M.~Welling and Y.~W. Teh, ``Bayesian learning via stochastic gradient
+  {L}angevin dynamics,'' in {\em Proc. Int. Conf. Mach. Learn.}, pp.~681--688,
+  2011.
+
+\bibitem{Song:NIPS:20}
+Y.~Song and S.~Ermon, ``Improved techniques for training score-based generative
+  models,'' in {\em Proc. Neural Inf. Process. Syst. Conf.}, 2020.
+
+\bibitem{Jalal:NIPS:21}
+A.~Jalal, M.~Arvinte, G.~Daras, E.~Price, A.~Dimakis, and J.~Tamir, ``Robust
+  compressed sensing {MRI} with deep generative priors,'' in {\em Proc. Neural
+  Inf. Process. Syst. Conf.}, 2021.
+
+\bibitem{Song:ICLR:21}
+Y.~Song, J.~Sohl-Dickstein, D.~P. Kingma, A.~Kumar, S.~Ermon, and B.~Poole,
+  ``Score-based generative modeling through stochastic differential
+  equations,'' in {\em Proc. Int. Conf. on Learn. Rep.}, 2021.
+
+\bibitem{Song:ICLR:22}
+Y.~Song, L.~Shen, L.~Xing, and S.~Ermon, ``Solving inverse problems in medical
+  imaging with score-based generative models,'' in {\em Proc. Int. Conf. on
+  Learn. Rep.}, 2022.
+
+\bibitem{Soloveitchik:21}
+M.~Soloveitchik, T.~Diskin, E.~Morin, and A.~Wiesel, ``Conditional {F}rechet
+  inception distance,'' {\em arXiv:2103.11521}, 2021.
+
+\bibitem{Ohayon:ICCVW:21}
+G.~Ohayon, T.~Adrai, G.~Vaksman, M.~Elad, and P.~Milanfar, ``High perceptual
+  quality image denoising with a posterior sampling { CGAN},'' in {\em Proc.
+  IEEE Int. Conf. Comput. Vis. Workshops}, vol.~10, pp.~1805--1813, 2021.
+
+\bibitem{Gulrajani:NIPS:17}
+I.~Gulrajani, F.~Ahmed, M.~Arjovsky, V.~Dumoulin, and A.~Courville, ``Improved
+  training of {W}asserstein {GAN}s,'' in {\em Proc. Neural Inf. Process. Syst.
+  Conf.}, p.~5769–5779, 2017.
+
+\bibitem{Mirza:14}
+M.~Mirza and S.~Osindero, ``Conditional generative adversarial nets,'' {\em
+  arXiv:1411.1784}, 2014.
+
+\bibitem{Schonfeld:CVPR:20}
+E.~Schonfeld, B.~Schiele, and A.~Khoreva, ``A {U-Net} based discriminator for
+  generative adversarial networks,'' in {\em Proc. IEEE Conf. Comp. Vision
+  Pattern Recog.}, pp.~8207--8216, 2020.
+
+\bibitem{Karras:NIPS:20}
+T.~Karras, M.~Aittala, J.~Hellsten, S.~Laine, J.~Lehtinen, and T.~Aila,
+  ``Training generative adversarial networks with limited data,'' in {\em Proc.
+  Neural Inf. Process. Syst. Conf.}, vol.~33, pp.~12104--12114, 2020.
+
+\bibitem{Zhao:AAAI:21}
+Z.~Zhao, S.~Singh, H.~Lee, Z.~Zhang, A.~Odena, and H.~Zhang, ``Improved
+  consistency regularization for {GANs},'' in {\em Proc. AAAI Conf. Artificial
+  Intell.}, vol.~35, pp.~11033--11041, 2021.
+
+\bibitem{Karras:ICLR:18}
+T.~Karras, T.~Aila, S.~Laine, and J.~Lehtinen, ``Progressive growing of {GAN}s
+  for improved quality, stability, and variation,'' in {\em Proc. Int. Conf. on
+  Learn. Rep.}, 2018.
+
+\bibitem{Zhao:TCI:17}
+H.~Zhao, O.~Gallo, I.~Frosio, and J.~Kautz, ``Loss functions for image
+  restoration with neural networks,'' {\em IEEE Trans. Comput. Imag.}, vol.~3,
+  pp.~47--57, Mar. 2017.
+
+\bibitem{Ohayon:github:21}
+G.~Ohayon, T.~Adrai, G.~Vaksman, M.~Elad, and P.~Milanfar, ``High perceptual
+  quality image denoising with a posterior sampling {CGAN}.'' Downloaded from
+  \url{https://github.com/theoad/pscgan}, July 2021.
+
+\bibitem{Heusel:NIPS:17}
+M.~Heusel, H.~Ramsauer, T.~Unterthiner, B.~Nessler, and S.~Hochreiter, ``{GAN}s
+  trained by a two time-scale update rule converge to a local {N}ash
+  equilibrium,'' in {\em Proc. Neural Inf. Process. Syst. Conf.}, vol.~30,
+  2017.
+
+\bibitem{Zbontar:18}
+J.~Zbontar, F.~Knoll, A.~Sriram, M.~J. Muckley, M.~Bruno, A.~Defazio,
+  M.~Parente, K.~J. Geras, J.~Katsnelson, H.~Chandarana, Z.~Zhang, M.~Drozdzal,
+  A.~Romero, M.~Rabbat, P.~Vincent, J.~Pinkerton, D.~Wang, N.~Yakubova,
+  E.~Owens, C.~L. Zitnick, M.~P. Recht, D.~K. Sodickson, and Y.~W. Lui,
+  ``fast{MRI: An} open dataset and benchmarks for accelerated {MRI},'' {\em
+  arXiv:1811.08839}, 2018.
+
+\bibitem{Zhang:MRM:13}
+T.~Zhang, J.~M. Pauly, S.~S. Vasanawala, and M.~Lustig, ``Coil compression for
+  accelerated imaging with {C}artesian sampling,'' {\em Magn. Reson. Med.},
+  vol.~69, no.~2, pp.~571--582, 2013.
+
+\bibitem{Joshi:22}
+M.~Joshi, A.~Pruitt, C.~Chen, Y.~Liu, and R.~Ahmad, ``Technical report
+  (v1.0)--pseudo-random cartesian sampling for dynamic {MRI},'' {\em
+  arXiv:2206.03630}, 2022.
+
+\bibitem{Ronneberger:MICCAI:15}
+O.~Ronneberger, P.~Fischer, and T.~Brox, ``{U-Net: C}onvolutional networks for
+  biomedical image segmentation,'' in {\em Proc. Intl. Conf. Med. Image Comput.
+  Comput. Assist. Intervent.}, pp.~234--241, 2015.
+
+\bibitem{Sriram:MICCAI:20}
+A.~Sriram, J.~Zbontar, T.~Murrell, A.~Defazio, C.~L. Zitnick, N.~Yakubova,
+  F.~Knoll, and P.~Johnson, ``End-to-end variational networks for accelerated
+  {MRI} reconstruction,'' in {\em Proc. Intl. Conf. Med. Image Comput. Comput.
+  Assist. Intervent.}, pp.~64--73, 2020.
+
+\bibitem{Jalal:github:21}
+A.~Jalal, M.~Arvinte, G.~Daras, E.~Price, A.~Dimakis, and J.~Tamir,
+  ``csgm-mri-langevin.'' \url{https://github.com/utcsilab/csgm-mri-langevin},
+  2021.
+\newblock Accessed: 2021-12-05.
+
+\bibitem{Prussmann:MRM:99}
+K.~P. Pruessmann, M.~Weiger, M.~B. Scheidegger, and P.~Boesiger, ``{SENSE}:
+  {S}ensitivity encoding for fast {MRI},'' {\em Magn. Reson. Med.}, vol.~42,
+  no.~5, pp.~952--962, 1999.
+
+\bibitem{Uecker:MRM:14}
+M.~Uecker, P.~Lai, M.~J. Murphy, P.~Virtue, M.~Elad, J.~M. Pauly, S.~S.
+  Vasanawala, and M.~Lustig, ``{ESPIRiT}--an eigenvalue approach to
+  autocalibrating parallel {MRI: W}here {SENSE} meets {GRAPPA},'' {\em Magn.
+  Reson. Med.}, vol.~71, no.~3, pp.~990--1001, 2014.
+
+\bibitem{Kastryulin:22}
+S.~Kastryulin, J.~Zakirov, N.~Pezzotti, and D.~V. Dylov, ``Image quality
+  assessment for magnetic resonance imaging,'' {\em arXiv:2203.07809}, 2022.
+
+\bibitem{Zhang:CVPR:18}
+R.~Zhang, P.~Isola, A.~A. Efros, E.~Shechtman, and O.~Wang, ``The unreasonable
+  effectiveness of deep features as a perceptual metric,'' in {\em Proc. IEEE
+  Conf. Comp. Vision Pattern Recog.}, pp.~586--595, 2018.
+
+\bibitem{Ding:TPAMI:20}
+K.~Ding, K.~Ma, S.~Wang, and E.~P. Simoncelli, ``Image quality assessment:
+  {U}nifying structure and texture similarity,'' {\em IEEE Trans. Pattern Anal.
+  Mach. Intell.}, vol.~44, no.~5, pp.~2567--2581, 2020.
+
+\bibitem{Zeng:github:22}
+Y.~Zeng, ``co-mod-gan-pytorch.'' Downloaded from
+  \url{https://github.com/zengxianyu/co-mod-gan-pytorch}, Sept. 2022.
+
+\bibitem{Song:github:21b}
+Y.~Song, J.~Sohl-Dickstein, D.~P. Kingma, A.~Kumar, S.~Ermon, and B.~Poole,
+  ``Score-based generative modeling through stochastic differential
+  equations.'' Downloaded from
+  \url{https://github.com/yang-song/score_sde_pytorch}, Oct. 2022.
+
+\bibitem{Bendel:NIPSW:23}
+M.~C. Bendel, R.~Ahmad, and P.~Schniter, ``Mask-agnostic posterior sampling
+  {MRI} via conditional {GANs} with guided reconstruction,'' in {\em Proc.
+  NeurIPS Workshop on Deep Inverse Problems}, 2023.
+
+\bibitem{Kynkaanniemi:22}
+T.~Kynk{\"a}{\"a}nniemi, T.~Karras, M.~Aittala, T.~Aila, and J.~Lehtinen, ``The
+  role of imagenet classes in fr{\'e}chet inception distance,'' {\em
+  arXiv:2203.06026}, 2022.
+
+\bibitem{Leone:Techno:61}
+F.~C. Leone, L.~S. Nelson, and R.~Nottingham, ``The folded normal
+  distribution,'' {\em Technometrics}, vol.~3, no.~4, pp.~543--550, 1961.
+
+\bibitem{Simonyan:14}
+K.~Simonyan and A.~Zisserman, ``Very deep convolutional networks for
+  large-scale image recognition,'' {\em arXiv:1409.1556}, 2014.
+
+\bibitem{Szegedy:CVPR:16}
+C.~Szegedy, V.~Vanhoucke, S.~Ioffe, J.~Shlens, and Z.~Wojna, ``Rethinking the
+  inception architecture for computer vision,'' in {\em Proc. IEEE Conf. Comp.
+  Vision Pattern Recog.}, 2016.
+
+\bibitem{Ong:SigPy:19}
+F.~Ong and M.~Lustig, ``{SigPy: A} python package for high performance
+  iterative reconstruction,'' in {\em Proc. Annu. Meeting ISMRM}, vol.~4819,
+  2019.
+
+\bibitem{Chen:ECCV:20}
+D.~Chen and M.~E. Davies, ``Deep decomposition learning for inverse imaging
+  problems,'' in {\em Proc. European Conf. Comp. Vision}, pp.~510--526, 2020.
+
+\bibitem{Kingma:ICLR:15}
+D.~P. Kingma and J.~Ba, ``Adam: {A} method for stochastic optimization,'' in
+  {\em Proc. Int. Conf. on Learn. Rep.}, 2015.
+
+\bibitem{Deora:CVPRW:20}
+P.~Deora, B.~Vasudeva, S.~Bhattacharya, and P.~M. Pradhan, ``Structure
+  preserving compressive sensing {MRI} reconstruction using generative
+  adversarial networks,'' in {\em Proc. IEEE Conf. Comp. Vision Pattern Recog.
+  Workshop}, pp.~2211--2219, June 2020.
+
+\end{thebibliography}

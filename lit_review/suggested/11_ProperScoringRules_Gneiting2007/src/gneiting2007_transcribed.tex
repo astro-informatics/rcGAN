@@ -1,0 +1,243 @@
+% ============================================================================
+% Gneiting, T. & Raftery, A. E. (2007). Strictly Proper Scoring Rules,
+% Prediction, and Estimation. JASA 102(477), 359--378. doi:10.1198/016214506000001437
+%
+% PARTIAL TRANSCRIPTION (no official LaTeX source exists). Transcribed by
+% Claude from paper.pdf; equation numbers match the published paper.
+% Included: Sec 1 (optimum score estimation idea), 2.1, 4.2, 4.3, 5.1, 5.2.
+% Omitted: categorical scores (Sec 3), density scores (4.1), 4.4, 5.3,
+%          quantile/interval scores (6), Bayes factors/CV (7), case study (8),
+%          optimum score estimation details (9), future work (10).
+% Verify any equation you rely on against paper.pdf.
+%
+% SIGN CONVENTION: this paper uses POSITIVELY oriented scores (higher = better,
+% forecaster maximises). CRPS as defined in (20)/(21) is <= 0. The usual ML loss
+% is the negatively oriented CRPS^* = -CRPS (see end of Sec 4.2).
+% ============================================================================
+\documentclass{article}
+\usepackage{amsmath,amssymb,amsthm}
+\newtheorem{theorem}{Theorem}
+\newtheorem*{assumption}{Assumption 1}
+\newcommand{\1}{\mathbb{1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\by}{\mathbf{y}}
+\newcommand{\bY}{\mathbf{Y}}
+\begin{document}
+
+\section*{1. Introduction (excerpt): optimum score estimation}
+Suppose we wish to fit a parametric model $P_\theta$ based on a sample
+$X_1,\dots,X_n$. We might measure goodness-of-fit by the mean score
+\[
+  \mathcal{S}_n(\theta) = \frac{1}{n}\sum_{i=1}^n S(P_\theta, X_i),
+\]
+where $S$ is a strictly proper scoring rule. If $\theta_0$ is the true parameter
+value, asymptotic arguments indicate that
+$\arg\max_\theta \mathcal{S}_n(\theta) \to \theta_0$ as $n\to\infty$. The
+\emph{optimum score estimator} is $\hat\theta_n = \arg\max_\theta \mathcal{S}_n(\theta)$
+(minimum contrast estimation; a special case of $M$-estimation; maximum
+likelihood is the special case of the logarithmic score).
+
+\section*{2.1 Proper scoring rules and convex functions}
+Let $\Omega$ be a sample space, $\mathcal{A}$ a $\sigma$-algebra of subsets of
+$\Omega$, and $\mathcal{P}$ a convex class of probability measures on
+$(\Omega,\mathcal{A})$. A \emph{probabilistic forecast} is any $P\in\mathcal{P}$.
+A \emph{scoring rule} is any extended real-valued function
+$S:\mathcal{P}\times\Omega\to\overline{\R}$ such that $S(P,\cdot)$ is
+$\mathcal{P}$-quasi-integrable for all $P\in\mathcal{P}$. If the forecast is $P$
+and $\omega$ materialises, the forecaster's reward is $S(P,\omega)$. Write
+\[
+  S(P,Q) = \int S(P,\omega)\,\mathrm{d}Q(\omega)
+\]
+for the expected score under $Q$ when the forecast is $P$. $S$ is \emph{proper}
+relative to $\mathcal{P}$ if
+\begin{equation}\tag{1}
+  S(Q,Q) \ge S(P,Q) \quad \text{for all } P,Q\in\mathcal{P}.
+\end{equation}
+It is \emph{strictly proper} if (1) holds with equality iff $P=Q$. If $S$ is
+proper, $c>0$ a constant and $h$ a $\mathcal{P}$-integrable function, then
+\begin{equation}\tag{2}
+  S^*(P,\omega) = c\,S(P,\omega) + h(\omega)
+\end{equation}
+is also proper (strictly proper if $S$ is); $S$ and $S^*$ are \emph{equivalent},
+and \emph{strongly equivalent} if $c=1$.
+
+\section*{4.2 Continuous ranked probability score}
+Let $\mathcal{P}$ be the Borel probability measures on $\R$; identify a forecast
+with its CDF $F$. The CRPS is
+\begin{equation}\tag{20}
+  \mathrm{CRPS}(F,x) = -\int_{-\infty}^{\infty} \bigl(F(y) - \1\{y\ge x\}\bigr)^2\,\mathrm{d}y ,
+\end{equation}
+the integral of the Brier scores for the binary forecasts at all real thresholds.
+By lemma 2.2 of Baringhaus \& Franz (2004) or identity (17) of Sz\'ekely \&
+Rizzo (2005),
+\begin{equation}\tag{21}
+  \mathrm{CRPS}(F,x) = \tfrac12 E_F|X-X'| - E_F|X-x| ,
+\end{equation}
+where $X,X'$ are independent copies of a random variable with CDF $F$ and finite
+first moment. For a Gaussian predictive distribution,
+\[
+  \mathrm{CRPS}\bigl(\mathcal{N}(\mu,\sigma^2),x\bigr)
+  = \sigma\left[\frac{1}{\sqrt\pi} - 2\varphi\!\left(\frac{x-\mu}{\sigma}\right)
+  - \frac{x-\mu}{\sigma}\left(2\Phi\!\left(\frac{x-\mu}{\sigma}\right)-1\right)\right],
+\]
+with $\varphi,\Phi$ the standard normal PDF and CDF. If the predictive
+distribution is a sample of size $n$, the right side of (20) can be evaluated
+via order statistics in $\mathcal{O}(n\log n)$ operations (Hersbach 2000, sec.~4.b).
+
+The CRPS is proper relative to $\mathcal{P}$ and \textbf{strictly proper
+relative to the subclass $\mathcal{P}_1$ of Borel measures with finite first
+moment}. The associated expected score (generalised entropy) function is
+\[
+  G(F) = -\int_{-\infty}^{\infty} F(y)\bigl(1-F(y)\bigr)\,\mathrm{d}y = -\tfrac12 E_F|X-X'| ,
+\]
+and the divergence function is
+\[
+  d(F,G) = \int_{-\infty}^{\infty} \bigl(F(y)-G(y)\bigr)^2\,\mathrm{d}y ,
+\]
+symmetric and of Cram\'er--von Mises type.
+
+It is typically used in negative orientation, $\mathrm{CRPS}^*(F,x) = -\mathrm{CRPS}(F,x)$,
+so (21) becomes
+\[
+  \mathrm{CRPS}^*(F,x) = E_F|X-x| - \tfrac12 E_F|X-X'| .
+\]
+In negative orientation it has the units of the observations and reduces to the
+absolute error when $F$ is a point measure (deterministic forecast).
+
+\section*{4.3 Energy score}
+Let $\mathcal{P}_\beta$, $\beta\in(0,2)$, be the Borel probability measures $P$
+on $\R^m$ with $E_P\|\bX\|^\beta<\infty$ ($\|\cdot\|$ Euclidean). The
+\emph{energy score} is
+\begin{equation}\tag{22}
+  \mathrm{ES}(P,\bx) = \tfrac12 E_P\|\bX-\bX'\|^\beta - E_P\|\bX-\bx\|^\beta ,
+\end{equation}
+with $\bX,\bX'$ independent copies with distribution $P\in\mathcal{P}_\beta$.
+It reduces to the CRPS (21) when $\beta=1$, $m=1$. Theorem 1 of Sz\'ekely (2003):
+the energy score is strictly proper relative to $\mathcal{P}_\beta$. In the
+limiting case $\beta=2$,
+\begin{equation}\tag{23}
+  \mathrm{ES}(P,\bx) = -\|\boldsymbol\mu_P - \bx\|^2 ,
+\end{equation}
+where $\boldsymbol\mu_P$ is the mean vector of $P$: regular and proper but
+\textbf{not strictly proper} relative to $\mathcal{P}_2$.
+
+For all Borel probability measures on $\R^m$ and $\beta\in(0,2)$,
+\begin{equation}\tag{24}
+  \mathrm{ES}(P,\bx) = -\frac{\beta\,2^{\beta-2}\,\Gamma\!\left(\frac m2+\frac\beta2\right)}
+  {\pi^{m/2}\,\Gamma\!\left(1-\frac\beta2\right)}
+  \int_{\R^m} \frac{\bigl|\phi_P(\by) - e^{i\langle \bx,\by\rangle}\bigr|^2}{\|\by\|^{m+\beta}}\,\mathrm{d}\by ,
+\end{equation}
+where $\phi_P$ is the characteristic function of $P$. If $P\in\mathcal{P}_\beta$
+the right sides of (22) and (24) agree: the score is a weighted distance between
+the characteristic function of $P$ and that of the point measure at the outcome.
+
+\section*{5.1 Kernel scores}
+A real-valued $g$ on $\Omega\times\Omega$ is a \emph{negative definite kernel}
+if it is symmetric and $\sum_{i=1}^n\sum_{j=1}^n a_i a_j g(x_i,x_j)\le 0$ for all
+positive integers $n$, all $a_1,\dots,a_n\in\R$ summing to $0$, and all
+$x_1,\dots,x_n\in\Omega$.
+
+\begin{theorem}[Theorem 4]
+Let $\Omega$ be a Hausdorff space and $g$ a nonnegative, continuous negative
+definite kernel on $\Omega\times\Omega$. For a Borel probability measure $P$ on
+$\Omega$, let $X,X'$ be independent with distribution $P$. Then
+\begin{equation}\tag{28}
+  S(P,x) = \tfrac12 E_P\, g(X,X') - E_P\, g(X,x)
+\end{equation}
+is proper relative to the class of Borel probability measures $P$ on $\Omega$
+for which $E_P\, g(X,X')$ is finite.
+\end{theorem}
+\begin{proof}
+Let $X,X'$ and $Y,Y'$ be independent with distributions $P$ and $Q$. We need
+\begin{equation}\tag{29}
+  -\tfrac12 E_Q\, g(Y,Y') \ge \tfrac12 E_P\, g(X,X') - E_{P,Q}\, g(X,Y).
+\end{equation}
+If $E_{P,Q}\,g(X,Y)$ is infinite the inequality is trivial; if finite, theorem
+2.1 of Berg et al.\ (1984, p.~235) implies (29).
+\end{proof}
+
+\noindent\textbf{Example 7 (Brier).} $\Omega=\{1,0\}$, $g(0,0)=g(1,1)=0$,
+$g(0,1)=g(1,0)=1$: (28) recovers the quadratic/Brier score.
+
+\noindent\textbf{Example 8 (CRPS).} $\Omega=\R$, $g(x,x')=|x-x'|$: (28) gives
+the CRPS (21).
+
+\noindent\textbf{Example 9 (Energy score).} $\Omega=\R^m$, $\beta\in(0,2)$,
+$g(\bx,\bx')=\|\bx-\bx'\|^\beta$: (28) gives the energy score (22).
+
+\noindent\textbf{Example 10 (circular CRPS).} $\Omega=\mathbb{S}$, angular
+distance $\alpha(\theta,\theta')$ is negative definite (Gneiting 1998), so
+\begin{equation}\tag{30}
+  S(P,\theta) = \tfrac12 E_P\,\alpha(\Theta,\Theta') - E_P\,\alpha(\Theta,\theta)
+\end{equation}
+is proper.
+
+For $\bx\in\R^m$ and $\alpha\in(0,\infty]$ define
+$\|\bx\|_\alpha = (\sum_{i=1}^m|x_i|^\alpha)^{1/\alpha}$ ($\max_i|x_i|$ if
+$\alpha=\infty$). Then for $\beta>0$ the kernel $g(\bx,\bx')=\|\bx-\bx'\|_\alpha^\beta$
+is negative definite iff:
+
+\begin{assumption}
+(a) $m=1$, $\alpha\in(0,\infty]$, $\beta\in(0,2]$; or (b) $m\ge2$,
+$\alpha\in(0,2]$, $\beta\in(0,\alpha]$; or (c) $m=2$, $\alpha\in(2,\infty]$,
+$\beta\in(0,1]$.
+\end{assumption}
+
+\noindent\textbf{Example 11 (non-Euclidean energy score).} Under Assumption 1,
+\[
+  S(P,\bx) = \tfrac12 E_P\|\bX-\bX'\|_\alpha^\beta - E_P\|\bX-\bx\|_\alpha^\beta
+\]
+is proper relative to Borel measures on $\R^m$ with $E_P\|\bX-\bX'\|_\alpha^\beta<\infty$.
+$m=1$ or $\alpha=2$ recovers the energy score. (Mattner 1997: if $\alpha\ge1$,
+$E_{P,Q}\|\bX-\bY\|_\alpha^\beta$ finite iff $E_P\|\bX\|_\alpha^\beta$ and
+$E_Q\|\bY\|_\alpha^\beta$ finite.)
+
+\begin{theorem}[Theorem 5]
+Let $\psi$ be continuous on $[0,\infty)$ with $-\psi'$ completely monotone and
+not constant. For a Borel probability measure $P$ on $\R^m$ with $\bX,\bX'$
+independent with distribution $P$,
+\[
+  S(P,\bx) = \tfrac12 E_P\,\psi(\|\bX-\bX'\|_2^2) - E_P\,\psi(\|\bX-\bx\|_2^2)
+\]
+is \textbf{strictly} proper relative to Borel $P$ on $\R^m$ with
+$E_P\,\psi(\|\bX-\bX'\|_2^2)<\infty$. (Immediate from theorem 2.2 of Mattner
+1997.) With $\psi(t)=t^{\beta/2}$, $\beta\in(0,2)$, this gives strict propriety
+of the energy score for $P$ with $E_P\|\bX\|_2^\beta<\infty$.
+\end{theorem}
+($\eta$ on $(0,\infty)$ is completely monotone if $(-1)^k\eta^{(k)}(t)\ge0$ for
+all $k\ge0$, $t>0$.)
+
+\section*{5.2 Inequalities of Hoeffding type and positive definite kernels}
+If $E_P\,g(X,X')$ and $E_Q\,g(Y,Y')$ are finite, (29) is the Hoeffding-type
+inequality
+\begin{equation}\tag{31}
+  2E_{P,Q}\,g(X,Y) - E_P\,g(X,X') - E_Q\,g(Y,Y') \ge 0 .
+\end{equation}
+(Sz\'ekely \& Rizzo 2005, thm 1: nearly identical result and a converse; if $g$
+is not negative definite there are counterexamples to (31) and the score is
+improper.) If $\Omega$ is a group and $g(x,x')=g(-x,-x')$,
+\begin{equation}\tag{32}
+  E_P\,g(X,-X') \ge E_P\,g(X,X').
+\end{equation}
+For $\Omega=\R^m$ under Assumption 1, (31) and (32) become
+\begin{equation}\tag{33}
+  2E\|\bX-\bY\|_\alpha^\beta - E\|\bX-\bX'\|_\alpha^\beta - E\|\bY-\bY'\|_\alpha^\beta \ge 0
+\end{equation}
+and
+\begin{equation}\tag{34}
+  E\|\bX-\bX'\|_\alpha^\beta \le E\|\bX+\bX'\|_\alpha^\beta .
+\end{equation}
+[Note: the left side of (33) is the (generalised) \emph{energy distance}
+between $P$ and $Q$.] For a group $\Omega$ with $g(x,x')=g(-x,-x')$,
+\begin{equation}\tag{35}
+  h(x,x') = g(x,-x') - g(x,x')
+\end{equation}
+is a positive definite kernel; in particular, under Assumption 1,
+\begin{equation}\tag{36}
+  h(\bx,\bx') = \|\bx+\bx'\|_\alpha^\beta - \|\bx-\bx'\|_\alpha^\beta
+\end{equation}
+is positive definite on $\R^m$.
+
+\end{document}

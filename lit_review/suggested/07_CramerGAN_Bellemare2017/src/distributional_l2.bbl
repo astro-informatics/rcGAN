@@ -1,0 +1,209 @@
+\begin{thebibliography}{}
+
+\bibitem[Arjovsky et~al., 2017]{arjovsky17wasserstein}
+Arjovsky, M., Chintala, S., and Bottou, L. (2017).
+\newblock Wasserstein {GAN}.
+\newblock {\em arXiv preprint arXiv:1701.07875}.
+
+\bibitem[Bellemare et~al., 2017]{bellemare17distributional}
+Bellemare, M.~G., Dabney, W., and Munos, R. (2017).
+\newblock A distributional perspective on reinforcement learning.
+\newblock In {\em Proceedings of the International Conference on Machine
+  Learning, to appear}.
+
+\bibitem[Bickel and Freedman, 1981]{bickel81asymptotic}
+Bickel, P.~J. and Freedman, D.~A. (1981).
+\newblock Some asymptotic theory for the bootstrap.
+\newblock {\em The Annals of Statistics}, pages 1196--1217.
+
+\bibitem[Chung and Sobel, 1987]{chung87discounted}
+Chung, K.-J. and Sobel, M.~J. (1987).
+\newblock Discounted {MDP}’s: Distribution functions and exponential utility
+  maximization.
+\newblock {\em SIAM Journal on Control and Optimization}, 25(1):49--62.
+
+\bibitem[Cover and Thomas, 1991]{cover91elements}
+Cover, T.~M. and Thomas, J.~A. (1991).
+\newblock {\em Elements of information theory}.
+\newblock John Wiley \& Sons.
+
+\bibitem[Danihelka et~al., 2017]{ivogan}
+Danihelka, I., Lakshminarayanan, B., Uria, B., Wierstra, D., and Dayan, P.
+  (2017).
+\newblock {Comparison of Maximum Likelihood and GAN-based training of Real
+  NVPs}.
+\newblock {\em arXiv preprint arXiv:1705.05263}.
+
+\bibitem[Dedecker and Merlev{\`e}de, 2007]{dedecker07empirical}
+Dedecker, J. and Merlev{\`e}de, F. (2007).
+\newblock The empirical distribution function for dependent variables:
+  asymptotic and nonasymptotic results in {L}p.
+\newblock {\em ESAIM: Probability and Statistics}, 11:102--114.
+
+\bibitem[Dudley, 2002]{dudley2002real}
+Dudley, R.~M. (2002).
+\newblock {\em Real analysis and probability}, volume~74.
+\newblock Cambridge University Press.
+
+\bibitem[Dziugaite et~al., 2015]{dziugaite2015training}
+Dziugaite, G.~K., Roy, D.~M., and Ghahramani, Z. (2015).
+\newblock Training generative neural networks via maximum mean discrepancy
+  optimization.
+\newblock In {\em Proceedings of the Conference on Uncertainty in Artificial
+  Intelligence}.
+
+\bibitem[Esfahani and Kuhn, 2015]{esfahani2015data}
+Esfahani, P.~M. and Kuhn, D. (2015).
+\newblock Data-driven distributionally robust optimization using the
+  {W}asserstein metric: Performance guarantees and tractable reformulations.
+\newblock {\em arXiv preprint arXiv:1505.05116}.
+
+\bibitem[Frogner et~al., 2015]{frogner15learning}
+Frogner, C., Zhang, C., Mobahi, H., Araya, M., and Poggio, T.~A. (2015).
+\newblock Learning with a {W}asserstein loss.
+\newblock In {\em Advances in Neural Information Processing Systems}.
+
+\bibitem[Gao and Kleywegt, 2016]{gao2016distributionally}
+Gao, R. and Kleywegt, A.~J. (2016).
+\newblock Distributionally robust stochastic optimization with {W}asserstein
+  distance.
+\newblock {\em arXiv preprint arXiv:1604.02199}.
+
+\bibitem[Gneiting and Raftery, 2007]{gneiting07strictly}
+Gneiting, T. and Raftery, A.~E. (2007).
+\newblock Strictly proper scoring rules, prediction, and estimation.
+\newblock {\em Journal of the American Statistical Association},
+  102(477):359--378.
+
+\bibitem[Goodfellow et~al., 2014]{goodfellow14generative}
+Goodfellow, I., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D., Ozair,
+  S., Courville, A., and Bengio, Y. (2014).
+\newblock Generative adversarial nets.
+\newblock In {\em Advances in Neural Information Processing Systems}.
+
+\bibitem[Gretton et~al., 2012]{gretton2012kernel}
+Gretton, A., Borgwardt, K.~M., Rasch, M.~J., Sch{\"o}lkopf, B., and Smola, A.
+  (2012).
+\newblock A kernel two-sample test.
+\newblock {\em Journal of Machine Learning Research}, 13:723--773.
+
+\bibitem[Gulrajani et~al., 2017]{gulrajani2017improved}
+Gulrajani, I., Ahmed, F., Arjovsky, M., Dumoulin, V., and Courville, A. (2017).
+\newblock Improved training of {W}asserstein {GAN}s.
+\newblock {\em arXiv preprint arXiv:1704.00028}.
+
+\bibitem[Hern{\'a}ndez-Lobato and Adams, 2015]{PB}
+Hern{\'a}ndez-Lobato, J.~M. and Adams, R.~P. (2015).
+\newblock Probabilistic backpropagation for scalable learning of {B}ayesian
+  neural networks.
+\newblock In {\em Proceedings of the International Conference on Machine
+  Learning}.
+
+\bibitem[Isola et~al., 2016]{isola2016image}
+Isola, P., Zhu, J.-Y., Zhou, T., and Efros, A.~A. (2016).
+\newblock Image-to-image translation with conditional adversarial networks.
+\newblock {\em arXiv preprint arXiv:1611.07004}.
+
+\bibitem[Kingma and Welling, 2014]{kingma2013auto}
+Kingma, D.~P. and Welling, M. (2014).
+\newblock Auto-encoding variational {B}ayes.
+\newblock {\em Proceedings of the International Conference on Learning
+  Representations}.
+
+\bibitem[{Li} et~al., 2017]{mmdgan}
+{Li}, C.-L., {Chang}, W.-C., {Cheng}, Y., {Yang}, Y., and {P{\'o}czos}, B.
+  (2017).
+\newblock {MMD GAN}: Towards deeper understanding of moment matching network.
+\newblock {\em arXiv preprint arXiv:1705.08584}.
+
+\bibitem[Li et~al., 2015]{li2015generative}
+Li, Y., Swersky, K., and Zemel, R. (2015).
+\newblock Generative moment matching networks.
+\newblock In {\em Proceedings of the International Conference on Machine
+  Learning}.
+
+\bibitem[Lichman, 2013]{ucirepository}
+Lichman, M. (2013).
+\newblock {UCI} machine learning repository.
+
+\bibitem[Liu et~al., 2015]{liu2015faceattributes}
+Liu, Z., Luo, P., Wang, X., and Tang, X. (2015).
+\newblock Deep learning face attributes in the wild.
+\newblock In {\em Proceedings of International Conference on Computer Vision}.
+
+\bibitem[Montavon et~al., 2016]{montavon2016wasserstein}
+Montavon, G., M{\"u}ller, K.-R., and Cuturi, M. (2016).
+\newblock {W}asserstein training of restricted {B}oltzmann machines.
+\newblock In {\em Advances in Neural Information Processing Systems}.
+
+\bibitem[Mroueh et~al., 2017]{mroueh2017mcgan}
+Mroueh, Y., Sercu, T., and Goel, V. (2017).
+\newblock Mc{G}an: Mean and covariance feature matching {GAN}.
+\newblock {\em arXiv preprint arXiv:1702.08398}.
+
+\bibitem[M{\"u}ller, 1997]{muller97integral}
+M{\"u}ller, A. (1997).
+\newblock Integral probability metrics and their generating classes of
+  functions.
+\newblock {\em Advances in Applied Probability}, 29(2):429--443.
+
+\bibitem[Rachev et~al., 2013]{rachev13methods}
+Rachev, S.~T., Klebanov, L., Stoyanov, S.~V., and Fabozzi, F. (2013).
+\newblock {\em The methods of distances in the theory of probability and
+  statistics}.
+\newblock Springer.
+
+\bibitem[Radford et~al., 2015]{radford2015unsupervised}
+Radford, A., Metz, L., and Chintala, S. (2015).
+\newblock Unsupervised representation learning with deep convolutional
+  generative adversarial networks.
+\newblock {\em arXiv preprint arXiv:1511.06434}.
+
+\bibitem[Rizzo and Sz{\'e}kely, 2016]{rizzo2016energy}
+Rizzo, M.~L. and Sz{\'e}kely, G.~J. (2016).
+\newblock Energy distance.
+\newblock {\em Wiley Interdisciplinary Reviews: Computational Statistics},
+  8(1):27--38.
+
+\bibitem[Ronneberger et~al., 2015]{ronneberger2015u}
+Ronneberger, O., Fischer, P., and Brox, T. (2015).
+\newblock U-net: Convolutional networks for biomedical image segmentation.
+\newblock In {\em International Conference on Medical Image Computing and
+  Computer-Assisted Intervention}.
+
+\bibitem[Rubner et~al., 2000]{rubner2000earth}
+Rubner, Y., Tomasi, C., and Guibas, L.~J. (2000).
+\newblock The earth mover's distance as a metric for image retrieval.
+\newblock {\em International journal of computer vision}, 40(2):99--121.
+
+\bibitem[Sejdinovic et~al., 2013]{sejdinovic2013equivalence}
+Sejdinovic, D., Sriperumbudur, B., Gretton, A., Fukumizu, K., et~al. (2013).
+\newblock Equivalence of distance-based and {RKHS}-based statistics in
+  hypothesis testing.
+\newblock {\em The Annals of Statistics}, 41(5):2263--2291.
+
+\bibitem[Sz{\'e}kely, 2002]{szekely02estatistics}
+Sz{\'e}kely, G.~J. (2002).
+\newblock E-statistics: The energy of statistical samples.
+\newblock Technical Report 02-16, Bowling Green State University, Department of
+  Mathematics and Statistics.
+
+\bibitem[{Van den Oord} et~al., 2016]{vandenoord16pixel}
+{Van den Oord}, A., Kalchbrenner, N., and Kavukcuoglu, K. (2016).
+\newblock Pixel recurrent neural networks.
+\newblock In {\em Proceedings of the International Conference on Machine
+  Learning}.
+
+\bibitem[Veraar, 2010]{Veraar2010}
+Veraar, M. (2010).
+\newblock On {K}hintchine inequalities with a weight.
+\newblock {\em Proceedings of the American Mathematical Society},
+  138(11):4119--4121.
+
+\bibitem[Zolotarev, 1976]{zolotarev76metric}
+Zolotarev, V.~M. (1976).
+\newblock Metric distances in spaces of random variables and their
+  distributions.
+\newblock {\em Sbornik: Mathematics}, 30(3):373--401.
+
+\end{thebibliography}

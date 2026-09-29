@@ -1,0 +1,25 @@
+\begin{algorithm}[b]
+\caption{Pseudocode for computing $\hat{\lambda}$}
+\label{alg:rcps-cal}
+
+\textbf{Input:} Calibration data, $(X_i,Y_i)$, $i = 1, \ldots, n$; risk level $\alpha$; error rate $\delta$; underlying predictor $\hat{f}$; heuristic lower and upper interval lengths $\tilde{l}$ and $\tilde{u}$; maximum value $\lambda_{\rm max}$; step size $d\lambda > 0$.
+
+\textbf{Output:} Parameter $\hat{\lambda}$ for computing RCPS.
+
+\begin{algorithmic}[1]
+
+\State $\lambda \gets \lambda_{\rm max}$
+\State $r \gets 1$
+
+\While{$r \leq \alpha$}
+    \State $\lambda \gets \lambda - d\lambda$
+    \For{$i=1,...,n$}  
+        \State $L_i \gets L\big(\mathcal{T}_{\lambda}(X_i),Y_i\big)$
+    \EndFor
+    \State $r \gets \frac{1}{n}\sum\limits_{i=1}^n L_i + \sqrt{\frac{1}{2n}\log \frac{1}{\delta}}$ \Comment{Can replace with any valid upper-confidence bound on the risk.}
+\EndWhile
+
+\State $\hat{\lambda} \gets \lambda + d\lambda$ \Comment{Backtrack by one because we overshot.}
+\end{algorithmic}
+
+\end{algorithm}

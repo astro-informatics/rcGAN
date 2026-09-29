@@ -1,0 +1,558 @@
+\begin{thebibliography}{63}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Pathak et~al.(2022)Pathak, Subramanian, Harrington, Raja,
+  Chattopadhyay, Mardani, Kurth, Hall, Li, Azizzadenesheli, and
+  Hassanzadeh]{pathak2022fourcastnet}
+J.~Pathak, S.~Subramanian, P.~Harrington, S.~Raja, A.~Chattopadhyay,
+  M.~Mardani, T.~Kurth, D.~Hall, Z.~Li, K.~Azizzadenesheli, and P.~Hassanzadeh.
+\newblock {F}our{C}ast{N}et: A global data-driven high-resolution weather model
+  using adaptive fourier neural operators.
+\newblock \emph{arXiv preprint arXiv:2202.11214}, Feb 22 2022.
+
+\bibitem[Bi et~al.(2023)Bi, Xie, Zhang, Chen, Gu, and Tian]{pangu2023}
+Kaifeng Bi, Lingxi Xie, Hengheng Zhang, Xin Chen, Xiaotao Gu, and Qi~Tian.
+\newblock Accurate medium-range global weather forecasting with 3d neural
+  networks.
+\newblock \emph{Nat.}, 619\penalty0 (7970):\penalty0 533--538, 2023.
+\newblock URL
+  \url{http://dblp.uni-trier.de/db/journals/nature/nature619.html#BiXZCG023}.
+
+\bibitem[Lam et~al.(2023)Lam, Sanchez-Gonzalez, Willson, Wirnsberger,
+  Fortunato, Alet, Ravuri, Ewalds, Eaton-Rosen, Hu, Merose, Hoyer, Holland,
+  Vinyals, Stott, Pritzel, Mohamed, and Battaglia]{lam2022graphcast}
+Remi Lam, Alvaro Sanchez-Gonzalez, Matthew Willson, Peter Wirnsberger, Meire
+  Fortunato, Ferran Alet, Suman Ravuri, Timo Ewalds, Zach Eaton-Rosen, Weihua
+  Hu, Alexander Merose, Stephan Hoyer, George Holland, Oriol Vinyals, Jacklynn
+  Stott, Alexander Pritzel, Shakir Mohamed, and Peter Battaglia.
+\newblock Learning skillful medium-range global weather forecasting.
+\newblock \emph{Science}, 382\penalty0 (6677):\penalty0 1416–1421, December
+  2023.
+\newblock ISSN 1095-9203.
+\newblock \doi{10.1126/science.adi2336}.
+\newblock URL \url{http://dx.doi.org/10.1126/science.adi2336}.
+
+\bibitem[Chen et~al.(2023)Chen, Zhong, Zhang, Cheng, Xu, Qi, and Li]{Chen2023}
+Lei Chen, Xiaohui Zhong, Feng Zhang, Yuan Cheng, Yinghui Xu, Yuan Qi, and Hao
+  Li.
+\newblock {F}u{X}i: a cascade machine learning forecasting system for 15-day
+  global weather forecast.
+\newblock \emph{npj Climate and Atmospheric Science}, 6\penalty0 (1), November
+  2023.
+\newblock ISSN 2397-3722.
+\newblock \doi{10.1038/s41612-023-00512-1}.
+\newblock URL \url{http://dx.doi.org/10.1038/s41612-023-00512-1}.
+
+\bibitem[Lang et~al.(2024{\natexlab{a}})Lang, Alexe, Chantry, Dramsch, Pinault,
+  Raoult, Clare, Lessig, Maier-Gerber, Magnusson, Bouallègue, Nemesio, Dueben,
+  Brown, Pappenberger, and Rabier]{lang2024aifs}
+Simon Lang, Mihai Alexe, Matthew Chantry, Jesper Dramsch, Florian Pinault,
+  Baudouin Raoult, Mariana C.~A. Clare, Christian Lessig, Michael Maier-Gerber,
+  Linus Magnusson, Zied~Ben Bouallègue, Ana~Prieto Nemesio, Peter~D. Dueben,
+  Andrew Brown, Florian Pappenberger, and Florence Rabier.
+\newblock {AIFS} -- {ECMWF}'s data-driven forecasting system.
+\newblock \emph{arXiv preprint arXiv:2406.01465}, 2024{\natexlab{a}}.
+\newblock URL \url{https://arxiv.org/abs/2406.01465}.
+
+\bibitem[Hoffman et~al.(1995)Hoffman, Liu, Louis, and Grassoti]{Hoffman1995}
+Ross~N. Hoffman, Zheng Liu, Jean-Francois Louis, and Christopher Grassoti.
+\newblock Distortion representation of forecast errors.
+\newblock \emph{Monthly Weather Review}, 123\penalty0 (9):\penalty0
+  2758–2770, September 1995.
+
+\bibitem[Ebert et~al.(2013)Ebert, Wilson, Weigel, Mittermaier, Nurmi, Gill,
+  Göber, Joslyn, Brown, Fowler, and Watkins]{ebertdouble}
+E.~Ebert, L.~Wilson, A.~Weigel, M.~Mittermaier, P.~Nurmi, P.~Gill, M.~Göber,
+  S.~Joslyn, B.~Brown, T.~Fowler, and A.~Watkins.
+\newblock Progress and challenges in forecast verification.
+\newblock \emph{Meteorological Applications}, 20\penalty0 (2):\penalty0
+  130--139, 2013.
+\newblock \doi{https://doi.org/10.1002/met.1392}.
+
+\bibitem[Hakim and Masanam(2024)]{hakim2024dynamical}
+Gregory~J Hakim and Sanjit Masanam.
+\newblock Dynamical tests of a deep-learning weather prediction model.
+\newblock \emph{Artificial Intelligence for the Earth Systems}, 2024.
+
+\bibitem[Ben~Bouall\`egue et~al.(2024{\natexlab{a}})Ben~Bouall\`egue, Clare,
+  Magnusson, Gascón, Maier-Gerber, Janoušek, Rodwell, Pinault, Dramsch, Lang,
+  Raoult, Rabier, Chevallier, Sandu, Dueben, Chantry, and
+  Pappenberger]{benbouallegue2023rise}
+Zied Ben~Bouall\`egue, Mariana C~A Clare, Linus Magnusson, Estibaliz Gascón,
+  Michael Maier-Gerber, Martin Janoušek, Mark Rodwell, Florian Pinault,
+  Jesper~S Dramsch, Simon T~K Lang, Baudouin Raoult, Florence Rabier, Matthieu
+  Chevallier, Irina Sandu, Peter Dueben, Matthew Chantry, and Florian
+  Pappenberger.
+\newblock The rise of data-driven weather forecasting: A first statistical
+  assessment of machine learning-based weather forecasts in an operational-like
+  context.
+\newblock \emph{Bulletin of the American Meteorological Society},
+  2024{\natexlab{a}}.
+\newblock ISSN 1520-0477.
+\newblock \doi{doi.org/10.1175/BAMS-D-23-0162.1}.
+\newblock URL \url{http://dx.doi.org/10.1175/BAMS-D-23-0162.1}.
+
+\bibitem[Lewis(2005)]{lewis2005}
+John~M. Lewis.
+\newblock Roots of ensemble forecasting.
+\newblock \emph{Monthly Weather Review}, 133:\penalty0 1865--1885, 2005.
+\newblock \doi{10.1175/MWR2949.1}.
+
+\bibitem[Leutbecher and Palmer(2008)]{leutbecher2008ensemble}
+Martin Leutbecher and Tim~N Palmer.
+\newblock {Ensemble forecasting}.
+\newblock \emph{Journal of computational physics}, 227\penalty0 (7):\penalty0
+  3515--3539, 2008.
+
+\bibitem[Fortin et~al.(2014)Fortin, Abaza, Anctil, and Turcotte]{fortin2014}
+V.~Fortin, M.~Abaza, F.~Anctil, and R.~Turcotte.
+\newblock Why should ensemble spread match the {RMSE} of the ensemble mean?
+\newblock \emph{Journal of Hydrometeorology}, 15\penalty0 (4):\penalty0 1708 --
+  1713, 2014.
+\newblock \doi{10.1175/JHM-D-14-0008.1}.
+\newblock URL
+  \url{https://journals.ametsoc.org/view/journals/hydr/15/4/jhm-d-14-0008_1.xml}.
+
+\bibitem[Molteni et~al.(1996{\natexlab{a}})Molteni, Buizza, Palmer, and
+  Petroliagis]{molteni1996ecmwf}
+Franco Molteni, Roberto Buizza, Tim~N Palmer, and Thomas Petroliagis.
+\newblock The {ECMWF} ensemble prediction system: Methodology and validation.
+\newblock \emph{Quarterly journal of the royal meteorological society},
+  122\penalty0 (529):\penalty0 73--119, 1996{\natexlab{a}}.
+
+\bibitem[Buizza et~al.(2008)Buizza, Leutbecher, and
+  Isaksen]{doi:10.1002/qj.346}
+Roberto Buizza, Martin Leutbecher, and Lars Isaksen.
+\newblock Potential use of an ensemble of analyses in the {ECMWF} ensemble
+  prediction system.
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  134\penalty0 (637):\penalty0 2051--2066, 2008.
+
+\bibitem[Isaksen et~al.(2010)Isaksen, Bonavita, Buizza, Fisher, Haseler,
+  Leutbecher, and Raynaud]{isaksen2010eda}
+L.~Isaksen, M.~Bonavita, R.~Buizza, M.~Fisher, J.~Haseler, M.~Leutbecher, and
+  L.~Raynaud.
+\newblock Ensemble of data assimilations at {ECMWF}.
+\newblock {ECMWF} Technical Memorandum No. 636, 2010.
+
+\bibitem[Lang et~al.(2019)Lang, Hólm, Bonavita, and Trémolet]{lang2019eda}
+S.~T.~K. Lang, E.~Hólm, M.~Bonavita, and Y.~Trémolet.
+\newblock A 50-member ensemble of data assimilations.
+\newblock ECMWF Newsletter 158, 2019.
+
+\bibitem[Lang et~al.(2021)Lang, Dawson, Diamantakis, Dueben, Hatfield,
+  Leutbecher, et~al.]{lang2021more}
+S.T.K. Lang, A.~Dawson, M.~Diamantakis, P.~Dueben, S.~Hatfield, M.~Leutbecher,
+  et~al.
+\newblock More accuracy with less precision.
+\newblock \emph{Q.J.R. Meteorol. Soc.}, 147\penalty0 (741):\penalty0
+  4358--4370, 2021.
+\newblock \doi{10.1002/qj.4181}.
+
+\bibitem[Leutbecher et~al.(2017)Leutbecher, Lock, Ollinaho, Lang, Balsamo,
+  Bechtold, Bonavita, Christensen, Diamantakis, Dutra, English, Fisher, Forbes,
+  Goddard, Haiden, Hogan, Juricke, Lawrence, MacLeod, Magnusson, Malardel,
+  Massart, Sandu, Smolarkiewicz, Subramanian, Vitart, Wedi, and
+  Weisheimer]{leutbecher2017}
+Martin Leutbecher, Sarah-Jane Lock, Pirkka Ollinaho, Simon T.~K. Lang,
+  Gianpaolo Balsamo, Peter Bechtold, Massimo Bonavita, Hannah~M. Christensen,
+  Michail Diamantakis, Emanuel Dutra, Stephen English, Michael Fisher,
+  Richard~M. Forbes, Jacqueline Goddard, Thomas Haiden, Robin~J. Hogan, Stephan
+  Juricke, Heather Lawrence, Dave MacLeod, Linus Magnusson, Sylvie Malardel,
+  Sebastien Massart, Irina Sandu, Piotr~K. Smolarkiewicz, Aneesh Subramanian,
+  Frédéric Vitart, Nils Wedi, and Antje Weisheimer.
+\newblock Stochastic representations of model uncertainties at {ECMWF}: state
+  of the art and future vision.
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  143\penalty0 (707):\penalty0 2315--2339, 2017.
+\newblock \doi{https://doi.org/10.1002/qj.3094}.
+
+\bibitem[Berner et~al.(2017)Berner, Achatz, Batte, Bengtsson, C{\'a}mara,
+  Christensen, Colangeli, Coleman, Crommelin, Dolaptchiev,
+  et~al.]{berner.ea.2017}
+Judith Berner, Ulrich Achatz, Lauriane Batte, Lisa Bengtsson, Alvaro de~la
+  C{\'a}mara, Hannah~M Christensen, Matteo Colangeli, Danielle~RB Coleman, Daan
+  Crommelin, Stamen~I Dolaptchiev, et~al.
+\newblock Stochastic parameterization: Toward a new view of weather and climate
+  models.
+\newblock \emph{Bulletin of the American Meteorological Society}, 98\penalty0
+  (3):\penalty0 565--588, 2017.
+\newblock URL \url{https://doi.org/10.1175/BAMS-D-15-00268.1}.
+
+\bibitem[Bihlo(2021)]{bihlo2021generative}
+Alex Bihlo.
+\newblock A generative adversarial network approach to (ensemble) weather
+  prediction.
+\newblock \emph{Neural Networks}, 139:\penalty0 1--16, 2021.
+
+\bibitem[Scher and Messori(2021)]{scher2021ensemble}
+Sebastian Scher and Gabriele Messori.
+\newblock Ensemble methods for neural network-based weather forecasts.
+\newblock \emph{Journal of Advances in Modeling Earth Systems}, 13\penalty0
+  (2), 2021.
+
+\bibitem[Clare et~al.(2021)Clare, Jamil, and Morcrette]{clare2021combining}
+Mariana~CA Clare, Omar Jamil, and Cyril~J Morcrette.
+\newblock Combining distribution-based neural networks to predict weather
+  forecast probabilities.
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  147\penalty0 (741):\penalty0 4337--4357, 2021.
+
+\bibitem[Weyn et~al.(2024)Weyn, Kumar, Berman, Kazmi, Klocek, Luferenko, and
+  Thambiratnam]{weyn2024ensemble}
+Jonathan~A Weyn, Divya Kumar, Jeremy Berman, Najeeb Kazmi, Sylwester Klocek,
+  Pete Luferenko, and Kit Thambiratnam.
+\newblock An ensemble of data-driven weather prediction models for operational
+  sub-seasonal forecasting.
+\newblock \emph{arXiv preprint arXiv:2403.15598}, 2024.
+
+\bibitem[Ben~Bouall\`egue et~al.(2024{\natexlab{b}})Ben~Bouall\`egue, Adewoyin,
+  Alexe, Chantry, Clare, Dramsch, Hahner, Lang, Lessig, Magnusson,
+  Maier-Gerber, Mertes, Moldovan, Nemesio, O’Brien, Pinault, Raoult, Cruz,
+  Theissen, and Tietsche]{blogaifs2}
+Z.~Ben~Bouall\`egue, Rilwan Adewoyin, Mihai Alexe, Matthew Chantry, Mariana
+  Clare, Jesper Dramsch, Sara Hahner, Simon Lang, Christian Lessig, Linus
+  Magnusson, Michael Maier-Gerber, Gert Mertes, Gabriel Moldovan, Ana~Prieto
+  Nemesio, Cathal O’Brien, Florian Pinault, Baudouin Raoult, Mario~Santa
+  Cruz, Helen Theissen, and Steffen Tietsche.
+\newblock A new {ML} model in the {ECMWF} web charts, 2024{\natexlab{b}}.
+
+\bibitem[Kochkov et~al.(2024)Kochkov, Yuval, Langmore, Norgaard, Smith, Mooers,
+  Klöwer, Lottes, Rasp, Düben, Hatfield, Battaglia, Sanchez-Gonzalez,
+  Willson, Brenner, and Hoyer]{kochkov2024neural}
+Dmitrii Kochkov, Janni Yuval, Ian Langmore, Peter Norgaard, Jamie Smith,
+  Griffin Mooers, Milan Klöwer, James Lottes, Stephan Rasp, Peter Düben, Sam
+  Hatfield, Peter Battaglia, Alvaro Sanchez-Gonzalez, Matthew Willson,
+  Michael~P. Brenner, and Stephan Hoyer.
+\newblock Neural general circulation models for weather and climate.
+\newblock \emph{arXiv preprint arXiv:2311.07222}, 2024.
+
+\bibitem[Sohl{-}Dickstein et~al.(2015)Sohl{-}Dickstein, Weiss, Maheswaranathan,
+  and Ganguli]{DBLP:journals/corr/Sohl-DicksteinW15}
+Jascha Sohl{-}Dickstein, Eric~A. Weiss, Niru Maheswaranathan, and Surya
+  Ganguli.
+\newblock Deep unsupervised learning using nonequilibrium thermodynamics.
+\newblock \emph{CoRR}, abs/1503.03585, 2015.
+\newblock URL \url{http://arxiv.org/abs/1503.03585}.
+
+\bibitem[Karras et~al.(2022)Karras, Aittala, Aila, and
+  Laine]{karras2022elucidating}
+Tero Karras, Miika Aittala, Timo Aila, and Samuli Laine.
+\newblock Elucidating the design space of diffusion-based generative models.
+\newblock \emph{arXiv preprint arXiv:2206.00364}, 2022.
+
+\bibitem[Price et~al.(2023)Price, Sanchez-Gonzalez, Alet, Ewalds, El-Kadi,
+  Stott, Mohamed, Battaglia, Lam, and Willson]{price2023gencast}
+Ilan Price, Alvaro Sanchez-Gonzalez, Ferran Alet, Timo Ewalds, Andrew El-Kadi,
+  Jacklynn Stott, Shakir Mohamed, Peter Battaglia, Remi Lam, and Matthew
+  Willson.
+\newblock {G}en{C}ast: Diffusion-based ensemble forecasting for medium-range
+  weather.
+\newblock \emph{arXiv preprint arXiv:2312.15796}, 2023.
+
+\bibitem[Lang et~al.(2024{\natexlab{b}})Lang, Chantry, Adewoyin, Alexe,
+  Bouall\`egue, Clare, Dramsch, Hahner, Lang, Lessig, Magnusson, Maier-Gerber,
+  Mertes, Moldovan, Nemesio, O’Brien, Pinault, Raoult, Cruz, Theissen, and
+  Tietsche]{ensemble_blog}
+Simon Lang, Matthew Chantry, Rilwan Adewoyin, Mihai Alexe, Zied~Ben
+  Bouall\`egue, Mariana Clare, Jesper Dramsch, Sara Hahner, Simon Lang,
+  Christian Lessig, Linus Magnusson, Michael Maier-Gerber, Gert Mertes, Gabriel
+  Moldovan, Ana~Prieto Nemesio, Cathal O’Brien, Florian Pinault, Baudouin
+  Raoult, Mario~Santa Cruz, Helen Theissen, and Steffen Tietsche.
+\newblock Enter the ensembles.
+\newblock
+  \url{https://www.ecmwf.int/en/about/media-centre/aifs-blog/2024/enter-ensembles},
+  2024{\natexlab{b}}.
+
+\bibitem[Alexe et~al.(2024{\natexlab{a}})Alexe, Lang, Clare, Leutbecher,
+  Roberts, Magnusson, Chantry, Adewoyin, Prieto-Nemesio, Dramsch, Pinault, and
+  Raoult]{aifsensemblesNL2024}
+Mihai Alexe, Simon Lang, Mariana Clare, Martin Leutbecher, Christopher Roberts,
+  Linus Magnusson, Matthew Chantry, Rilwan Adewoyin, Ana Prieto-Nemesio, Jesper
+  Dramsch, Florian Pinault, and Baudouin Raoult.
+\newblock Data-driven ensemble forecasting with the {AIFS}, 10/2024
+  2024{\natexlab{a}}.
+\newblock URL
+  \url{https://www.ecmwf.int/en/newsletter/181/earth-system-science/data-driven-ensemble-forecasting-aifs}.
+
+\bibitem[Lang et~al.(2023)Lang, Rodwell, and Schepers]{lang81380}
+Simon Lang, Mark Rodwell, and Dinand Schepers.
+\newblock {IFS} upgrade brings many improvements and unifies medium-range
+  resolutions.
+\newblock \emph{{ECMWF} Newsletter 176}, pages 21--28, 2023.
+\newblock \doi{10.21957/slk503fs2i}.
+
+\bibitem[Pacchiardi et~al.(2024)Pacchiardi, Adewoyin, Dueben, and
+  Dutta]{pacchiardi2024probabilistic}
+Lorenzo Pacchiardi, Rilwan~A Adewoyin, Peter Dueben, and Ritabrata Dutta.
+\newblock Probabilistic forecasting with generative networks via scoring rule
+  minimization.
+\newblock \emph{Journal of Machine Learning Research}, 25\penalty0
+  (45):\penalty0 1--64, 2024.
+
+\bibitem[Shokar et~al.(2024)Shokar, Kerswell, and Haynes]{Shokar_2024}
+Ira J.~S. Shokar, Rich~R. Kerswell, and Peter~H. Haynes.
+\newblock Stochastic latent transformer: Efficient modeling of stochastically
+  forced zonal jets.
+\newblock \emph{Journal of Advances in Modeling Earth Systems}, 16\penalty0
+  (6), June 2024.
+\newblock ISSN 1942-2466.
+\newblock \doi{10.1029/2023ms004177}.
+\newblock URL \url{http://dx.doi.org/10.1029/2023MS004177}.
+
+\bibitem[Ferro et~al.(2008)Ferro, Richardson, and Weigel]{Ferro_etal2008}
+Christopher A.~T. Ferro, David~S. Richardson, and Andreas~P. Weigel.
+\newblock On the effect of ensemble size on the discrete and continuous ranked
+  probability scores.
+\newblock \emph{Meteorological Applications}, 15\penalty0 (1):\penalty0 19--24,
+  2008.
+\newblock \doi{https://doi.org/10.1002/met.45}.
+
+\bibitem[Ferro(2013)]{Ferro2013}
+C.~A.~T. Ferro.
+\newblock Fair scores for ensemble forecasts.
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  140\penalty0 (683):\penalty0 1917–1923, December 2013.
+\newblock ISSN 0035-9009.
+\newblock \doi{10.1002/qj.2270}.
+\newblock URL \url{http://dx.doi.org/10.1002/qj.2270}.
+
+\bibitem[Leutbecher(2019)]{leutbecher2019}
+Martin Leutbecher.
+\newblock Ensemble size: How suboptimal is less than infinity?
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  145\penalty0 (S1):\penalty0 107--128, 2019.
+\newblock \doi{https://doi.org/10.1002/qj.3387}.
+\newblock URL
+  \url{https://rmets.onlinelibrary.wiley.com/doi/abs/10.1002/qj.3387}.
+
+\bibitem[Wedi(2014)]{Wedi2014}
+N.~P. Wedi.
+\newblock Increasing the horizontal resolution in numerical weather prediction
+  and climate simulations: illusion or panacea?
+\newblock \emph{Philosophical Transactions of the Royal Society A}, 372, 2014.
+\newblock \doi{10.1098/rsta.2013.0289}.
+
+\bibitem[Ba et~al.(2016)Ba, Kiros, and Hinton]{ba2016layernormalization}
+Jimmy~Lei Ba, Jamie~Ryan Kiros, and Geoffrey~E. Hinton.
+\newblock Layer normalization, 2016.
+\newblock URL \url{https://arxiv.org/abs/1607.06450}.
+
+\bibitem[Chen et~al.(2021)Chen, Tan, Li, Liu, Qin, Zhao, and
+  Liu]{chen2021adaspeechadaptivetextspeech}
+Mingjian Chen, Xu~Tan, Bohan Li, Yanqing Liu, Tao Qin, Sheng Zhao, and Tie-Yan
+  Liu.
+\newblock Adaspeech: Adaptive text to speech for custom voice, 2021.
+
+\bibitem[Keisler(2022)]{keisler2022forecasting}
+R.~Keisler.
+\newblock Forecasting global weather with graph neural networks.
+\newblock \emph{arXiv preprint arXiv:2202.07575}, Feb 15 2022.
+
+\bibitem[Molteni et~al.(1996{\natexlab{b}})Molteni, Buizza, Palmer, and
+  Petroliagis]{moltenieps}
+F.~Molteni, R.~Buizza, T.~N. Palmer, and T.~Petroliagis.
+\newblock The {ECMWF} ensemble prediction system: Methodology and validation.
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  122\penalty0 (529):\penalty0 73--119, 1996{\natexlab{b}}.
+\newblock \doi{https://doi.org/10.1002/qj.49712252905}.
+
+\bibitem[Maciel et~al.(2017)Maciel, Quintino, Modigliani, Dando, Raoult,
+  Deconinck, Rathgeber, and Simarro]{maciel2017mir}
+P.~Maciel, T.~Quintino, U.~Modigliani, P.~Dando, B.~Raoult, W.~Deconinck,
+  F.~Rathgeber, and C.~Simarro.
+\newblock The new ecmwf interpolation package mir, 2017.
+\newblock URL \url{https://doi.org/10.21957/H20RZ8}.
+
+\bibitem[Hersbach(2000)]{hersbach2000}
+Hans Hersbach.
+\newblock Decomposition of the continuous ranked probability score for ensemble
+  prediction systems.
+\newblock \emph{Weather and Forecasting}, 15\penalty0 (5):\penalty0 559 -- 570,
+  2000.
+\newblock \doi{10.1175/1520-0434(2000)015<0559:DOTCRP>2.0.CO;2}.
+\newblock URL
+  \url{https://journals.ametsoc.org/view/journals/wefo/15/5/1520-0434_2000_015_0559_dotcrp_2_0_co_2.xml}.
+
+\bibitem[Micikevicius et~al.(2018)Micikevicius, Narang, Alben, Diamos, Elsen,
+  Garcia, Ginsburg, Houston, Kuchaiev, Venkatesh, and
+  Wu]{micikevicius2018mixedprecisiontraining}
+Paulius Micikevicius, Sharan Narang, Jonah Alben, Gregory Diamos, Erich Elsen,
+  David Garcia, Boris Ginsburg, Michael Houston, Oleksii Kuchaiev, Ganesh
+  Venkatesh, and Hao Wu.
+\newblock Mixed precision training, 2018.
+\newblock URL \url{https://arxiv.org/abs/1710.03740}.
+
+\bibitem[Loshchilov and Hutter(2019)]{loshchilov2018decoupled}
+Ilya Loshchilov and Frank Hutter.
+\newblock Decoupled weight decay regularization.
+\newblock In \emph{International Conference on Learning Representations}, 2019.
+\newblock URL \url{https://openreview.net/forum?id=Bkg6RiCqY7}.
+
+\bibitem[Li et~al.(2020)Li, Zhao, Varma, Salpekar, Noordhuis, Li, Paszke,
+  Smith, Vaughan, Damania, and Chintala]{li2020ddp}
+Shen Li, Yanli Zhao, Rohan Varma, Omkar Salpekar, Pieter Noordhuis, Teng Li,
+  Adam Paszke, Jeff Smith, Brian Vaughan, Pritam Damania, and Soumith Chintala.
+\newblock {P}y{T}orch distributed: Experiences on accelerating data parallel
+  training, 2020.
+\newblock URL \url{https://arxiv.org/abs/2006.15704}.
+
+\bibitem[Chen et~al.(2016)Chen, Xu, Zhang, and Guestrin]{chen2016training}
+T.~Chen, B.~Xu, C.~Zhang, and C.~Guestrin.
+\newblock Training deep nets with sublinear memory cost.
+\newblock \emph{arXiv preprint arXiv:1604.06174}, Apr 22 2016.
+
+\bibitem[Hersbach et~al.(2020)Hersbach, Bell, Berrisford,
+  et~al.]{hersbach2020era5}
+H.~Hersbach, B.~Bell, P.~Berrisford, et~al.
+\newblock The {ERA5} global reanalysis.
+\newblock \emph{QJ R Meteorol Soc}, 146:\penalty0 1999--2049, 2020.
+\newblock \doi{10.1002/qj.3803}.
+
+\bibitem[Vitart et~al.(2008)Vitart, Buizza, Alonso~Balmaseda, Balsamo, Bidlot,
+  Bonet, Fuentes, Hofstadler, Molteni, and Palmer]{vitart2008vareps}
+Frédéric Vitart, Roberto Buizza, Magdalena Alonso~Balmaseda, Gianpaolo
+  Balsamo, Jean-Raymond Bidlot, Axel Bonet, Manuel Fuentes, Alfred Hofstadler,
+  Franco Molteni, and Tim~N. Palmer.
+\newblock The new vareps-monthly forecasting system: A first step towards
+  seamless prediction.
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  134\penalty0 (636):\penalty0 1789--1799, 2008.
+\newblock \doi{https://doi.org/10.1002/qj.322}.
+
+\bibitem[White et~al.(2017)White, Carlsen, Robertson, Klein, Lazo, Kumar,
+  Vitart, Coughlan~de Perez, Ray, Murray, Bharwani, MacLeod, James, Fleming,
+  Morse, Eggen, Graham, Kjellström, Becker, Pegion, Holbrook, McEvoy,
+  Depledge, Perkins-Kirkpatrick, Brown, Street, Jones, Remenyi,
+  Hodgson-Johnston, Buontempo, Lamb, Meinke, Arheimer, and
+  Zebiak]{white2017s2s}
+Christopher~J. White, Henrik Carlsen, Andrew~W. Robertson, Richard~J.T. Klein,
+  Jeffrey~K. Lazo, Arun Kumar, Frederic Vitart, Erin Coughlan~de Perez,
+  Andrea~J. Ray, Virginia Murray, Sukaina Bharwani, Dave MacLeod, Rachel James,
+  Lora Fleming, Andrew~P. Morse, Bernd Eggen, Richard Graham, Erik Kjellström,
+  Emily Becker, Kathleen~V. Pegion, Neil~J. Holbrook, Darryn McEvoy, Michael
+  Depledge, Sarah Perkins-Kirkpatrick, Timothy~J. Brown, Roger Street, Lindsey
+  Jones, Tomas~A. Remenyi, Indi Hodgson-Johnston, Carlo Buontempo, Rob Lamb,
+  Holger Meinke, Berit Arheimer, and Stephen~E. Zebiak.
+\newblock Potential applications of subseasonal-to-seasonal (s2s) predictions.
+\newblock \emph{Meteorological Applications}, 24\penalty0 (3):\penalty0
+  315--325, 2017.
+\newblock \doi{https://doi.org/10.1002/met.1654}.
+
+\bibitem[Vitart and Robertson(2018)]{vitart2018s2s}
+Fr{\'e}d{\'e}ric Vitart and Andrew~W. Robertson.
+\newblock The sub-seasonal to seasonal prediction project (s2s) and the
+  prediction of extreme events.
+\newblock \emph{npj Climate and Atmospheric Science}, 1\penalty0 (1):\penalty0
+  3, 2018.
+
+\bibitem[Meehl et~al.(2021)Meehl, Richter, Teng, Capotondi, Cobb, Doblas-Reyes,
+  Donat, England, Fyfe, Han, Kim, Kirtman, Kushnir, Lovenduski, Mann,
+  Merryfield, Nieves, Pegion, Rosenbloom, Sanchez, Scaife, Smith, Subramanian,
+  Sun, Thompson, Ummenhofer, and Xie]{meehl2021initialized}
+Gerald~A. Meehl, Jadwiga~H. Richter, Haiyan Teng, Antonietta Capotondi, Kim
+  Cobb, Francisco Doblas-Reyes, Markus~G. Donat, Matthew~H. England, John~C.
+  Fyfe, Weiqing Han, Hyemi Kim, Ben~P. Kirtman, Yochanan Kushnir, Nicole~S.
+  Lovenduski, Michael~E. Mann, William~J. Merryfield, Veronica Nieves, Kathy
+  Pegion, Nan Rosenbloom, Sara~C. Sanchez, Adam~A. Scaife, Doug Smith,
+  Aneesh~C. Subramanian, Lantao Sun, Diane Thompson, Caroline~C. Ummenhofer,
+  and Shang-Ping Xie.
+\newblock Initialized earth system prediction from subseasonal to decadal
+  timescales.
+\newblock \emph{Nature Reviews Earth \& Environment}, 2\penalty0 (5):\penalty0
+  340--357, 2021.
+
+\bibitem[Roberts et~al.(2023)Roberts, Balmaseda, Ferranti, and
+  Vitart]{roberts2023euro}
+Christopher~D Roberts, Magdalena~A Balmaseda, Laura Ferranti, and Frederic
+  Vitart.
+\newblock {Euro-{A}tlantic weather regimes and their modulation by tropospheric
+  and stratospheric teleconnection pathways in {ECMWF} reforecasts}.
+\newblock \emph{Monthly Weather Review}, 151\penalty0 (10):\penalty0
+  2779--2799, 2023.
+
+\bibitem[Roberts and Leutbecher(2024)]{roberts2024unbiased}
+Christopher~D Roberts and Martin Leutbecher.
+\newblock Unbiased evaluation and calibration of ensemble forecast anomalies.
+\newblock \emph{arXiv preprint arXiv:2410.06162}, 2024.
+
+\bibitem[Madden and Julian(1971)]{madden1971detection}
+Roland~A Madden and Paul~R Julian.
+\newblock Detection of a 40--50 day oscillation in the zonal wind in the
+  tropical {P}acific.
+\newblock \emph{Journal of Atmospheric Sciences}, 28\penalty0 (5):\penalty0
+  702--708, 1971.
+
+\bibitem[Wheeler and Hendon(2004)]{wheeler2004all}
+Matthew~C Wheeler and Harry~H Hendon.
+\newblock {An all-season real-time multivariate {MJO} index: Development of an
+  index for monitoring and prediction}.
+\newblock \emph{Monthly weather review}, 132\penalty0 (8):\penalty0 1917--1932,
+  2004.
+
+\bibitem[Gottschalck et~al.(2010)Gottschalck, Wheeler, Weickmann, Vitart,
+  Savage, Lin, Hendon, Waliser, Sperber, Prestrelo,
+  et~al.]{gottschalck2010framework}
+Jon Gottschalck, M~Wheeler, K~Weickmann, F~Vitart, N~Savage, H~Lin, H~Hendon,
+  D~Waliser, K~Sperber, C~Prestrelo, et~al.
+\newblock {A framework for assessing operational model {MJO} forecasts: a
+  project of the {CLIVAR} {M}adden-{J}ulian {O}scillation working group}.
+\newblock \emph{Bull Am Meteorol Soc}, 91\penalty0 (8):\penalty0 1247--1258,
+  2010.
+
+\bibitem[Vitart(2017)]{vitart2017madden}
+Fr{\'e}d{\'e}ric Vitart.
+\newblock {M}adden—{J}ulian {O}scillation prediction and teleconnections in
+  the {S2S} database.
+\newblock \emph{Quarterly Journal of the Royal Meteorological Society},
+  143\penalty0 (706):\penalty0 2210--2220, 2017.
+
+\bibitem[Alexe et~al.(2024{\natexlab{b}})Alexe, Boucher, Lean, Pinnington,
+  Laloyaux, McNally, Lang, Chantry, Burrows, Chrust, Pinault, Villeneuve,
+  Bormann, and Healy]{alexe2024graphdop}
+Mihai Alexe, Eulalie Boucher, Peter Lean, Ewan Pinnington, Patrick Laloyaux,
+  Anthony McNally, Simon Lang, Matthew Chantry, Chris Burrows, Marcin Chrust,
+  Florian Pinault, Ethel Villeneuve, Niels Bormann, and Sean Healy.
+\newblock {GraphDOP}: {T}owards skilful data-driven medium-range weather
+  forecasts learnt and initialised directly from observations.
+\newblock \emph{In preparation}, 2024{\natexlab{b}}.
+
+\bibitem[McNally et~al.(2025)McNally, Lessig, Lean, Boucher, Alexe, Pinnington,
+  Laloyaux, Lang, Pinault, Chantry, Burrows, Villeneuve, Chrust, Bormann, and
+  Healy]{mcnally2024ecmwfnl}
+Tony McNally, Christian Lessig, Peter Lean, Eulalie Boucher, Mihai Alexe, Ewan
+  Pinnington, Patrick Laloyaux, Simon Lang, Florian Pinault, Matthew Chantry,
+  Chris Burrows, Ethel Villeneuve, Marcin Chrust, Niels Bormann, and Sean
+  Healy.
+\newblock An update on {AI-DOP}: Skilful weather forecasts produced directly
+  from observations.
+\newblock \emph{{ECMWF} Newsletter No. 182}, 2025.
+\newblock \doi{10.21957/tmi6y913dc}.
+
+\bibitem[Vaughan et~al.(2024)Vaughan, Markou, Tebbutt, Requeima, Bruinsma,
+  Andersson, Herzog, Lane, Chantry, Hosking, et~al.]{vaughan2024aardvark}
+Anna Vaughan, Stratis Markou, Will Tebbutt, James Requeima, Wessel~P Bruinsma,
+  Tom~R Andersson, Michael Herzog, Nicholas~D Lane, Matthew Chantry, J~Scott
+  Hosking, et~al.
+\newblock Aardvark weather: end-to-end data-driven weather forecasting.
+\newblock \emph{arXiv preprint arXiv:2404.00411}, 2024.
+
+\bibitem[Keller and Potthast(2024)]{keller2024ai}
+Jan~D Keller and Roland Potthast.
+\newblock {AI}-based data assimilation: Learning the functional of analysis
+  estimation.
+\newblock \emph{arXiv preprint arXiv:2406.00390}, 2024.
+
+\bibitem[Manshausen et~al.(2024)Manshausen, Cohen, Pathak, Pritchard, Garg,
+  Mardani, Kashinath, Byrne, and Brenowitz]{manshausen2024generative}
+Peter Manshausen, Yair Cohen, Jaideep Pathak, Mike Pritchard, Piyush Garg,
+  Morteza Mardani, Karthik Kashinath, Simon Byrne, and Noah Brenowitz.
+\newblock Generative data assimilation of sparse weather station observations
+  at kilometer scales.
+\newblock \emph{arXiv preprint arXiv:2406.16947}, 2024.
+
+\end{thebibliography}

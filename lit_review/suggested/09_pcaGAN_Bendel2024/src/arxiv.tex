@@ -1,0 +1,1651 @@
+\documentclass{article}
+
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2023
+
+
+% ready for submission
+\usepackage[final,nonatbib]{neurips_2024}
+
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2024}
+
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%\usepackage[preprint,nonatbib]{neurips_2024}
+
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2024}
+
+
+% Include other packages here, before hyperref.
+\usepackage{microtype}      % microtypography
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{xfp}
+\usepackage{subcaption}
+%\usepackage[utf8]{inputenc} % allow utf-8 input
+%\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+%\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{xcolor}         % colors
+\usepackage{amsmath}
+\usepackage{amssymb} 
+\usepackage{amsthm}         % proof environment
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{multirow}
+\usepackage{array}          % allows "m" in tabular    
+\usepackage[pagebackref,hidelinks]{hyperref}
+\usepackage{cite}
+%\hypersetup{
+%    colorlinks=true,
+%    linkcolor=blue,
+%    filecolor=blue,      
+%    urlcolor=blue,
+%    citecolor=blue,
+%    }
+
+\makeatletter
+\ifcase \@ptsize \relax% 10pt
+  \newcommand{\miniscule}{\@setfontsize\miniscule{1}{1}}% \tiny: 5/6
+\or% 11pt
+  \newcommand{\miniscule}{\@setfontsize\miniscule{1}{1}}% \tiny: 6/7
+\or% 12pt
+  \newcommand{\miniscule}{\@setfontsize\miniscule{1}{1}}% \tiny: 6/7
+\fi
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+%------------------------------------------------------------------
+ % math shortcuts
+ \renewcommand{\tilde}{\widetilde}
+ \renewcommand{\hat}{\widehat}
+ \renewcommand{\bar}{\overline}
+ %\newcommand{\defn}{\ensuremath{:=}}
+ \newcommand{\defn}{\triangleq}
+ \newcommand{\limit}[2]{\ensuremath{\lim_{#1 \rightarrow #2}}}
+ \newcommand{\bvec}[1]{\ensuremath{\Breve{\boldsymbol{#1}}}}
+ \newcommand{\tvec}[1]{\ensuremath{\Tilde{\boldsymbol{#1}}}}
+ \newcommand{\uvec}[1]{\ensuremath{\underline{\boldsymbol{#1}}}}
+ \newcommand{\ovec}[1]{\boldsymbol{\Bar{#1}}}
+ \newcommand{\hvec}[1]{\ensuremath{\Hat{\boldsymbol{#1}}}}
+ \renewcommand{\vec}[1]{\ensuremath{\boldsymbol{#1}}}
+ \newcommand{\huvec}[1]{\ensuremath{\Hat{\underline{\boldsymbol{#1}}}}}
+ \newcommand{\hovec}[1]{\ensuremath{\Hat{\Bar{\boldsymbol{#1}}}}}
+ \newcommand{\mat}[1]{\ensuremath{\begin{bmatrix}#1\end{bmatrix}}}
+ \newcommand{\smallmat}[1]{\ensuremath{
+        \left[\begin{smallmatrix}#1\end{smallmatrix}\right]}}
+ \newcommand{\ip}[1]{\ensuremath{\left\langle #1 \right\rangle}}
+ %\newcommand{\ip}[1]{\mbox{$<$}#1\mbox{$>$}}
+ \newcommand{\norm}[1]{\ensuremath{\| #1 \|}}
+ \newcommand{\mc}[1]{\ensuremath{\mathcal{#1}}}
+ \newcommand{\st}{{~\text{s.t.}~}}
+ \newcommand{\barst}[1]{\ensuremath{\text{\raisebox{-0.5mm}{$\bigl|_{#1}$}}}}
+ \newcommand{\Barst}[1]{\ensuremath{\text{\raisebox{-0.5mm}{$\biggl|_{#1}$}}}}
+ \newcommand{\zci}{{\textstyle\frac{1}{z^*}}}
+ \newcommand{\Real}{{\mathbb{R}}}
+ \newcommand{\Complex}{{\mathbb{C}}}
+ \newcommand{\Int}{{\mathbb{Z}}}
+ \newcommand{\Nat}{{\mathbb{N}}}
+ \newcommand{\Rat}{{\mathbb{Q}}}
+ \newcommand{\Field}{\mathbb{F}}
+ \newcommand{\Ell}{\mathcal{L}}
+ \newcommand{\Expectation}{\mathbb{E}}
+ \newcommand{\conv}{\ast}
+ \newcommand{\cconv}{\circledast}
+ \newcommand{\of}[1]{^{\scriptscriptstyle (#1)}}
+ \newcommand{\oft}[1]{^{{\scriptscriptstyle (#1)}t}}
+ \newcommand{\ofc}[1]{^{{\scriptscriptstyle (#1)}*}}
+ \newcommand{\ofH}[1]{^{{\scriptscriptstyle (#1)}H}}
+ \newcommand{\modulo}[1]{\left\langle #1 \right\rangle}
+ \newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+ \newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+ \newcommand{\iddots}{\reflectbox{$\ddots$}}
+ \newcommand{\tran}{^{\top}}
+ \newcommand{\herm}{^{\textsf{H}}}
+ \newcommand*\deriv{\mathop{}\!\mathrm{d}}
+
+ % operators
+ \DeclareMathOperator{\real}{Re}
+ \DeclareMathOperator{\imag}{Im}
+ \DeclareMathOperator{\sgn}{sgn}
+ \DeclareMathOperator{\csgn}{csgn}
+ \DeclareMathOperator{\E}{E}
+ \DeclareMathOperator{\Cov}{Cov}
+ \DeclareMathOperator{\var}{var}
+ \DeclareMathOperator{\kurt}{kurt}
+ \DeclareMathOperator{\Kurt}{{\mc K}}
+ \DeclareMathOperator{\row}{row}
+ \DeclareMathOperator{\col}{col}
+ \DeclareMathOperator{\spn}{span}
+ \DeclareMathOperator{\tr}{tr}
+ \DeclareMathOperator{\diag}{diag}
+ \DeclareMathOperator{\cir}{\mc C}
+ \DeclareMathOperator{\Diag}{{\mc D}}
+ \DeclareMathOperator{\sinc}{sinc}
+ \DeclareMathOperator{\vect}{vec}
+ \DeclareMathOperator*{\argmin}{arg\,min}
+ \DeclareMathOperator{\erf}{erf}
+
+ % references
+ \newcommand{\Algref}[1]{Algorithm~\ref{alg:#1}}
+ \renewcommand{\algref}[1]{Alg.~\ref{alg:#1}}
+ \newcommand{\lineref}[1]{line~\ref{line:#1}}
+ \newcommand{\Lineref}[1]{Line~\ref{line:#1}}
+ \renewcommand{\eqref}[1]{(\ref{eq:#1})}
+ \newcommand{\Eqref}[1]{Equation~(\ref{eq:#1})}
+ \newcommand{\Figref}[1]{Figure~\ref{fig:#1}}
+ \newcommand{\figref}[1]{Fig.~\ref{fig:#1}}
+ \newcommand{\tabref}[1]{Table~\ref{tab:#1}}
+ \newcommand{\Secref}[1]{Section~\ref{sec:#1}}
+ \newcommand{\secref}[1]{Sec.~\ref{sec:#1}}
+ \newcommand{\appref}[1]{App.~\ref{app:#1}}
+ \newcommand{\Appref}[1]{Appendix~\ref{app:#1}}
+ \newcommand{\lemref}[1]{Lemma~\ref{lem:#1}}
+ \newcommand{\thmref}[1]{Theorem~\ref{thm:#1}}
+ \newcommand{\corref}[1]{Corollary~\ref{cor:#1}}
+ \newcommand{\conref}[1]{Conjecture~\ref{con:#1}}
+ \newcommand{\propref}[1]{Proposition~\ref{prop:#1}}
+
+ % colors
+ \newcommand{\textr}[1]{\textcolor{red}{#1}}
+ \newcommand{\textb}[1]{\textcolor{blue}{#1}}
+ 
+ % GAN stuff
+ \newcommand{\raw}{^{\mathsf{raw}}}
+ \newcommand{\batch}{_{\mathsf{batch}}}
+ \newcommand{\critic}{_{\mathsf{critic}}}
+ \newcommand{\train}{_{\mathsf{rc}}}
+ \newcommand{\eig}{_{\mathsf{pca}}}
+ \newcommand{\eval}{_{\mathsf{eval}}}
+ \newcommand{\evec}{_{\mathsf{evec}}}
+ \newcommand{\test}{_{\mathsf{test}}}
+ \newcommand{\val}{_{\mathsf{val}}}
+ \DeclareMathOperator{\CWD}{CWD}
+ \newcommand{\Dadler}{D^{\mathsf{adler}}}
+ \newcommand{\Ladler}{\mc{L}^{\mathsf{adler}}_{\mathsf{adv}}}
+ \newcommand{\Ladv}{\mc{L}_{\mathsf{adv}}}
+ \newcommand{\Lrcgan}{\mc{L}_{\mathsf{rcGAN}}}
+ \newcommand{\Lpcagan}{\mc{L}_{\mathsf{pcaGAN}}}
+ \newcommand{\Lgp}{\mc{L}_{\mathsf{gp}}}
+ \newcommand{\Ldrift}{\mc{L}_{\mathsf{drift}}}
+ \newcommand{\Ltwo}{\mc{L}_2}
+ \newcommand{\LtwoP}{\mc{L}_{2,P}}
+ \newcommand{\LtwoPt}{\mc{L}_{2,P\train}}
+ \newcommand{\LvarP}{\mc{L}_{\mathsf{var},P}}
+ \newcommand{\LvarPt}{\mc{L}_{\mathsf{var},P\train}}
+ \newcommand{\LtwovarP}{\mc{L}_{2,\mathsf{var},P}}
+ \newcommand{\LtwovarPt}{\mc{L}_{2,\mathsf{var},P\train}}
+ \newcommand{\LoneP}{\mc{L}_{1,P}}
+ \newcommand{\LonePt}{\mc{L}_{1,P\train}}
+ \newcommand{\LstdP}{\mc{L}_{\mathsf{SD},P}}
+ \newcommand{\LstdPt}{\mc{L}_{\mathsf{SD},P\train}}
+ \newcommand{\LonestdP}{\mc{L}_{1,\mathsf{SD},P}}
+ \newcommand{\LonestdPt}{\mc{L}_{1,\mathsf{SD},P\train}}
+ \newcommand{\Leig}{\mc{L}_{\mathsf{eig},K}}
+ \newcommand{\Levec}{\mc{L}\evec}
+ \newcommand{\Leval}{\mc{L}\eval}
+ \newcommand{\betaadv}{\beta_{\mathsf{adv}}}
+ \newcommand{\betapca}{\beta_{\mathsf{pca}}}
+ \newcommand{\betavar}{\beta_{\mathsf{var}}}
+ \newcommand{\betastd}{\beta_{\mathsf{SD}}}
+  \newcommand{\betastde}{\beta_{\mathsf{SD}, e}}
+ \newcommand{\betastdG}{\beta_{\mathsf{SD}}^\mc{N}}
+ \newcommand{\mustd}{\mu_{\mathsf{SD}}}
+ \newcommand{\avgP}{_{\scriptscriptstyle (P)}}
+ \newcommand{\avgone}{_{\scriptscriptstyle (1)}}
+ \newcommand{\avgPt}{_{\scriptscriptstyle (P\train)}}
+ \newcommand{\avgPe}{_{\scriptscriptstyle (P\eig)}}
+
+% statistical quantities
+ \DeclareMathOperator{\SINR}{SINR}
+ \DeclareMathOperator{\SIR}{SIR}
+ \DeclareMathOperator{\MSE}{MSE}
+ \newcommand{\mmse}{_{\mathsf{mmse}}}
+ \newcommand{\pa}{p_{\mathsf{a}}}
+ \newcommand{\pb}{p_{\mathsf{b}}}
+ \newcommand{\pab}{p_{\mathsf{a,b}}}
+ \newcommand{\px}{p_{\mathsf{x}}}
+ \newcommand{\py}{p_{\mathsf{y}}}
+ \newcommand{\pxy}{p_{\mathsf{x,y}}}
+ \newcommand{\pygx}{p_{\mathsf{y}|\mathsf{x}}}
+ \newcommand{\pxgy}{p_{\mathsf{x}|\mathsf{y}}}
+ \newcommand{\pG}{p_{\mathsf{G}}}
+ \newcommand{\pz}{p_{\mathsf{z}}}
+ \newcommand{\pxh}{p_{\hat{\mathsf{x}}_{\vec{\theta}}}}
+ \newcommand{\pxhgy}{p_{\hat{\mathsf{x}}|\mathsf{y}}}
+ \newcommand{\Eab}{\E_{\mathsf{a,b}}}
+ \newcommand{\Ey}{\E_{\mathsf{y}}}
+ \newcommand{\Exgy}{\E_{\mathsf{x}|\mathsf{y}}}
+ \newcommand{\Exy}{\E_{\mathsf{x,y}}}
+ \newcommand{\Exhgy}{\E_{\hat{\mathsf{x}}|\mathsf{y}}}
+ \newcommand{\Egy}{\E_{\hat{\mathsf{x}},y}}
+ \newcommand{\Ez}{\E_{\mathsf{z}}}
+ \newcommand{\Ezy}{\E_{\mathsf{z,y}}}
+ \newcommand{\Exzy}{\E_{\mathsf{x,z,y}}}
+ \newcommand{\Exzzy}{\E_{\mathsf{x,z_1,z_2,y}}} 
+ \newcommand{\ExzPy}{\E_{\mathsf{x,z_1,...,z_P,y}}}
+ \newcommand{\ExxPy}{\E_{\mathsf{x,\hat{x}_{(P)},y}}}
+ \newcommand{\Exxhgy}{\E_{\mathsf{x,\hat{x}_1,...,\hat{x}_{P\eig}|y}}}
+ \newcommand{\Eziy}{\E_{\mathsf{z_i,y}}}
+ \newcommand{\Ezigy}{\E_{\mathsf{z_i}|\mathsf{y}}}
+ \newcommand{\EzPgy}{\E_{\mathsf{z_1,...,z_P}|\mathsf{y}}}
+ \newcommand{\EzPy}{\E_{\mathsf{z_1,...,z_P,y}}}
+ \newcommand{\ExzPgy}{\E_{\mathsf{x,z_1,...,z_P}|\mathsf{y}}}
+ \newcommand{\ExxP}{\E_{X,\hat{X}_1,...\hat{X}_P}}
+ \newcommand{\ExP}{\E_{\hat{X}_1,...\hat{X}_P}}
+ \newcommand{\Covzigy}{\Cov_{\mathsf{z_i}|\mathsf{y}}}
+ \newcommand{\Covxgy}{\Cov_{\mathsf{x}|\mathsf{y}}}
+ 
+ % CFID stuff
+ \DeclareMathOperator{\CFID}{CFID}
+ \newcommand{\pxugyu}{p_{\underline{\mathsf{x}}|\underline{\mathsf{y}}}}
+ \newcommand{\pxuhgyu}{p_{\hat{\underline{\mathsf{x}}}|\underline{\mathsf{y}}}}
+ \newcommand{\muxu}{\vec{\mu}_{\underline{\mathsf{x}}}}
+ \newcommand{\muxhu}{\vec{\mu}_{\underline{\hat{\mathsf{x}}}}}
+ \newcommand{\muyu}{\vec{\mu}_{\underline{\mathsf{y}}}}
+ \newcommand{\muxugyu}{\vec{\mu}_{\underline{\mathsf{x}}|\underline{\mathsf{y}}}}
+ \newcommand{\muxhugyu}{\vec{\mu}_{\underline{\hat{\mathsf{x}}}|\underline{\mathsf{y}}}}
+ \newcommand{\Sigxugyu}{\vec{\Sigma}_{\underline{\mathsf{x}}\underline{\mathsf{x}}|\underline{\mathsf{y}}}}
+ \newcommand{\Sigxuhgyu}{\vec{\Sigma}_{\underline{\hat{\mathsf{x}}}\underline{\hat{\mathsf{x}}}|\underline{\mathsf{y}}}}
+ \newcommand{\Sigxuxu}{\vec{\Sigma}_{\underline{\mathsf{x}}\underline{\mathsf{x}}}}
+ \newcommand{\Sigxhuxhu}{\vec{\Sigma}_{\underline{\hat{\mathsf{x}}}\underline{\hat{\mathsf{x}}}}}
+ \newcommand{\Sigyuyu}{\vec{\Sigma}_{\underline{\mathsf{y}}\underline{\mathsf{y}}}}
+ \newcommand{\Sigxuyu}{\vec{\Sigma}_{\underline{\mathsf{x}}\underline{\mathsf{y}}}}
+ \newcommand{\Sigxhuyu}{\vec{\Sigma}_{\underline{\hat{\mathsf{x}}}\underline{\mathsf{y}}}}
+
+ \newcommand{\mux}{\vec{\mu}_{\mathsf{x}}}
+ \newcommand{\muxd}[1]{\vec{\mu}_{\mathsf{x}}^{(#1)}}
+ \newcommand{\evald}[2]{\lambda_{#1}^{(#2)}}
+ \newcommand{\evaltd}[2]{\tilde{\lambda}_{#1}^{(#2)}}
+ \newcommand{\evecud}[2]{\vec{u}_{#1}^{(#2)}}
+ \newcommand{\evecd}[2]{\vec{v}_{#1}^{(#2)}}
+ \newcommand{\muy}{\vec{\mu}_{\mathsf{y}}}
+ \newcommand{\muxgy}{\vec{\mu}_{\mathsf{x}|\mathsf{y}}}
+ \newcommand{\Sigx}{\vec{\Sigma}_{\mathsf{x}}}
+ \newcommand{\Sigxx}{\vec{\Sigma}_{\mathsf{xx}}}
+ \newcommand{\Sigxy}{\vec{\Sigma}_{\mathsf{xy}}}
+ \newcommand{\Sigyx}{\vec{\Sigma}_{\mathsf{yx}}}
+ \newcommand{\Sigy}{\vec{\Sigma}_{\mathsf{y}}}
+ \newcommand{\Sigxgy}{\vec{\Sigma}_{\mathsf{x}|\mathsf{y}}}
+ \newcommand{\muxgyhat}{\vec{\mu}_{\hat{\mathsf{x}}|\mathsf{y}}}
+ \newcommand{\Sigxgyhat}{\vec{\Sigma}_{\hat{\mathsf{x}}|\mathsf{y}}}
+ 
+ \newcommand{\zm}{_{\mathsf{zm}}}
+ \newcommand{\mean}{_{\mathsf{mean}}}
+ \newcommand{\cova}{_{\mathsf{cov}}}
+
+ % Eigen stuff
+ \newcommand{\lambdahat}{\hat{\lambda}}
+ \newcommand{\sg}{\texttt{StopGrad}}
+ \newcommand{\Mod}[1]{\ \mathrm{mod}\ #1}
+ 
+\title{pcaGAN: Improving Posterior-Sampling cGANs via Principal Component Regularization}
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+
+\author{%
+  Matthew C. Bendel \\
+  Dept. ECE\\
+  The Ohio State University\\
+  Columbus, OH 43210 \\
+  \texttt{bendel.8@osu.edu} \\
+  \And
+  Rizwan Ahmad \\
+  Dept. BME\\
+  The Ohio State University\\
+  Columbus, OH 43210 \\
+  \texttt{ahmad.46@osu.edu} \\
+  \And
+  Philip Schniter \\
+  Dept. ECE\\
+  The Ohio State University\\
+  Columbus, OH 43210 \\
+  \texttt{schniter.1@osu.edu} \\
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{abstract}
+In ill-posed imaging inverse problems, there can exist many hypotheses that fit both the observed measurements and prior knowledge of the true image. 
+Rather than returning just one hypothesis of that image, posterior samplers aim to explore the full solution space by generating many probable hypotheses, which can later be used to quantify uncertainty or construct recoveries that appropriately navigate the perception/distortion trade-off.
+In this work, we propose a fast and accurate posterior-sampling conditional generative adversarial network (cGAN) that, through a novel form of regularization, aims for correctness in the posterior mean as well as the trace and K principal components of the posterior covariance matrix.
+Numerical experiments demonstrate that our method outperforms contemporary cGANs and diffusion models in imaging inverse problems like denoising, large-scale inpainting, and accelerated MRI recovery. The code for our model can be found here: \url{https://github.com/matt-bendel/pcaGAN}.
+\end{abstract}
+
+%%%%%%%%% BODY TEXT
+\section{Introduction} \label{sec:intro}
+In image recovery, the goal is to recover the true image $\vec{x}$ from noisy/distorted/incomplete measurements $\vec{y}=\mc{M}(\vec{x})$.
+This arises in linear inverse problems such as denoising, deblurring, inpainting, and magnetic resonance imaging (MRI), 
+%where $\vec{y}=\vec{Ax}+\vec{w}$ with known matrix $\vec{A}$ and unknown noise $\vec{w}$, 
+as well as in non-linear inverse problems like phase-retrieval and image-to-image translation.
+For all such problems, it is impossible to perfectly recover $\vec{x}$ from $\vec{y}$.
+
+In much of the literature, image recovery is posed as point estimation, where the goal is to return a single best estimate $\hvec{x}$.
+However, there are several shortcomings of this approach.
+First, it's not clear how to define ``best,'' since L2- or L1-minimizing $\hvec{x}$ are often regarded as too blurry, while efforts to make $\hvec{x}$ perceptually pleasing can sacrifice agreement with the true image $\vec{x}$ and cause hallucinations \cite{Belthangady:NMe:19,Hoffman:NMe:21,Muckley:TMI:21,Bhadra:TMI:21,Gottschling:23}, as we show later. Also, many applications demand not only a recovery $\hvec{x}$ but also some quantification of uncertainty in that recovery \cite{Abdar:IF:21,Lambert:AIMed:24}.
+
+As an alternative to point estimation, \emph{posterior-sampling}-based image recovery \cite{Ardizzone:19,Winkler:19,Sun:AAAI:21,Wen:ICML:23,Edupuganti:TMI:20,Tonolini:JMLR:20,Sohn:NIPS:15,Isola:CVPR:17,Adler:18,Zhao:ICLR:21,Zhao:MIA:18,Bendel:NIPS:23,Welling:ICML:11,Song:NIPS:20,Jalal:NIPS:21,Song:ICLR:21,Song:ICLR:22,Kawar:NIPS:22,Chung:ICLR:23,Wang:ICLR:23} aims to generate $P\geq 1$ samples $\{\hvec{x}_i\}_{i=1}^P$ from the posterior distribution $\pxgy(\cdot|\vec{y})$.
+Posterior sampling facilitates numerous strategies to quantify the uncertainty in estimating $\vec{x}$, or any function of $\vec{x}$, from $\vec{y}$ \cite{Abdar:IF:21,Lambert:AIMed:24}.
+It also can help with visualizing uncertainty and increasing robustness to adversarial attacks \cite{Ohayon:ICML:23}.
+That said, the design of accurate and computationally-efficient posterior samplers remains an open problem.
+
+% OLD THIRD PARAGRAPH...
+% To address these shortcomings, \emph{posterior-sampling}-based image recovery \cite{
+% Ardizzone:19,Winkler:19,Sun:AAAI:21, Wen:ICML:23, 
+% Edupuganti:TMI:20,Tonolini:JMLR:20,Sohn:NIPS:15,
+% Isola:CVPR:17,Adler:18,Zhao:ICLR:21,Zhao:MIA:18, Bendel:NIPS:23,
+% Welling:ICML:11,Song:NIPS:20,Jalal:NIPS:21,Song:ICLR:21,Song:ICLR:22, Kawar:NIPS:22, Chung:ICLR:23
+% } has been proposed.
+% There the goal is to generate $P$ samples $\{\hvec{x}_i\}_{i=1}^P$ from the posterior distribution $\pxgy(\cdot|\vec{y})$.
+% Posterior sampling facilitates numerous strategies to quantify the uncertainty in estimating $\vec{x}$, or any function of $\vec{x}$, from $\vec{y}$
+% \cite{Abdar:IF:21,Lambert:AIMed:24}.
+% %Angelopoulos:ICML:22, 
+% %Horwitz:22, 
+% %Teneggi:ICML:23, 
+% %Kutiel:ICLR:23,
+% %Ekmekci:NIPSW:32,
+% %Narnhofer:JIS:24,
+% Likewise, posterior samples $\{\hvec{x}_i\}$ will display attributes that reflect minority and majority populations in the training data.
+% Furthermore, different trade-offs between perceptual quality and distortion can be attained by varying the number of samples $P$ in the posterior average $\hvec{x}\avgP\defn\frac{1}{P}\sum_{i=1}^P\hvec{x}_i$.
+% Despite the plethora of applications, the design of accurate and computationally efficient posterior samplers is still an open problem, and one that we aim to address in this work.
+
+Given a training dataset of image/measurement pairs $\{(\vec{x}_t, \vec{y}_t)\}_{t=1}^T$, our goal is to build a generator $G_{\vec{\theta}}$ that, for a given $\vec{y}$, maps random code vectors $\vec{z}\sim\mc{N}(\vec{0}, \vec{I})$ to samples of the posterior, i.e., $\hvec{x}=G_{\vec{\theta}}(\vec{z}, \vec{y})\sim\pxgy(\cdot, \vec{y})$.
+There are many ways to approximate the ideal generator.
+The recent literature has focused on 
+conditional variational autoencoders (cVAEs) \cite{Edupuganti:TMI:20,Tonolini:JMLR:20,Sohn:NIPS:15}, 
+conditional normalizing flows (cNFs) \cite{Ardizzone:19,Winkler:19,Sun:AAAI:21, Wen:ICML:23}, 
+conditional generative adversarial networks (cGANs) \cite{Isola:CVPR:17,Adler:18,Zhao:ICLR:21,Zhao:MIA:18, Bendel:NIPS:23},
+and Langevin/score/diffusion-based generative models \cite{Welling:ICML:11,Song:NIPS:20,Jalal:NIPS:21,Song:ICLR:21,Song:ICLR:22, Kawar:NIPS:22, Chung:ICLR:23, Wang:ICLR:23}.
+Although diffusion models have garnered a great share of recent attention, they tend to generate samples several orders-of-magnitude slower than their cNF, cVAE, and cGAN counterparts.
+
+With the goal of fast and accurate posterior sampling, recent progress in cGAN training has been made through regularization. 
+For example, Ohayon et al. \cite{Ohayon:ICCVW:21} proposed to enforce correctness in the generated $\vec{y}$-conditional mean using a novel form of L2 regularization. 
+Later, Bendel et al. \cite{Bendel:NIPS:23} proposed to enforce correctness in the generated $\vec{y}$-conditional mean \emph{and} trace-covariance using L1 regularization plus a correctly weighted standard-deviation (SD) reward, and gave evidence that their ``rcGAN'' competes with contemporary diffusion samplers on MRI and inpainting tasks.
+Soon after, Man et al. \cite{Man:CVPRW:23} showed that L2 regularization and a variance reward are effective when training cGANs for JPEG decoding.
+More details are given in \Secref{background}.
+
+In a separate line of work, Nehme et al. \cite{Nehme:NIPS:23} trained a Neural Posterior Principal Components (NPPC) network to directly estimate the eigenvectors and eigenvalues of the $\vec{y}$-conditional covariance matrix, which allows powerful insights into the nature of uncertainty in an inverse problem.
+
+
+% OLD FINAL PARAGRAPH...
+% Bendel et al.\ \cite{Bendel:NIPS:23} recently showed evidence that cGANs can outperform contemporary diffusion models in recovered image quality as well as speed.
+% Their ``rcGAN'' accomplished this feat using a novel regularization that enforces correctness in both the $\vec{y}$-conditional mean and trace-covariance.
+% Meanwhile, Nehme et al.\ \cite{Nehme:NIPS:23} showed that it is possible to train a Neural Posterior Principal Components (NPPC) network to directly estimate the eigenvectors and eigenvalues of the $\vec{y}$-conditional covariance matrix.
+
+\textbf{Our contributions.~} 
+Inspired by regularized cGANs and NPPC, we propose a novel ``pcaGAN'' that encourages correctness in the $K$ principal components of the $\vec{y}$-conditional covariance matrix, as well as the $\vec{y}$-conditional mean and trace covariance, when sampling from the posterior.
+We demonstrate that our pcaGAN outperforms existing cGANs \cite{Adler:18, Zhao:ICLR:21, Bendel:NIPS:23, Ohayon:ICCVW:21} and diffusion models \cite{Jalal:NIPS:21,Chung:ICLR:23, Kawar:NIPS:22, Wang:ICLR:23} on posterior sampling tasks like denoising, large-scale inpainting, and accelerated MRI recovery, while sampling orders-of-magnitude faster than those diffusion models.
+We also demonstrate that pcaGAN recovers the principal components more accurately than NPPC using approximately the same runtime.
+
+% ORIGINAL CONTRIBUTION PARAGRAPH...
+% Inspired by these latter two works, we propose a novel ``pcaGAN'' that enforces correctness in the $K$ principal components of the $\vec{y}$-conditional covariance matrix, as well as the $\vec{y}$-conditional mean and trace-covariance.
+% We demonstrate that our pcaGAN outperforms existing cGANs \cite{Adler:18, Zhao:ICLR:21, Bendel:NIPS:23} and diffusion models \cite{Jalal:NIPS:21,Chung:ICLR:23} on posterior sampling tasks like denoising, large-scale inpainting, and accelerated MRI recovery, while sampling orders-of-magnitude faster than \cite{Jalal:NIPS:21, Chung:ICLR:23}.
+% We also demonstrate that pcaGAN recovers the eigen-components more accurately than NPPC.
+
+%------------------------------------------------------------------------
+\section{Background}\label{sec:background}
+Our approach builds on the rcGAN regularization framework from \cite{Bendel:NIPS:23}, which itself builds on the cGAN framework from \cite{Adler:18}, both of which we now summarize.
+Let $\mc{X}$, $\mc{Y}$, and $\mc{Z}$ denote the domains of $\vec{x}$, $\vec{z}$, and $\vec{y}$, respectively.
+The goal is to design a generator $\mc{G}_{\vec{\theta}}:\mc{Z}\times\mc{Y}\rightarrow\mc{X}$ where, for a given $\vec{y}$, the random $\hvec{x}=G_{\vec{\theta}}(\vec{z}, \vec{y})$ induced by the code vector $\vec{z}\sim\pz$ (with $\vec{z}$ independent of $\vec{y}$) has a distribution that is close to the true posterior $\pxgy(\cdot,\vec{y})$ in the Wasserstein-1 distance, given by
+\begin{align}
+W_1\big(\pxgy(\cdot,\vec{y}),\pxhgy(\cdot,\vec{y})\big) = \sup_{D\in L_1} \Exgy\{D(\vec{x},\vec{y})\} - \Exhgy\{D(\hvec{x},\vec{y})\}
+\label{eq:W1}.
+\end{align}
+Here, $D:\mc{X}\times\mc{Y}\rightarrow \Real$ is a ``critic'' or ``discriminator'' that tries to distinguish between the true $\vec{x}$ and generated $\hvec{x}$ given $\vec{y}$, and $L_1$ denotes the set of 1-Lipschitz functions.
+A loss is constructed by averaging \eqref{W1} over $\vec{y}\sim\py$, which takes the form
+\begin{align}
+\Ey\big\{W_1\big(\pxgy(\cdot,\vec{y}),\pxhgy(\cdot,\vec{y})\big)\big\} 
+%&= \sup_{D\in L_1} \Exy\{D(\vec{x},\vec{y})\}  - \Egy\{D(\hvec{x},\vec{y})\} 
+%\label{eq:supEcom}\\
+&= \sup_{D\in L_1} \Exzy\{D(\vec{x},\vec{y})  - D(G_{\vec{\theta}}(\vec{z},\vec{y}),\vec{y})\}
+\label{eq:EW1},
+\end{align}
+using the fact that the expectation commutes with the supremum \cite{Adler:18}.
+$D$ is then implemented as a neural network $D_{\vec{\phi}}$ with parameters $\vec{\phi}$.
+Finally, $(\vec{\theta}, \vec{\phi})$ are learned by minimizing
+\begin{align}
+\Ladv(\vec{\theta},\vec{\phi}) 
+\defn \Exzy\{D_{\vec{\phi}}(\vec{x},\vec{y}) - D_{\vec{\phi}}(G_{\vec{\theta}}(\vec{z},\vec{y}),\vec{y})\}
+\label{eq:Ladv} 
+\end{align}
+over $\vec{\theta}$ and minimizing $-\Ladv(\vec{\theta},\vec{\phi}) + \Lgp(\vec{\phi})$ over $\vec{\phi}$, where $\Lgp(\vec{\phi})$ is a gradient penalty that encourages $D_{\vec{\phi}}\in L_1$ \cite{Gulrajani:NIPS:17}.
+In practice, the expectation in \eqref{Ladv} is approximated by a sample average over the training data $\{(\vec{x}_t,\vec{y}_t)\}$.
+
+In the typical case that the training data includes only a single image $\vec{x}_t$ for each measurement vector $\vec{y}_t$, minimizing $\Ladv(\vec{\theta},\vec{\phi})$ alone does not encourage the generator to produce diverse samples.
+Rather, it leads to a form of mode collapse where the code $\vec{z}$ is ignored.
+In \cite{Adler:18}, Adler and \"Oktem proposed a two-sample discriminator that encourages diverse generator outputs without compromising the Wasserstein objective \eqref{EW1}.
+In \cite{Bendel:NIPS:23}, Bendel et al.\ instead proposed to regularize $\Ladv(\vec{\theta},\vec{\phi})$ in a way that encourages correct posterior means and trace-covariances, i.e., 
+\begin{align}
+\muxgyhat &= \muxgy
+&&\text{for}~
+\muxgyhat\defn\E\{\hvec{x}|\vec{y}\}
+&&\text{and}~
+\muxgy\defn\E\{\vec{x}|\vec{y}\}\\
+\tr(\Sigxgyhat) &= \tr(\Sigxgy)
+&&\text{for}~
+\Sigxgyhat\defn\Cov\{\hvec{x}|\vec{y}\}
+&&\text{and}~
+\Sigxgy\defn\Cov\{\vec{x}|\vec{y}\} 
+\label{eq:trcov}.
+\end{align}
+%\textr{[use $(\vec{y})$?]}
+To do this, \cite{Bendel:NIPS:23} replaced $\Ladv(\vec{\theta},\vec{\phi})$ with the regularized adversarial loss
+\begin{align}\textstyle
+\Lrcgan(\vec{\theta},\vec{\phi}) \defn \betaadv\Ladv(\vec{\theta},\vec{\phi}) + \LonePt(\vec{\theta}) - \betastd\LstdPt(\vec{\theta})
+\label{eq:rcganobj} ,
+\end{align}
+which involves the $P\train$-sample supervised-$\ell_1$ loss and standard-deviation (SD) reward terms
+\begin{align}
+\LoneP(\vec{\theta})
+&\defn \textstyle \ExzPy\big\{ \|\vec{x}-\hvec{x}\avgP\|_1\big\}
+\label{eq:LoneP} \\
+\LstdP(\vec{\theta})
+&\defn \textstyle \sum_{i=1}^{P} \EzPy\big\{ \|\hvec{x}_i-\hvec{x}\avgP\|_1 \big\}
+\label{eq:LstdP},
+\end{align}
+where typically $P\train=2$.
+Here, $\{\hvec{x}_i\}$ are the generated samples and $\hvec{x}\avgP$ is their $P$-sample average:
+\begin{align}
+\hvec{x}_i \defn G_{\vec{\theta}}(\vec{z}_i,\vec{y}) ~\text{for}~ i=1,\dots,P\train
+\quad\text{and}\quad
+\hvec{x}\avgP \defn \textstyle \frac{1}{P} \sum_{i=1}^{P} \hvec{x}_i .
+\end{align}
+%$\{\hvec{x}_i\}$ are the samples generated from the codes $\{\vec{z}_i\}$ via $\hvec{x}_i \defn G_{\vec{\theta}}(\vec{z}_i,\vec{y})$ and $\hvec{x}\avgPt \defn \frac{1}{P\train} \sum_{i=1}^{P\train} \hvec{x}_i$ is their $P\train$-sample average
+The reward weight $\betastd$ in \eqref{rcganobj} is automatically adjusted to accomplish \eqref{trcov} during training \cite{Bendel:NIPS:23}.
+We note that the $\mathcal{L}_{1,P}(\vec{\theta})$ regularization proposed in \cite{Bendel:NIPS:23} is closely related to the regularization $\mathcal{L}_{2,P}(\vec{\theta}) \triangleq \ExzPy\{\|\vec{x}-\hat{\vec{x}}_{(P)}\|_2^2\}$ proposed earlier by Ohayon et al.\ in \cite{Ohayon:ICCVW:21}.
+A detailed discussion of the advantages and disadvantages of various cGAN regularizations can be found in \cite{Bendel:NIPS:23}. 
+
+
+%------------------------------------------------------------------------
+\section{Proposed method} \label{sec:proposed}
+%\subsection{Proposed regularization}
+
+Whereas rcGAN aimed for correctness in the posterior mean and posterior trace-covariance statistics, our proposed pcaGAN \emph{also} aims for correctness in the $K$ principal components of the posterior covariance matrix $\Sigxgyhat$, where $K$ is user-selectable.
+To do this, pcaGAN adds two additional regularization terms to the rcGAN objective:
+%\begin{align}
+%&\Lpcagan(\vec{\theta},\vec{\phi})
+%= \Lrcgan(\vec{\theta},\vec{\phi})
+%\nonumber\\&
+%+ \Ey\bigg\{ \ExzPgy\bigg\{
+%- \sum_{k=1}^K[\hvec{v}_k\tran(\vec{x}-\muxgy)]^2
+%+ \sum_{k=1}^K \bigg(1-\frac{[\vec{v}_k\tran(\vec{x}-\muxgy)]^2 }{\hat{\lambda}_k}\bigg)^2
+%\bigg|\vec{y}\bigg\}\bigg\}
+%\label{eq:eigganobj} ,
+%\end{align}
+\begin{align}
+\Lpcagan(\vec{\theta},\vec{\phi})
+&\defn \Lrcgan(\vec{\theta},\vec{\phi}) + \betapca\Levec(\vec{\theta}) + \betapca\Leval(\vec{\theta})
+\label{eq:eigganobj}\\
+\Levec(\vec{\theta})
+&\defn \textstyle -\Ey\big\{ \ExzPgy\big\{ \sum_{k=1}^K[\hvec{v}_k\tran(\vec{x}-\muxgy)]^2 \big|\vec{y}\big\}\big\}
+\label{eq:Levec}\\
+\Leval(\vec{\theta})
+%&\defn \Ey\bigg\{ \ExzPgy\bigg\{ \sum_{k=1}^K \bigg(1-\frac{[\vec{v}_k\tran(\vec{x}-\muxgy)]^2 }{\hat{\lambda}_k}\bigg)^2 \bigg|\vec{y}\bigg\}\bigg\} 
+&\defn \textstyle \Ey\big\{ \ExzPgy\big\{ \sum_{k=1}^K \big(1-\lambda_k/\hat{\lambda}_k\big)^2 \big|\vec{y}\big\}\big\}
+\label{eq:Leval}.
+\end{align}
+Here, $\{(\hvec{v}_k,\hat{\lambda}_k)\}_{k=1}^K$ denote the principal eigenvectors and eigenvalues of the $\vec{\theta}$-dependent generated covariance matrix $\Sigxgyhat$ and $\{(\vec{v}_k,\lambda_k)\}_{k=1}^K$ denote the principal eigenvectors and eigenvalues of the true covariance matrix $\Sigxgy$.
+Because \eqref{Levec} is the classical PCA objective \cite{Jolliffe:Book:02}, minimizing $\Levec(\vec{\theta})$ over $\vec{\theta}$ will drive the generated principal eigenvector $\hvec{v}_k$ towards the true principal eigenvector $\vec{v}_k$ for each $k=1,\dots,K$.
+Likewise, 
+%since $\ExzPgy\{[\vec{v}_k\tran(\vec{x}-\muxgy)]^2\}=\lambda_k$, 
+minimizing $\Leval(\vec{\theta})$ over $\vec{\theta}$ will drive the generated principal eigenvalue $\hat{\lambda}_k$ towards the true principal eigenvalue $\lambda_k$ for each $k=1,\dots,K$.
+Based on our experiments, putting $\hat{\lambda}_k$ in the denominator works better than the numerator and the squared error in \eqref{Leval} works better than an absolute value.
+
+In practice, the expectations in \eqref{Levec}-\eqref{Leval} are replaced by sample averages over the training data.
+In the typical case that the training data includes only a single image $\vec{x}_t$ for each measurement vector $\vec{y}_t$, the quantities $\muxgy$ and $\{\lambda_k\}$ in \eqref{Levec}-\eqref{Leval} are unknown and non-trivial to estimate for each $\vec{y}_t$.
+Hence, when training the pcaGAN, we approximate them with learned quantities.
+This must be done carefully, however.
+For example, if $\muxgy$ in \eqref{Levec} was simply replaced by the $\vec{\theta}$-dependent quantity $\muxgyhat$, then minimizing $\Levec(\vec{\theta})$ over $\vec{\theta}$ would encourage $\muxgyhat$ to become overly large in order to drive $\Levec(\vec{\theta})$ to a large negative value.
+
+\begin{algorithm}[t]
+\caption{pcaGAN generator-training iteration}\label{alg:pcaGAN}
+\begin{algorithmic}[1]
+%\Require $K, P\train, P\eig, E\evec, E\eval, M, \betaadv, \betastd, \betapca, \{(\vec{x}_b, \vec{y}_b)\}_{b=1}^B, \vec{\theta}$,
+\Require 
+number of estimated eigen-components $K$, 
+number of samples used for eigenvector and eigenvalue regularization $P\eig$, 
+number of samples used for rcGAN regularization $P\train$, 
+epoch at which to involve eigenvector regularization $E\evec$, 
+epoch at which to involve eigenvalue regularization $E\eval$, 
+lazy update period $M$, 
+adversarial loss weight $\betaadv$, 
+std regularization weight $\betastd$, 
+eigenvector and eigenvalue regularization weight $\betapca$, 
+training batch $\{(\vec{x}_b, \vec{y}_b)\}_{b=1}^B$, 
+current model parameters $\vec{\theta}$,
+current training epoch $e$, the current training step $s$
+
+\State $\mc{L}(\vec{\theta}) \leftarrow 0$\label{line:zero}
+\State
+\For{$b=1,\dots,B$}
+\State $\vec{z}_i \sim \mc{N}(\vec{0}, \vec{I})$ ~for~ $i=1,\dots, P\train$\label{line:zi}
+\State $\hvec{x}_i \gets G_{\vec{\theta}}(\vec{z}_i, \vec{y}_b)$~for~ $i=1,\dots, P\train$\label{line:xhati}
+\State $\mc{L}(\vec{\theta}) \leftarrow \mc{L}(\vec{\theta}) -\betaadv\sum_{i=1}^{P\train} D_{\vec{\phi}}(\hvec{x}_i,\vec{y}_b)$\label{line:adv}
+\State $\hvec{x}\avgPt = \frac{1}{P\train}\sum_{i=1}^{P\train} \hvec{x}_i$
+\State $\mc{L}(\vec{\theta}) \leftarrow \mc{L}(\vec{\theta}) + \|\vec{x}_b-\hvec{x}\avgPt\|_1 - \betastd\sum_{i=1}^{P\train} \EzPy\big\{ \|\hvec{x}_i-\hvec{x}\avgPt\|_1 \big\}$\label{line:rc}
+\State
+\If{$e \geq E\evec$ and $s\Mod{M} = 0$} \label{line:Eevec}
+    \State $\vec{z}_j \sim \mc{N}(\vec{0}, \vec{I})$ ~for~ $j=1,\dots, P\eig$\label{line:zj}
+    \State $\hvec{x}_j \gets G_{\vec{\theta}}(\vec{z}_j, \vec{y}_b)$~for~ $j=1,\dots, P\eig$\label{line:xhatj}
+    \State $\hvec{\mu} \gets \sg(\frac{1}{P\eig}\sum_{j=1}^{P\eig} \hvec{x}_j)$\label{line:muhat}
+    %\State $\tvec{X} \gets [(\hvec{x}_1 - \hvec{\mu}), \dots, (\hvec{x}_{P\eig} - \hvec{\mu})]\tran$\label{line:datamat}
+    %\State $\hvec{U}\hvec{S}\hvec{V}\tran \gets \text{SVD}(\tvec{X})$\label{line:svd}
+    \State $\hvec{U}\hvec{S}\hvec{V}\tran \gets \text{SVD}([\hvec{x}_1 - \hvec{\mu}, \dots, \hvec{x}_{P\eig} - \hvec{\mu}]\tran)$\label{line:svd}
+    \State $\hvec{v}_k \gets [\hvec{V}]_{:,k}$ ~for~ $k=1,\dots, K$\label{line:vhat}
+    %\State $\Levec(\vec{\theta}) \gets -\sum_{k=1}^K [\hvec{v}_{k}\tran(\vec{x}_b - \hvec{\mu})]^2$
+    \State $\mc{L}(\vec{\theta}) \gets \mc{L}(\vec{\theta}) - \betapca\sum_{k=1}^K [\hvec{v}_{k}\tran(\vec{x}_b - \hvec{\mu})]^2$\label{line:evec}
+
+%    \If{$e \geq E\eval$}
+%        \State $\lambdahat_k \gets [\hvec{S}]_{kk}^2$ ~for~ $k=1,\dots, K$
+%        \State $\tvec{X}_{\mathsf{corr}} \gets [\vec{x}_b - \hvec{\mu}, \hvec{x}_2 - \hvec{\mu}, \dots, \hvec{x}_{P\eig} - \hvec{\mu}]\tran$\label{line:datamatcorr}
+%        \State $\mc{L}(\vec{\theta}) \gets \mc{L}(\vec{\theta}) + \betapca\sum_{k=1}^K(1 - \frac{1}{\lambdahat_k}\sg(\frac{1}{P\eig}\|\hvec{v}_k\tran\tvec{X}_{\mathsf{corr}}\|^2))^2$\label{line:eval}
+%    \EndIf
+\EndIf
+\State
+\If{$e \geq E\eval$ and $s\Mod{M} = 0$} \label{line:Eeval}
+    \State $\lambdahat_k \gets [\hvec{S}]_{kk}^2$ ~for~ $k=1,\dots, K$\label{line:lambdahat}
+    \State $\tvec{X} \gets [\vec{x}_b - \hvec{\mu}, \hvec{x}_1 - \hvec{\mu}, \hvec{x}_2 - \hvec{\mu}, \dots, \hvec{x}_{P\eig} - \hvec{\mu}]\tran$\label{line:datamatcorr}
+    %\State $\Leval(\vec{\theta}) \gets \sum_{k=1}^K(1 - \frac{1}{\lambdahat_k}\sg(\frac{1}{P\eig}\|\hvec{v}_k\tran\tvec{X}\|^2))^2$
+    \State $\mc{L}(\vec{\theta}) \gets \mc{L}(\vec{\theta}) + \betapca\sum_{k=1}^K\big(1 - \frac{1}{\lambdahat_k}\sg(\frac{1}{P\eig + 1}\|\hvec{v}_k\tran\tvec{X}\|^2)\big)^2$\label{line:eval}
+\EndIf
+\EndFor
+\State
+\State $\vec{\theta} \gets \text{Adam}(\vec{\theta}, \nabla\mc{L}(\vec{\theta}))$\label{line:adam}
+
+\end{algorithmic}
+\end{algorithm}
+
+\Algref{pcaGAN} details our proposed approach to training the pcaGAN. 
+In particular, it describes the steps used to perform a single update of the generator parameters $\vec{\theta}$ based on the training batch $\{(\vec{x}_b, \vec{y}_b)\}_{b=1}^B$.
+Before diving into the details, we offer a brief summary of \Algref{pcaGAN}.
+For the initial epochs, the rcGAN objective $\Lrcgan$ alone is optimized, which allows the generated posterior mean $\muxgyhat$ to converge to the vicinity of $\muxgy$.
+Starting at $E\evec$ epochs, the $\mc{L}\evec(\vec{\theta})$ regularization from \eqref{Levec} is added, but with $\muxgy$ approximated as $\sg(\muxgyhat)$.
+The use of $\sg$ forces $\mc{L}\evec(\vec{\theta})$ to be minimized by manipulating the eigenvectors $\{\hvec{v}_k\}_{k=1}^K$ and not the generated posterior mean $\muxgyhat$.
+These eigenvectors are computed using an SVD of centered approximate-posterior samples.
+To reduce the computational burden imposed by this SVD, a ``lazy regularization'' \cite{Karras:CVPR:20} approach is adopted, which computes $\mc{L}\evec(\vec{\theta})$ only once every $M$ training steps.
+Training proceeds in this manner until the eigenvectors $\{\hvec{v}_k\}$ converge.
+Starting at $E\eval$ epochs, the $\mc{L}\eval(\vec{\theta})$ regularization from \eqref{Leval} is added, but with %$\vec{v}_k\tran(\vec{x}-\muxgy)$ approximated as $\sg\big(\hvec{v}_k\tran(\vec{x}-\muxgyhat)\big)$, 
+$\lambda_k$ approximated as
+\begin{align}
+\lambda_k \approx \sg\big(\tfrac{1}{1+P\eig}\big\|\hvec{v}_k\tran[\vec{x}_b-\muxgyhat,\hvec{x}_1-\muxgyhat,\dots,\hvec{x}_{P\eig}-\muxgyhat]\big\|^2\big),
+\label{eq:lambda_approx}
+\end{align}
+where $\sg$ is used so that the optimization focuses on $\{\hat{\lambda}_k\}$.
+The rational behind \eqref{lambda_approx} is that, when $\hvec{v}_k=\vec{v}_k$ and $\muxgyhat=\muxgy$, the terms $[\hvec{v}_k\tran(\vec{x}_b-\muxgyhat)]^2$ and $[\hvec{v}_k\tran(\hvec{x}_j-\muxgyhat)]^2~\forall j$ all equal $\lambda_k$ in $\vec{y}_b$-conditional expectation.
+This expectation is approximated using a $(1+P\eig)$-term sample average in \eqref{lambda_approx} via the squared norm.
+The eigenvalues $\{\hat{\lambda}_k\}$ in \eqref{Leval} are computed using the previously described SVD and the regularization schedule is again $M$-lazy.
+
+We now provide additional details on \Algref{pcaGAN}.
+After the loss is initialized in \lineref{zero}, the following steps are executed for each measurement vector $\vec{y}_b$ in the batch.
+First, approximate posterior samples $\{\hvec{x}_i\}_{i=1}^{P\train}$ are generated in \lineref{xhati}, where $P\train=2$ as per the suggestion in \cite{Bendel:NIPS:23}.
+Using these samples, the adversarial component of the loss is added in \lineref{adv} and the rcGAN regularization is added in \lineref{rc}.
+Starting at epoch $E\evec$, lines~\ref{line:zj}-\ref{line:evec} are executed whenever the training iteration is a multiple of $M$. 
+Nominally, $E\evec$ is set where the validation PSNR of $\hvec{\mu}$ (an empirical approximation of $\muxgyhat$) stabilizes and $M=100$.
+Within those lines, samples $\{\hvec{x}_j\}_{j=1}^{P\eig}$ are generated in \lineref{xhatj} (where nominally $P\eig=10K$), their sample mean is computed in \lineref{muhat}, and the SVD of the centered samples is computed in \lineref{svd}. 
+The top $K$ right singular vectors are then extracted in \lineref{vhat} in order to construct the $\mc{L}\evec(\vec{\theta})$ regularization, which is added to the overall generator loss $\mc{L}(\vec{\theta})$ in \lineref{evec}.
+Starting at epoch $E\eval$, where nominally $E\eval=E\evec+25$, lines~\ref{line:lambdahat}-\ref{line:eval} are executed whenever the training iteration is a multiple of $M$.
+In \lineref{lambdahat}, the top $K$ eigenvalues $\{\hat{\lambda}_k\}$ are constructed from the previously computed singular values and, in \lineref{eval}, the $\mc{L}\eval(\vec{\theta})$ regularization is constructed and added to the overall training loss.
+The construction of $\mc{L}\eval(\vec{\theta})$ was previously described around \eqref{lambda_approx}.
+Finally, once the losses for all batch elements have been incorporated, the gradient $\nabla \mc{L}(\vec{\theta})$ is computed using back-propagation and a gradient-descent step of $\vec{\theta}$ is performed using the Adam optimizer \cite{Kingma:ICLR:15} in \lineref{adam}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Numerical experiments} \label{sec:experiments}
+We now present experiments with Gaussian data, MNIST denoising, MRI, and FFHQ face inpainting.
+Additional implementation and training details for each experiment are provided in \Appref{implementation}.
+%For each experiment, our method was trained according to \Algref{pcaGAN}.
+% See \url{https://github.com/matt-bendel/rcGAN}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Recovering synthetic Gaussian data} \label{sec:gaussianexp}
+
+Here our goal is to recover $\vec{x}\sim\mc{N}(\mux, \Sigx)\in \Real^d$ from $\vec{y}=\vec{Mx} + \vec{w}\in\Real^d$, where $\vec{M}$ masks $\vec{x}$ at even indices and noise $\vec{w}\sim\mc{N}(\vec{0}, \sigma^2\vec{I})$ is independent of $\vec{x}$ with $\sigma^2=0.001$.
+Since $\vec{x}$ and $\vec{y}$ are jointly Gaussian, the posterior is Gaussian posterior with $\muxgy = \mux + \Sigxy\Sigy^{-1}(\vec{y} - \muy)$ and $\Sigxgy = \Sigx - \Sigxy\Sigy^{-1}\Sigyx$, where 
+$\mux, \muy, \Sigx, \Sigy$ are marginal and $\Sigxy,\Sigyx$ are joint statistics.
+%$\mux, \Sigx$ and $\muy, \Sigy$ denote the mean and covariance matrix of $\vec{x}$ and $\vec{y}$, respectively, and $\Sigxy,\Sigyx$ denote the cross-covariance matrices between $\vec{x}$ and $\vec{y}$.
+
+We generate random $\mux\sim\mc{N}(\vec{0},\vec{I})$ and $\Sigx$ with half-normal eigenvalues $\lambda_k$ (see additional details in \appref{gaussian}), and consider a sequence of problem sizes $d=10,20,30,\dots,100$.
+For each $d$, we generate 70\,000 training, 20\,000 validation, and 10\,000 test samples. 
+The generator and discriminator are simple multilayer perceptrons (see \appref{implementation_gaussian}) trained for 100 epochs with $K=d$, $E\evec=10$, $\betaadv=10^{-5}$, and $\betapca=10^{-2}$.
+
+\textbf{Competitors.~}
+We compare the proposed pcaGAN to rcGAN \cite{Bendel:NIPS:23} and NPPC \cite{Nehme:NIPS:23}.
+rcGAN uses the same generator and discriminator architectures as pcaGAN and is trained according to \eqref{rcganobj} with $\betaadv=10^{-5}$ and $P\train=2$. 
+For NPPC, we use the authors' implementation \cite{Nehme:github:23} with $K=d$ and some minor modifications to work with vector data.
+To evaluate performance, we use the Wasserstein-2 (W2) distance between $\pxgy$ and $\hat{\pxgy}$, which in the Gaussian case reduces to 
+\begin{align}
+\mc{W}_2(\pxgy, \hat{\pxgy}) = \|\muxgy - \hat{\muxgy}\|_2^2 + \tr\big[\Sigxgy + \hat{\Sigxgy} - 2(\Sigxgy^{\nicefrac{1}{2}}\hat{\Sigxgy}\Sigxgy^{\nicefrac{1}{2}})^{\nicefrac{1}{2}}\big]
+\label{eq:W2}.
+\end{align}
+For the cGANs, we compute $\hat{\muxgy}$ and $\hat{\Sigxgy}$ empirically from $10d$ samples, while for NPPC we use the conditional mean, eigenvalues, and eigenvectors returned by the approach.
+
+\begin{figure}[t]
+    \centering
+    %\scriptsize
+    %\rotatebox{90}{\hspace{11mm}$\mc{W}_2(\pxgy, \pxhgy)$}\hspace{-3mm}
+    \begin{subfigure}[b]{.3\columnwidth}
+        \caption{$\mc{W}_2(\pxgy, \pxhgy)$ vs.\ $M$}
+        \centering
+            \includegraphics[height=0.65\columnwidth,trim=25 15 25 35,clip]{figures_arxiv/gaussian/cfid_v_freq.png}
+            %\\ ~~$M$
+        \label{fig:cfid_v_gamma}
+    \end{subfigure}
+    \begin{subfigure}[b]{.3\columnwidth}
+        \caption{$\mc{W}_2(\pxgy, \pxhgy)$ vs.\ $K$}
+        \centering
+            \includegraphics[height=0.65\columnwidth,trim=25 15 25 35,clip]{figures_arxiv/gaussian/cfid_v_k.png}
+            %\\ ~~~~$K$
+        \label{fig:cfid_v_k}
+    \end{subfigure}
+    \begin{subfigure}[b]{.3\columnwidth}
+        \caption{$\mc{W}_2(\pxgy, \pxhgy) / d$ vs.\ $d$}
+        \centering
+            \includegraphics[height=0.65\columnwidth,trim=20 15 25 35,clip]{figures_arxiv/gaussian/cfid_v_d.png} 
+            %\\~~~~$d$
+        \label{fig:cfid_v_d}
+    \end{subfigure}
+    % \begin{subfigure}[b]{.32\columnwidth}
+        % \begin{center}
+            % \includegraphics[width=0.9\columnwidth]{figures/gaussian/cfid_v_lambda_placement.png}\\
+            % \textcolor{white}{$2$}
+        % \end{center}
+        % \caption{$\mc{W}_2(\pxgy, \pxhgy)$ vs.\ $?$}
+        % \label{fig:cfid_v_x_corr}
+    % \end{subfigure}
+    \caption{Gaussian experiment. Wasserstein-2 distance versus (a) lazy update period $M$ for pcaGAN with $d=100=K$, (b) estimated eigen-components $K$ for pcaGAN with $d=100$ and $M=100$, and (c) problem dimension $d$ for all methods under test with $K=d$ and $M=100$.}
+    \label{fig:gaussian_ablation}
+\end{figure}
+
+\textbf{Results.~}
+\Figref{cfid_v_gamma} examines the impact of the lazy update period $M$ on pcaGAN's W2 distance at $d=100$ with $K=d$.
+Based on this figure, to balance performance with training overhead, we set $M=100$ for all future experiments.
+\Figref{cfid_v_k} examines the impact of $K$ on W2 distance for the pcaGAN with $d=100$.
+It shows that using $K<d$ causes a relatively mild increase in W2 distance, as expected due to the half-normal distribution on the true eigenvalues $\lambda_k$.
+\Figref{cfid_v_d} shows that the proposed pcaGAN outperforms rcGAN and NPPC in W2 distance for all problem sizes $d$.
+
+%Increasing $K$ does not yield a significant improvement in performance, which is due to the fact that most of the energy of the true posterior covariance matrix is captured by the first few eigenvalues in this experiment.
+%\textr{Anecdotally, we have observed similar behavior in other, higher dimensional, experiments when computing estimated eigenvalues with trained generative models.}
+%Thus, setting $K\ll N$ for subsequent experiments still improves performance over competitors.
+%In some instances, even choosing $K=1$ yields a notable performance improvement (see \secref{MRIexperiments}).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{MNIST denoising}\label{sec:mnistdenoising}
+Now our goal is to recover an MNIST digit $\vec{x}\in[0,1]^{28\times 28}$ from noisy measurements $\vec{y} = \vec{x} + \vec{w}$ with $\vec{w}\sim\mc{N}(\vec{0}, \vec{I})$. 
+We randomly split the MNIST training fold into $50\,000$ training and $10\,000$ validation images, and we use the entire MNIST fold set for testing.
+For pcaGAN and rcGAN, we use a UNet \cite{Ronneberger:MICCAI:15} generator and the encoder portion of the same UNet followed by one dense layer as the discriminator.
+pcaGAN was trained for 125 epochs with $E\evec=25$, $\betaadv=10^{-5}$, $\betapca=10^{-1}$, and $K\in\{5,10\}$.
+
+\textbf{Competitors.~}
+We again compare the proposed pcaGAN to rcGAN and NPPC.
+For rcGAN we used the same generator and discriminator architectures as pcaGAN and trained according to \eqref{rcganobj} with $\betaadv=10^{-5}$ and $P\train=2$.
+For NPPC, we used the authors' MNIST implementation from \cite{Nehme:github:23}.
+
+%\textbf{Testing.~} 
+Following the NPPC paper \cite{Nehme:NIPS:23}, we evaluate performance using root MSE (rMSE) $\Exy\{\|\vec{x} - \hat{\muxgy}\|_2\}$ and residual error magnitude (REM$_5$) $\Exy\big\{\big\|(\vec{I} - \hvec{V}_5\hvec{V}_5\hspace{-1.5mm}\tran)\vec{e}\big\|_2\big\}$, where $\vec{e} = \vec{x} - \hat{\muxgy}$ and $\hvec{V}_5$ is an $28^2\times5$ matrix whose $k$th column equals the $k$th principal eigenvector $\hvec{v}_k$.
+For the cGANs, we use $\hat{\muxgy}=\hvec{x}\avgP$ and compute $\{\hvec{v}_k\}$ from the SVD of a matrix of centered samples $\{\hvec{x}_i\}_{i=1}^P$, both with $P=100$.
+For NPPC, we use the conditional means and eigenvectors returned by the approach.
+For performance evaluation, we also consider Conditional Frechet Inception Distance (CFID) \cite{Soloveitchik:21} with InceptionV3 features.
+CFID is analogous to Frechet Inception Distance (FID) \cite{Heusel:NIPS:17} but applies to conditional distributions (see \appref{cfid} for more details). 
+
+
+\begin{table*}[t]
+  \caption{Average MNIST denoising results.}
+  %\vspace{0.1in}
+  \label{tab:mnistresults}
+  \centering
+  \resizebox{0.6\columnwidth}{!}{%
+  \begin{tabular}{llccc}
+    \toprule
+    Model & 
+    rMSE $\!\downarrow$ & REM$_5\!\downarrow$ & CFID $\!\downarrow$ & Time(128) $\!\downarrow$ \\
+    \midrule
+    NPPC (Nehme et al.\ \cite{Nehme:NIPS:23}) & \bf 3.94 & 3.63 & -- & \bf 112 ms\\
+    rcGAN (Bendel et al.\ \cite{Bendel:NIPS:23}) & 4.04 & 3.41 & 63.44 & 118 ms\\
+    pcaGAN (Ours, $K=5$) & 4.02 & 3.31 & 61.48 & 118 ms \\
+    pcaGAN (Ours, $K=10$) & 4.02 & \bf 3.25 & \bf 60.16 & 118 ms\\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\newcommand{\mnistSubfigBody}[2]{
+    \def\figwid{0.175\columnwidth}
+    \def\figheight{0.175\columnwidth}
+    \def\figheighttwo{0.3225\columnwidth}
+    \def\tabwidrow{0.085\columnwidth}
+    \def\tabwidcol{0.10\columnwidth}
+    
+    \tiny
+    \hspace{\figwid}
+    \hspace{5mm}
+    % row of v's
+    \resizebox{0.73\columnwidth}{!}{%
+    \begin{tabular}{ccccc}
+    $\hvec{v}_1$ & $\hvec{v}_2$ & $\hvec{v}_3$ & $\hvec{v}_4$ & $\hvec{v}_5$
+    \end{tabular}}\\[-0.5mm]
+    % y label
+    \rotatebox{90}{\hspace{5mm} \vec{y}\vphantom{$\hat{\muxgy}$}}
+    \hspace{-1mm}
+    % y image
+    \includegraphics[width=\figwid]{figures_arxiv/mnist/mnist_left_top_eigengan_#1.png}
+    \hspace{1mm}
+    % row of evec images
+    \includegraphics[height=\figheight,trim=0 0 0 0,clip]
+            {figures_arxiv/mnist/variations/1and4/mnist_right_top_#2_#1.png}\\[0mm]
+
+    % row of alpha's
+    \hspace{\figwid}
+    \hspace{4mm}
+    \resizebox{0.73\columnwidth}{!}{%
+    \begin{tabular}{ccccc}
+    $\alpha\!\!=\!\!-\!3$ & $\alpha\!\!=\!\!-\!2$ & $\alpha\!\!=\!\!0$ & $\alpha\!\!=\!\!2$ & $\alpha\!\!=\!\!3$
+    \end{tabular}}\\[-2.0mm]
+
+    % y label
+    \rotatebox{90}{\hspace{5mm} \vec{x} \hspace{0.090\columnwidth} $\hat{\muxgy}$}
+    \hspace{-1mm}
+    % mean image
+    \includegraphics[width=\figwid]{figures_arxiv/mnist/mnist_left_bottom_#2_#1.png}
+    % y label
+    \resizebox{!}{\figheighttwo}{%
+    \rotatebox{90}{% 
+    \begin{tabular}{cc}
+    $\hat{\muxgy}\!+\!\alpha\hvec{v}_4$ & $\hat{\muxgy}\!+\!\alpha\hvec{v}_1$
+    \end{tabular} }}
+    \hspace{-1mm}
+    % row of eigenperturbed images
+    \includegraphics[height=\figheighttwo,trim=0 0 0 0,clip]
+            {figures_arxiv/mnist/variations/1and4/mnist_right_bottom_#2_#1.png}\\[0mm]
+}
+
+\newcommand{\mnistSubfig}[2]{
+    \def\figwid{0.175\columnwidth}
+    \def\figheight{0.175\columnwidth}
+    \def\figheighttwo{0.3225\columnwidth}
+    \def\tabwidrow{0.085\columnwidth}
+    \def\tabwidcol{0.10\columnwidth}
+    
+    \tiny
+    \hspace{\figwid}
+    \hspace{5mm}
+    % row of v's
+    \resizebox{0.73\columnwidth}{!}{%
+    \begin{tabular}{ccccc}
+    $\hvec{v}_1$ & $\hvec{v}_2$ & $\hvec{v}_3$ & $\hvec{v}_4$ & $\hvec{v}_5$
+    \end{tabular}}\\[-0.5mm]
+    % y label
+    \rotatebox{90}{\hspace{5mm} \vec{y}\vphantom{$\hat{\muxgy}$}}
+    \hspace{-1mm}
+    % image
+    \includegraphics[width=\figwid]{figures_arxiv/mnist/mnist_left_top_eigengan_#1.png}
+    \hspace{1mm}
+    % row of images
+    \includegraphics[height=\figheight,trim=0 0 0 0,clip]
+            {figures_arxiv/mnist/mnist_right_top_#2_#1.png}\\[0mm]
+
+    % row of alpha's
+    \hspace{\figwid}
+    \hspace{4mm}
+    \resizebox{0.73\columnwidth}{!}{%
+    \begin{tabular}{ccccc}
+    $\alpha\!\!=\!\!-\!3$ & $\alpha\!\!=\!\!-\!2$ & $\alpha\!\!=\!\!0$ & $\alpha\!\!=\!\!2$ & $\alpha\!\!=\!\!3$
+    \end{tabular}}\\[-2.0mm]
+
+    % y label
+    \rotatebox{90}{\hspace{5mm} \vec{x} \hspace{0.090\columnwidth} $\hat{\muxgy}$}
+    \hspace{-1mm}
+    % image
+    \includegraphics[width=\figwid]{figures_arxiv/mnist/mnist_left_bottom_#2_#1.png}
+    % y label
+    \resizebox{!}{\figheighttwo}{%
+    \rotatebox{90}{% 
+    \begin{tabular}{cc}
+    $\hat{\muxgy}\!+\!\alpha\hvec{v}_5$ & $\hat{\muxgy}\!+\!\alpha\hvec{v}_2$
+    \end{tabular} }}
+    \hspace{-1mm}
+    % row of images
+    \includegraphics[height=\figheighttwo,trim=0 0 0 0,clip]
+            {figures_arxiv/mnist/mnist_right_bottom_#2_#1.png}\\[0mm]
+}
+
+\newcommand{\mnistFigBody}[2]{
+    \begin{figure}[#2]
+    \centering
+    \begin{subfigure}[b]{.49\columnwidth}
+        \caption{pcaGAN ($K=10$)}
+        \mnistSubfigBody{#1}{eigengan}
+        \label{fig:mnist_pcagan_#1}
+    \end{subfigure}
+    \begin{subfigure}[b]{.49\columnwidth}
+        \caption{NPPC}
+        \mnistSubfigBody{#1}{nppc}
+        \label{fig:mnist_nppc_#1}
+    \end{subfigure}
+    \caption{For (a) pcaGAN and (b) NPPC, this figure shows the true image $\vec{x}$, noisy measurements $\vec{y}$, the conditional mean $\hat{\muxgy}$, principal eigenvectors $\{\hvec{v}_k\}$, and two perturbations of $\hat{\muxgy}$.}
+    \label{fig:mnist_#1}
+\end{figure}
+}
+
+\newcommand{\mnistFig}[1]{
+    \begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{.49\columnwidth}
+        \caption{pcaGAN ($K=10$)}
+        \mnistSubfig{#1}{eigengan}
+        \label{fig:mnist_pcagan_#1}
+    \end{subfigure}
+    \begin{subfigure}[b]{.49\columnwidth}
+        \caption{NPPC}
+        \mnistSubfig{#1}{nppc}
+        \label{fig:mnist_nppc_#1}
+    \end{subfigure}
+    \caption{For (a) pcaGAN and (b) NPPC, this figure shows the true image $\vec{x}$, noisy measurements $\vec{y}$, the conditional mean $\hat{\muxgy}$, principal eigenvectors $\{\hvec{v}_k\}$, and two perturbations of $\hat{\muxgy}$.}
+    \label{fig:mnist_#1}
+\end{figure}
+}
+
+\textbf{Results.~}
+\tabref{mnistresults} shows rMSE, REM$_5$, CFID, and the reconstruction time for a batch of 128 images on the test fold.
+(NPPC does not generate image samples and so CFID does not apply.)
+The table shows that the proposed pcaGAN wins in all metrics, except for rMSE where NPPC wins.
+This is not surprising because NPPC computes $\hat{\muxgy}$ using a dedicated network trained to minimize MSE loss.
+NPPC also generates its eigenvectors slightly quicker than pcaGAN generates samples.
+\tabref{mnistresults} also shows that pcaGAN performance improves as $K$ increases from 5 to 10, despite the fact that REM$_5$ uses only the top 5 eigenvectors. \Figref{mnist_4} shows examples of the 5 principal eigenvectors and posterior mean learned by pcaGAN and NPPC.
+The eigenvectors of pcaGAN are more structured and less noisy than those of NPPC. 
+\Figref{mnist_4} also shows $\hat{\muxgy}\!+\!\alpha\vec{v}_k$ for $\alpha\in[-3,3]$ and $k\in\{1,4\}$.
+Additional figures can be found in \appref{mnistfigs}.
+
+\mnistFigBody{8}{t}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Accelerated MRI} \label{sec:MRIexperiments}
+
+\newcommand{\MRIavgsampsamp}[7]{
+    \begin{figure}[t]
+    \def\tabwidcol{15.5mm} % row label spacing
+    \def\tabwidrow{15.5mm} % row label spacing
+    \def\figwid{0.14\columnwidth}
+    \def\figheight{0.42\columnwidth}
+    \hspace{12.5mm}
+    \hspace{\figwid}
+    %\rotatebox{0}
+        {\sf \scriptsize
+        \begin{tabular}{>{\centering}p{\tabwidrow}>{\centering}p{\tabwidrow}>{\centering}p{\tabwidrow}>{\centering}p{\tabwidrow}>{\centering}p{\tabwidrow}}
+        pcaGAN (ours) & rcGAN (Bendel) & pscGAN (Ohayon) & cGAN\\(Adler) & Langevin (Jalal)
+        \end{tabular}}\\[-0.5mm]
+    \rotatebox{90}{\sf \scriptsize
+        \begin{tabular}{>{\centering}p{\tabwidcol}>{\centering}p{\tabwidcol}>{\centering}p{\tabwidcol}}
+        E2E-VarNet & Truth & Truth
+        \end{tabular}}%
+    \begin{tikzpicture}
+        \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[height=\figheight,trim=10 10 5 10,clip]{figures_arxiv/mri/body_figs/body_mri_fig_R_#7_left_#1.png}};
+        \draw [-latex, line width=1pt, yellow] (#2,\fpeval{#3 + #6}) -- (#4,\fpeval{#5 + #6});
+        \draw [-latex, line width=1pt, yellow] (#2,#3) -- (#4,#5);
+    \end{tikzpicture}
+    % \includegraphics[height=\figheight,trim=10 10 5 10,clip]{figures/mri/body_figs/body_mri_fig_left_#1.png}
+    \hspace{2mm}
+    \rotatebox{90}{\sf \scriptsize
+        \begin{tabular}{>{\centering}p{\tabwidcol}>{\centering}p{\tabwidcol}>{\centering}p{\tabwidcol}}
+        Sample & Sample & Average (P=32)
+        \end{tabular}}%
+    \begin{tikzpicture}
+        \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[height=\figheight,trim=10 10 5 10,clip]{figures_arxiv/mri/body_figs/body_mri_fig_R_#7_right_#1.png}};
+        % Our samps
+        \draw [-latex, line width=1pt, yellow] (#2,\fpeval{#3 + 2*#6}) -- (#4,\fpeval{#5 + 2*#6});
+        \draw [-latex, line width=1pt, yellow] (#2,\fpeval{#3 + #6}) -- (#4,\fpeval{#5 + #6});
+        \draw [-latex, line width=1pt, yellow] (#2,#3) -- (#4,#5);
+
+        % Ohayon samps
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + #6},\fpeval{#3 + 2*#6}) -- (\fpeval{#4 + #6},\fpeval{#5 + 2*#6});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + #6},\fpeval{#3 + #6}) -- (\fpeval{#4 + #6},\fpeval{#5 + #6});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + #6},#3) -- (\fpeval{#4 + #6},#5);
+
+        % Adler samps
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 2*#6},\fpeval{#3 + 2*#6}) -- (\fpeval{#4 + 2*#6},\fpeval{#5 + 2*#6});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 2*#6},\fpeval{#3 + #6}) -- (\fpeval{#4 + 2*#6},\fpeval{#5 + #6});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 2*#6},#3) -- (\fpeval{#4 + 2*#6},#5);
+
+        % Langevin samps
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 3*#6},\fpeval{#3 + 2*#6}) -- (\fpeval{#4 + 3*#6},\fpeval{#5 + 2*#6});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 3*#6},\fpeval{#3 + #6}) -- (\fpeval{#4 + 3*#6},\fpeval{#5 + #6});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 3*#6},#3) -- (\fpeval{#4 + 3*#6},#5);
+
+        % Langevin samps
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 4*#6},\fpeval{#3 + 2*#6}) -- (\fpeval{#4 + 4*#6},\fpeval{#5 + 2*#6});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 4*#6},\fpeval{#3 + #6}) -- (\fpeval{#4 + 4*#6},\fpeval{#5 + #6});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 4*#6},#3) -- (\fpeval{#4 + 4*#6},#5);
+        % 4.45 -> 6.65 (corner to corner)
+    \end{tikzpicture}
+    \caption{Example MRI recoveries at $R=#7$. Arrows highlight meaningful variations.}
+    \label{fig:avgsampsamp_#1_#7}
+    \end{figure}
+}
+
+\newcommand{\MRIavgerrstd}[2]{
+    \begin{figure}[t]
+    \def\tabwidcol{21mm} % row label spacing
+    \def\tabwidrow{19mm} % row label spacing
+    \def\figwid{0.18\columnwidth}
+    \rotatebox{0}{\sf \scriptsize
+        \begin{tabular}{>{\centering}p{\tabwidrow}>{\centering}p{\tabwidrow}>{\centering}p{\tabwidrow}>{\centering}p{\tabwidrow}>{\centering}p{\tabwidrow}>{\centering}p{\tabwidrow}}
+        Truth & E2E-VarNet & rcGAN & pcaGAN & cGAN (Adler) & Langevin (Jalal)
+        \end{tabular}
+    }
+    \\
+    \includegraphics[width=\columnwidth,trim=10 10 10 10,clip]{figures_arxiv/mri/body_figs/body_mri_fig_R_#2_avg_err_std_#1.png}
+    \caption{Example $R=#2$ MRI reconstructions with $P=32$. 
+    Row one: $P$-sample average $\hvec{x}\avgP$. 
+    Row two: pixel-wise absolute error $|\hvec{x}\avgP-\vec{x}|$.
+    Row three: pixel-wise SD $(\frac{1}{P}\sum_{i=1}^P(\hvec{x}_i-\hvec{x}\avgP)^2)^{1/2}$.}
+    \label{fig:avgerrstd_#1}
+    \end{figure}
+}
+
+\newcommand{\MRIzoomedappfig}[7]{
+    \begin{figure}[h]
+    \def\tabwid{14.25mm} % row label spacing
+    \def\figwid{\columnwidth}
+    \rotatebox{0}{\sf \scriptsize 
+    \hspace{1.5mm}
+        \begin{tabular}{>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}}
+         & E2E-VarNet & pcaGAN (ours) & rcGAN (Bendel) & pscGAN (Ohayon) & cGAN\\(Adler) & Langevin (Jalal) 
+        \end{tabular}}\\[-0.75mm]
+    \rotatebox{90}{\sf \scriptsize
+        \begin{tabular}{>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}}
+        & Truth & Truth &  &  &  
+        \end{tabular}}
+    \hspace{-2mm}
+    \begin{tikzpicture}
+        \node[anchor=south west,inner sep=0] at (0,0) {\includegraphics[width=0.925\columnwidth,trim=10 10 7 7,clip]{figures_arxiv/mri/app_figs/app_mri_R_#6_fig_#1.png}};
+        % GT
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 - 2*#7},\fpeval{#3 + 2*#7}) -- (\fpeval{#4 - 2*#7},\fpeval{#5 + 2*#7});
+        
+        % VarNet
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 - #7},\fpeval{#3 + 4*#7}) -- (\fpeval{#4 - #7},\fpeval{#5 + 4*#7});
+        
+        % Our samps
+        \draw [-latex, line width=1pt, yellow] (#2,\fpeval{#3 + 4*#7}) -- (#4,\fpeval{#5 + 4*#7});
+        \draw [-latex, line width=1pt, yellow] (#2,\fpeval{#3 + 3*#7}) -- (#4,\fpeval{#5 + 3*#7});
+        \draw [-latex, line width=1pt, yellow] (#2,\fpeval{#3 + 2*#7}) -- (#4,\fpeval{#5 + 2*#7});
+        \draw [-latex, line width=1pt, yellow] (#2,\fpeval{#3 + #7}) -- (#4,\fpeval{#5 + #7});
+        \draw [-latex, line width=1pt, yellow] (#2,#3) -- (#4,#5);
+
+        % Ohayon samps
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + #7},\fpeval{#3 + 4*#7}) -- (\fpeval{#4 + #7},\fpeval{#5 + 4*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + #7},\fpeval{#3 + 3*#7}) -- (\fpeval{#4 + #7},\fpeval{#5 + 3*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + #7},\fpeval{#3 + 2*#7}) -- (\fpeval{#4 + #7},\fpeval{#5 + 2*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + #7},\fpeval{#3 + #7}) -- (\fpeval{#4 + #7},\fpeval{#5 + #7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + #7},#3) -- (\fpeval{#4 + #7},#5);
+
+        % Adler samps
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 2*#7},\fpeval{#3 + 4*#7}) -- (\fpeval{#4 + 2*#7},\fpeval{#5 + 4*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 2*#7},\fpeval{#3 + 3*#7}) -- (\fpeval{#4 + 2*#7},\fpeval{#5 + 3*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 2*#7},\fpeval{#3 + 2*#7}) -- (\fpeval{#4 + 2*#7},\fpeval{#5 + 2*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 2*#7},\fpeval{#3 + #7}) -- (\fpeval{#4 + 2*#7},\fpeval{#5 + #7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 2*#7},#3) -- (\fpeval{#4 + 2*#7},#5);
+
+        % Langevin samps
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 3*#7},\fpeval{#3 + 4*#7}) -- (\fpeval{#4 + 3*#7},\fpeval{#5 + 4*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 3*#7},\fpeval{#3 + 3*#7}) -- (\fpeval{#4 + 3*#7},\fpeval{#5 + 3*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 3*#7},\fpeval{#3 + 2*#7}) -- (\fpeval{#4 + 3*#7},\fpeval{#5 + 2*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 3*#7},\fpeval{#3 + #7}) -- (\fpeval{#4 + 3*#7},\fpeval{#5 + #7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 3*#7},#3) -- (\fpeval{#4 + 3*#7},#5);
+
+        % Langevin samps
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 4*#7},\fpeval{#3 + 4*#7}) -- (\fpeval{#4 + 4*#7},\fpeval{#5 + 4*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 4*#7},\fpeval{#3 + 3*#7}) -- (\fpeval{#4 + 4*#7},\fpeval{#5 + 3*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 4*#7},\fpeval{#3 + 2*#7}) -- (\fpeval{#4 + 4*#7},\fpeval{#5 + 2*#7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 4*#7},\fpeval{#3 + #7}) -- (\fpeval{#4 + 4*#7},\fpeval{#5 + #7});
+        \draw [-latex, line width=1pt, yellow] (\fpeval{#2 + 4*#7},#3) -- (\fpeval{#4 + 4*#7},#5);
+        
+        % 4.45 -> 6.65 (corner to corner)
+    \end{tikzpicture}
+    \rotatebox{90}{\sf \scriptsize
+        \begin{tabular}{>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}>{\centering}p{\tabwid}}
+        Sample & Sample & Average (P=2) & Average (P=4) & Average (P=32) & Std. Dev. Map 
+        \end{tabular}}
+    \caption{Example $R=#6$ MRI reconstruction.
+    Row one: pixel-wise SD with $P=32$, %$(\frac{1}{P}\sum_{i=1}^P(\hvec{x}_i-\hvec{x}\avgP)^2)^{1/2}$,
+    Row two: $\hvec{x}\avgP$ with $P=32$,
+    Row three: $\hvec{x}\avgP$ with $P=4$,
+    Row four: $\hvec{x}\avgP$ with $P=2$,
+    Rows five and six: posterior samples.
+    The arrows indicate regions of meaningful variation across posterior samples.} 
+    \label{fig:mriapp_R#6_#1}
+    \end{figure}
+}
+
+\MRIavgsampsamp{3}{0.97}{1.4}{1.12}{0.9}{2.0}{8}
+% \MRIavgerrstd{1}{4}
+
+We now consider accelerated MRI, where the goal is to recover a complex-valued multicoil image $\vec{x}$ from masked frequency-domain (i.e., ``k-space'') measurements $\vec{y}$. 
+To build the image data $\{\vec{x}_t\}$, we follow the approach in the rcGAN paper \cite{Bendel:NIPS:23}, which uses the first 8 slices of all fastMRI \cite{Zbontar:18} T2 brain volumes with at least 8 coils, crops to $384 \times 384$ pixels, and compresses to 8 virtual coils \cite{Zhang:MRM:13}. 
+This yields 12\,200 training, 2\,376 testing, and 784 validation images.
+To create each $\vec{y}_t$, we transform $\vec{x}_t$ to the k-space, subsample using the Cartesian GRO mask \cite{Joshi:22} at accelerations $R=4$ and $R=8$, and transform the zero-filled k-space measurements back to the image domain.
+
+%For pcaGAN, we use the architecture from \cite{Bendel:NIPS:23} and enforce data-consistency as in \cite{Sonderby:ICLR:17}. 
+We train pcaGAN for 100 epochs with $K=1$, $E\evec=25$, $\betaadv=10^{-5}$, and $\betapca=10^{-2}$ and select the final model using validation CFID computed with VGG-16 features.
+%(computed with VGG-16, due to better alignment with radiologists' perceptions \cite{Kastryulin:IA:23}, rather than Inception-v3).
+
+\textbf{Competitors.~} 
+We compare the proposed pcaGAN to rcGAN \cite{Bendel:NIPS:23}, pscGAN \cite{Ohayon:ICCVW:21}, Adler \& \"Oktem's cGAN \cite{Adler:18}, the Langevin approach \cite{Jalal:NIPS:21}, and the E2E-VarNet \cite{Sriram:MICCAI:20}.
+%rcGAN uses the loss described in \secref{background} and the cGAN from \cite{Adler:18} uses generator loss $\betaadv\Ladler(\vec{\theta},\vec{\phi})$ and discriminator loss $-\Ladler(\vec{\theta},\vec{\phi})+ \alpha_1 \Lgp(\vec{\phi}) + \alpha_2 \Ldrift(\vec{\phi})$, where \cite{Adler:18}
+%\begin{align}
+%    \Ladler(\vec{\theta},\vec{\phi}) 
+%        &\defn \Exzzy\big\{ 
+%        \tfrac{1}{2}\Dadler_{\vec{\phi}}(\vec{x},G_{\vec{\theta}}(\vec{z}_1,\vec{y}),\vec{y}) + \tfrac{1}{2}\Dadler_{\vec{\phi}}(G_{\vec{\theta}}(\vec{z}_2,\vec{y}),\vec{x},\vec{y})
+%        \nonumber\\&\quad
+%        - \Dadler_{\vec{\phi}}(G_{\vec{\theta}}(\vec{z}_1,\vec{y}),G_{\vec{\theta}}(\vec{z}_2,\vec{y}),\vec{y})
+%         \big\}.
+%    \label{eq:Ladler}
+%\end{align}
+%Each used the value of $\betaadv$ specified in the original paper and rcGAN used $P\train=2$. 
+All cGANs use the generator and discriminator architectures from \cite{Bendel:NIPS:23}
+and enforce data-consistency \cite{Sonderby:ICLR:17}.
+%, except that \cite{Adler:18} used extra discriminator input channels to facilitate the 3-input loss from \eqref{Ladler}.
+For rcGAN and the Langevin approach, we did not modify the authors' implementations from \cite{Bendel:github:23} and \cite{Jalal:github:21} except to use the GRO sampling mask.
+For E2E-VarNet, we use the GRO mask, hyperparameters, and training procedure from \cite{Jalal:NIPS:21}.
+
+%\textbf{Testing.~} 
+Following \cite{Bendel:NIPS:23}, we convert the multicoil outputs $\hvec{x}_i$ to complex-valued images using SENSE-based coil combining \cite{Prussmann:MRM:99} with ESPIRiT-estimated \cite{Uecker:MRM:14} coil sensitivity maps, and compute performance on magnitude images.
+All feature-based metrics (CFID, FID, LPIPS, DISTS) were computed with AlexNet features to show that pcaGAN does not overfit to the VGG-16 features used for validation.
+It was shown in \cite{Adamson:NIPSW:23} that image-quality metrics computed using ImageNet-trained feature generators like AlexNet and VGG-16 perform comparably to metrics computed using MRI-trained feature generators in terms of correlation with radiologists' scores.
+
+\begin{table*}[t]
+  \caption{Average MRI results at acceleration $R\in\{4,8\}$ %CFID and FID used  AlexNet features.
+    %$\pm$ shows standard error. 
+    %(C)FID$^1$, PSNR, SSIM, and APSD used $72$ test samples and $P\!=\!32$. 
+    % CFID$^1$, FID, and APSD used $72$ test samples and $P\!=\!32$, 
+    % CFID$^2$ used $2\,376$ test samples and $P\!=\!8$, and 
+    % CFID$^3$ used all $14\,576$ samples and $P\!=\!1$ - say this stuff in text now...
+    }
+  %\vspace{0.1in}
+  \label{tab:mriresults}
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{llllllllllllll}
+    \toprule
+    & \multicolumn{6}{c}{$R=4$} & \multicolumn{6}{c}{$R=8$}\\
+    \cmidrule(lr){2-7} \cmidrule(lr){8-13}
+    Model & 
+    CFID$^1\!\!\downarrow$ & CFID$^2\!\!\downarrow$ & CFID$^3\!\!\downarrow$ & FID$\downarrow$ & APSD & Time (4)$\downarrow$ &
+    CFID$^1\!\!\downarrow$ & CFID$^2\!\!\downarrow$ & CFID$^3\!\!\downarrow$ & FID$\downarrow$ & APSD & Time (4)$\downarrow$ \\
+    \midrule
+    E2E-VarNet (Sriram et al.\ \cite{Sriram:MICCAI:20}) 
+        & 16.08 & 13.07 & 10.26 & 38.88 & 0.0 & 310ms 
+        & 36.86 & 29.90 & 23.82 & 44.04 & 0.0 & 316ms\\
+    Langevin (Jalal et al.\ \cite{Jalal:NIPS:21}) 
+        & 33.05 & - & - & 31.43 & 5.9e-6 & 14 min
+        & 48.59 & - & - &  52.62 & 7.6e-6 & 14 min\\
+    cGAN (Adler \& \"Oktem \cite{Adler:18}) 
+        & 19.00 & 12.05 & 7.00 & 29.77 & 3.9e-6 & \textbf{217 ms}
+        & 59.94 & 40.24 & 26.10 & 31.81 & 7.7e-6 & \textbf{217 ms}\\
+    pscGAN (Ohayon et al.\ \cite{Ohayon:ICCVW:21}) 
+        & 13.74 & 10.56 & 7.53 & 37.28 & 7.2e-8 & \textbf{217 ms} &
+        39.67 & 31.81 & 24.06 & 43.39 & 7.7e-7 & \textbf{217 ms}\\
+    rcGAN (Bendel et al.\ \cite{Bendel:NIPS:23}) & 9.71 & 5.27 & 1.69 & 25.62 & 3.8e-6 & \textbf{217 ms}
+        & 24.04 & 13.20 & 3.83 & 28.43 & 7.6e-6 & \textbf{217 ms}\\
+    % rcLatent (Ours) & 25.52 & 11.64 & 4.21 & \bf 22.88 & 4.2e-6 & \textbf{217 ms} & 47.16 & 30.23 & 13.27 & \bf 26.14 & 6.6e-6 & \textbf{217 ms}\\
+    % rcPix + rcLatent (Ours) & \bf 8.58 & \bf 4.48 & \bf 1.18 & 25.80 & 4.5e-6 & \textbf{217 ms} & \bf 20.24 & 10.82 & \bf 2.59 & 28.70 & 6.9e-6 & \textbf{217 ms}\\
+    % rcPix + rcLatent + eigLatent (Ours) & 8.79 & 4.78 & 1.58 & 25.16 & - & \textbf{217 ms} & 20.83 & \bf 10.73 & 2.62 & 28.41 & - & \textbf{217 ms}\\
+    pcaGAN (Ours) & \bf 8.78 & \bf 4.48 & \bf 1.29 & \bf 25.02 & 4.4e-6 & \textbf{217 ms} & \bf 21.65 & \bf 11.47 & \bf 3.21 & \bf 28.35 & 6.5e-6 & \textbf{217 ms}\\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\textbf{Results.~} 
+\tabref{mriresults} shows CFID, FID, APSD $\defn(\frac{1}{P}\sum_{i=1}^{P} \frac{1}{N}\|\hvec{x}\avgP-\hvec{x}_i\|^2)^{1/2}$, and 4-sample generation time for the methods under test.
+Due to its slow sample-generation time, we evaluate the CFID, FID, and APSD of the Langevin technique \cite{Jalal:NIPS:21} using the 72-image test from \cite{Bendel:NIPS:23}.
+But due to the bias of CFID at small sample sizes \cite{Soloveitchik:21}, we evaluate the other methods using all $2\,376$ test images (CFID$^2$) and again using all $14\,576$ training and test images (CFID$^3$).
+\tabref{mriresults} shows that pcaGAN yields better CFID and FID than the competitors.
+All cGANs generated samples 3--4 orders-of-magnitude faster than the Langevin approach \cite{Jalal:NIPS:21}.
+
+\tabref{versusPr8} shows PSNR, SSIM, LPIPS \cite{Zhang:CVPR:18}, and DISTS \cite{Ding:TPAMI:20} for the $P$-sample average $\hvec{x}\avgP$ at $P\in\{1,2,4,8,16,32\}$ and $R=8$. 
+(See \appref{mri} for $R=4$.)
+It has been shown that DISTS correlates particularly well with radiologist scores \cite{Kastryulin:IA:23}.
+The E2E-VarNet achieves the best PSNR, but the proposed cGAN achieves the best LPIPS and DISTS when $P=2$ and the best SSIM when $P=8$. 
+This $P$-dependence is related to the perception-distortion trade-off \cite{Blau:CVPR:18} and consistent with that reported in \cite{Bendel:NIPS:23}. 
+%Increasing $P$ yields an $\hvec{x}\avgP$ with reduced perceptual quality, but also lower distortion.
+
+\Figref{avgsampsamp_3_8} shows zoomed versions of two recoveries $\hvec{x}_i$ and the sample average $\hvec{x}\avgP$ with $P=32$.
+Appendices~\ref{app:mriR4plots} and \ref{app:mriR8plots} show additional plots of $\hvec{x}\avgP$ that visually demonstrate the perception-distortion trade-off. 
+%where smaller $P$ yield sharper recoveries and larger $P$ yields over-smoothed recoveries. 
+
+
+\begin{table*}[t]
+  \caption{Average PSNR, SSIM, LPIPS, and DISTS of $\hvec{x}\avgP$ versus $P$ for MRI at $R=8$}
+  %\vspace{0.1in}
+  \label{tab:versusPr8}
+  \centering
+  \resizebox{1.0\textwidth}{!}{%
+  \begin{tabular}{lcccccccccccc}
+    \toprule
+    & \multicolumn{6}{c}{PSNR$\uparrow$} 
+        & \multicolumn{6}{c}{SSIM$\uparrow$}\\ 
+    \cmidrule(lr){2-7} \cmidrule(lr){8-13}
+    Model & $P\!=$1 & $P\!=$2 & $P\!=$4 & $P\!=$8 & $P\!=$16 & $P\!=$32
+          & $P\!=$1 & $P\!=$2 & $P\!=$4 & $P\!=$8 & $P\!=$16 & $P\!=$32\\
+    \midrule
+    E2E-VarNet (Sriram et al.\ \cite{Sriram:MICCAI:20}) & \bf 36.49 & - & - & - & - & - & 0.9220 & - & - & - & - & -\\
+    % UNet & 34.77 & 34.77 & 34.77 & 34.77 & 34.77 & 34.77 
+          % & 0.9228 & 0.9228 & 0.9228 & 0.9228 & 0.9228 & 0.9228\\
+    Langevin (Jalal et al. \cite{Jalal:NIPS:21}) 
+          & 32.17 & 32.83 & 33.45 & 33.74 & 33.83 & 33.90
+          & 0.8725 & 0.8919 & 0.9031 & 0.9091 & 0.9120 & 0.9137\\
+    cGAN (Adler \& \"Oktem \cite{Adler:18}) 
+          & 31.31 & 32.31 & 32.92 & 33.26 & 33.42 & 33.51
+          & 0.8865 & 0.9045 & 0.9103 & 0.9111 & 0.9102 & 0.9095\\
+    pscGAN (Ohayon et al. \cite{Ohayon:ICCVW:21}) 
+          & 34.89 & 34.90 & 34.90 & 34.90 & 34.91 & 34.92
+          & 0.9222 & 0.9217 & 0.9213 & 0.9211 & 0.9211 & 0.9210\\
+    rcGAN (Bendel et al. \cite{Bendel:NIPS:23}) 
+          & 32.32 & 33.67 & 34.53 & 35.01 & 35.27 & 35.42
+          & 0.9030 & 0.9199 & 0.9252 & 0.9257 & 0.9251 & 0.9246\\
+    pcaGAN (Ours) & 33.28 & 34.47 & 35.20 & 35.61 & 35.82 & 35.94 &  0.9136 & 0.9257 & \bf 0.9283 & 0.9275 & 0.9262 & 0.9253\\
+    % Latent cGAN (Ours) & 30.84 & 31.56 & 31.98 & 32.21 & 32.34 & 32.39 &  0.8807 & 0.8944 & 0.9011 & 0.9042 & 0.9056 & 0.9063\\
+    % Pixel + Latent cGAN (Ours) & 33.03 & 34.22 & 34.99 & 35.41 & 35.64 & 35.76 &  0.9098 & 0.9239 & \bf 0.9273 & 0.9267 & 0.9255 & 0.9244\\
+    & \multicolumn{6}{c}{LPIPS$\downarrow$} 
+        & \multicolumn{6}{c}{DISTS$\downarrow$}\\ 
+    \cmidrule(lr){2-7} \cmidrule(lr){8-13}
+    Model & $P\!=$1 & $P\!=$2 & $P\!=$4 & $P\!=$8 & $P\!=$16 & $P\!=$32
+          & $P\!=$1 & $P\!=$2 & $P\!=$4 & $P\!=$8 & $P\!=$16 & $P\!=$32\\
+    \midrule
+    E2E-VarNet (Sriram et al.\ \cite{Sriram:MICCAI:20}) & 0.0575 & - & - & - & - & - & 0.1253 & - & - & - & - & -\\
+    % UNet & 0.0586 & 0.0586 & 0.0586 & 0.0586 & 0.0586 & 0.0586
+          % & 0.1120 & 0.1120 & 0.1120 & 0.1120 & 0.1120 & 0.1120\\
+    Langevin (Jalal et al. \cite{Jalal:NIPS:21}) 
+          & 0.0769 & 0.0619 & 0.0579 & 0.0589 & 0.0611 & 0.0611
+          & 0.1341 & 0.1136 & 0.1086 & 0.1119 & 0.1175 & 0.1212\\
+    cGAN (Adler \& \"Oktem \cite{Adler:18}) 
+          & 0.0698 & 0.0614 & 0.0623 & 0.0667 & 0.0704 & 0.0727
+          & 0.1407 & 0.1262 & 0.1252 & 0.1291 & 0.1334 & 0.1361\\
+    pscGAN (Ohayon et al. \cite{Ohayon:ICCVW:21}) 
+          & 0.0532 & 0.0536 & 0.0539 & 0.0540 & 0.0534 & 0.0540
+          & 0.1128 & 0.1143 & 0.1151 & 0.1155 & 0.1157 & 0.1158\\
+    rcGAN (Bendel et al. \cite{Bendel:NIPS:23}) 
+          & 0.0418 & 0.0379 & 0.0421 & 0.0476 & 0.0516 & 0.0539
+          & 0.0906 & 0.0877 & 0.0965 & 0.1063 & 0.1135 & 0.1177\\
+    pcaGAN (Ours) & 0.0358 & \bf 0.0344 & 0.0391 & 0.0442 & 0.0479 & 0.0499 &  0.0804 & \bf 0.0799 & 0.0920 & 0.1026 & 0.1099 & 0.1144\\
+    % Latent cGAN (Ours) & 0.0681 & 0.0584 & 0.0573 & 0.0597 & 0.0613 & 0.0633 &  0.1000 & 0.0960 & 0.0980 & 0.1010 & 0.1031 & 0.1055\\
+    % Pixel + Latent cGAN (Ours) & 0.0350 & \bf 0.0345 & 0.0404 & 0.0470 & 0.0514 & 0.0540 &  \bf 0.0706 & 0.0749 & 0.0908 & 0.1034 & 0.1127 & 0.1178\\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Large-scale inpainting} \label{sec:inpainting}
+
+\newcommand{\inpaintingFigRow}[2]{
+    \def\fighgt{21mm}
+    \begin{figure}[#2]
+    \centering
+    {\scriptsize\sf
+    \rotatebox{90}{\hspace{6mm} Original}%
+        \includegraphics[height=\fighgt,trim=5 9 5 6,clip]{figures_arxiv/inpainting/original_#1.png}
+    \hspace{3mm}
+    \rotatebox{90}{\hspace{2mm} \textcolor{white}{Sg}pcaGAN\textcolor{white}{N}}\,%
+        \includegraphics[height=\fighgt,trim=5 9 5 6,clip]
+            {figures_arxiv/inpainting/5_recons_eigengan_#1.png}\\[0mm]
+    \rotatebox{90}{\hspace{3mm} \textcolor{white}{Sg}Masked\textcolor{white}{N}}%
+        \includegraphics[height=\fighgt,trim=5 9 5 6,clip]{figures_arxiv/inpainting/masked_#1.png}
+    \hspace{3mm}
+    \rotatebox{90}{\hspace{3mm} \textcolor{white}{Sg}rcGAN\textcolor{white}{N}}\,%
+        \includegraphics[height=\fighgt,trim=5 9 5 6,clip]
+            {figures_arxiv/inpainting/5_recons_rcgan_#1.png}\\[0mm]
+    \hspace{7.5mm}\hspace{\fighgt}
+    \rotatebox{90}{\hspace{0mm} \textcolor{white}{Sg}CoModGAN\textcolor{white}{N}}\,%
+        \includegraphics[height=\fighgt,trim=5 9 5 6,clip]
+            {figures_arxiv/inpainting/5_recons_comodgan_#1.png}\\[0mm]
+    \hspace{7.5mm}\hspace{\fighgt}
+    \rotatebox{90}{\hspace{5mm}\textcolor{white}{Sg}DPS \textcolor{white}{N}}\,%
+        \includegraphics[height=\fighgt,trim=5 9 5 6,clip]
+            {figures_arxiv/inpainting/samps_dps_#1.png}\\[0mm]
+    \hspace{7.5mm}\hspace{\fighgt}
+    \rotatebox{90}{\hspace{5mm}\textcolor{white}{Sg}DDNM \textcolor{white}{N}}\,%
+        \includegraphics[height=\fighgt,trim=5 9 5 6,clip]
+            {figures_arxiv/inpainting/samps_ddnm_#1.png}\\[0mm]
+    \hspace{7.5mm}\hspace{\fighgt}
+    \rotatebox{90}{\hspace{5mm}\textcolor{white}{Sg}DDRM \textcolor{white}{N}}\,%
+        \includegraphics[height=\fighgt,trim=5 9 5 6,clip]
+            {figures_arxiv/inpainting/samps_ddrm_#1.png}\\[0mm]
+    % \hspace{8.5mm}\hspace{\fighgt}
+    % \rotatebox{90}{\textcolor{white}{Sg}DPS (w/ DC)\textcolor{white}{N}}\,%
+        % \includegraphics[height=\fighgt,trim=5 9 5 6,clip]
+            % {figures/inpainting/5_recons_dps_#1_w_dc.png}
+            }
+    %\vspace{-2mm}
+    \caption{Example of inpainting a randomly generated mask on a $256\!\times\!256$ FFHQ face image.}
+    \label{fig:inpainting_#1}
+\end{figure}
+}
+
+% \begin{table*}[t]
+%   \caption{Average CFID, FID, and 40-sample reconstruction time for inpainting.}
+%   \label{tab:inpainting256}
+%   \centering
+%   \resizebox{0.6\columnwidth}{!}{%
+%   \begin{tabular}{llll}
+%     \toprule
+%     Model & CFID$\downarrow$ & FID$\downarrow$ 
+%         %& PSNR$\uparrow$ & SSIM$\uparrow$ 
+%         & Time (40)$\downarrow$\\
+%     \midrule
+%     DPS (Chung et al.\ \cite{Chung:ICLR:23}) & 3.62 & 4.53 
+%         & 14 min\\
+%     CoModGAN (Zhao et al.\ \cite{Zhao:ICLR:21}) & 3.96 & 4.70
+%         & \textbf{325 ms}\\
+%     rcGAN (Bendel et al.\ \cite{Bendel:NIPS:23}) & 3.74 & 4.69 
+%         & \textbf{325 ms}\\
+%     pcaGAN (Ours) & \bf 3.45 & \bf 4.51 & \textbf{325 ms}\\
+%     \bottomrule
+%   \end{tabular}%
+%   }
+% \end{table*}
+
+\begin{table*}[t]
+  \caption{Average FFHQ inpainting results.}
+  \label{tab:inpainting256}
+  \centering
+  \resizebox{0.6\columnwidth}{!}{%
+  \begin{tabular}{lllll}
+    \toprule
+    Model & CFID$\downarrow$ & FID$\downarrow$ 
+        %& PSNR$\uparrow$ & SSIM$\uparrow$
+        & LPIPS$\downarrow$ & Time (40 samples)$\downarrow$\\
+    \midrule
+    DPS (Chung et al. \cite{Chung:ICLR:23}) & 7.26 & 2.00 
+        & 0.1245 & 14 min\\
+    DDNM (Wang et al. \cite{Wang:ICLR:23}) & 11.30 & 3.63 & 0.1409 & 30 s\\
+    DDRM (Kawar et al. \cite{Kawar:NIPS:22}) & 13.17 & 5.36 & 0.1587 & 5 s\\
+    pscGAN (Ohayon et al. \cite{Ohayon:ICCVW:21}) & 18.44 & 8.40 & 0.1716 & \textbf{325 ms}\\
+    CoModGAN (Zhao et al. \cite{Zhao:ICLR:21}) & 7.85 & 2.23
+        & 0.1290 & \textbf{325 ms}\\
+    rcGAN (Bendel et al. \cite{Bendel:NIPS:23}) & 7.51 & 2.12 & 0.1262 & \textbf{325 ms}\\
+    pcaGAN (Ours) & \bf 7.08 & \bf 1.98 & \bf 0.1230 & \textbf{325 ms}\\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+Our final goal is to inpaint a face image with a large randomly generated masked region.
+For this task, we use 256 $\times$ 256 FFHQ face images \cite{Karras:CVPR:19} and the mask generation procedure from \cite{Zhao:ICLR:21}.
+We randomly split the FFHQ training fold into 45\,000 training and 5\,000 validation images, and we use the remaining 20\,000 images for testing. 
+ 
+For pcaGAN, we use CoModGAN's \cite{Zhao:ICLR:21} generator and discriminator architecture
+%, but not discriminator mini-batch standard deviation (MBSD) \cite{Karras:ICLR:18}. 
+and train for 100 epochs using $K=$ 2, $E\evec=$ 25, $\betaadv=5\times 10^{-3}$, and $\betapca=10^{-3}$.
+
+\textbf{Competitors.~} 
+We compare with 
+CoModGAN \cite{Zhao:ICLR:21}, pscGAN \cite{Ohayon:ICCVW:21},
+rcGAN \cite{Bendel:NIPS:23}, 
+and state-of-the-art diffusion methods DDRM (20 NFEs) \cite{Kawar:NIPS:22}, DDNM (100 NFEs) \cite{Wang:ICLR:23}, and DPS (1000 NFEs) \cite{Chung:ICLR:23}.
+CoModGAN, pscGAN, and rcGAN differ from pcaGAN only in generator regularization and CoModGAN's use of discriminator MBSD \cite{Karras:ICLR:18}.
+For rcGAN, DDNM, DDRM, and DPS, we use the authors' implementations from \cite{Bendel:github:23}, \cite{Wang:github:23}, \cite{Kawar:github:22}, and \cite{Chung:github:23} with mask generation from \cite{Zhao:ICLR:21}.
+%
+FID and CFID were evaluated on our 20\,000 image test set with $P\!=\!1$.
+
+\inpaintingFigRow{287}{t}
+
+\textbf{Results.~} 
+\tabref{inpainting256} shows test CFID, FID, LPIPS, and 40-sample generation time.
+The table shows that the proposed pcaGAN wins in CFID, FID and LPIPS, and that the four cGANs generate samples 3--4 orders-of-magnitude faster than DPS.
+\Figref{inpainting_287} shows five generated samples for each method under test, along with the true and masked image.
+%We also show an additional row where we explicitly enforce data-consistency with DPS, as it does not inherently do this. 
+pcaGAN shows better subjective quality than the competitors, as well as good diversity.
+% DPS changes the unmasked pixels and struggles with unrealistic artifacts.
+Additional figures can be found in \appref{inpaintfigs}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion} \label{sec:discussion}
+%We now describe how the proposed pcaGAN relates to existing work.
+When training a cGAN, the overall goal is that the samples $\{\hvec{x}_i\}$ generated from a particular $\vec{y}$ accurately represent the true posterior $\pxgy(\cdot|\vec{y})$.
+Achieving this goal is challenging when training from paired data $\{(\vec{x}_t,\vec{y}_t)\}$, because such datasets provide only one example of $\vec{x}$ for each given $\vec{y}$.
+Early methods like \cite{Isola:CVPR:17,Adler:18,Zhao:ICLR:21} focused on providing \emph{some} variation among $\{\hvec{x}_i\}$, but did not aim for the correct variation.
+The rcGAN from \cite{Bendel:NIPS:23} focused on providing the correct \emph{amount} of variation by enforcing $\tr(\Sigxgyhat)=\tr(\Sigxgy)$, 
+%where $\Sigxgyhat$ and $\Sigxgy$ are the generated and true covariance for a given $\vec{y}$. 
+and the proposed pcaGAN goes farther by encouraging $\Sigxgyhat$ and $\Sigxgy$ to agree along $K$ principal directions.
+Our experiments demonstrate that pcaGAN yields a notable improvement over rcGAN and outperforms contemporary diffusion approaches like DPS \cite{Chung:ICLR:23}.
+
+PCA principles have also been used in \emph{unconditional} GANs, where the goal is to train a generator $G_{\vec{\theta}}$ that turns codes $\vec{z}\sim\mc{N}(\vec{0},\vec{I})$ into outputs $\hvec{x}=G_{\vec{\theta}}(\vec{z})$ that match the true marginal distribution $\px$ from which the training samples $\{\vec{x}_t\}$ are drawn.
+For example, the eigenGAN from \cite{He:ICCV:21} aims to train in such a way that semantic attributes are learned (without supervision) and can be independently controlled by manipulating individual entries of $\vec{z}$.
+%It does so by building a generator where, for $l=1,\dots,L$, the quantity $\vec{V}_l\vec{\Lambda}_l\vec{z}_l+\vec{\mu}_l$ is added to the $l$th layer of an $L$-layer convolutional network.
+%Here $\vec{z}_l$ is a subvector of $\vec{z}$, $\vec{V}_l$ is a learned matrix with orthonormal columns, $\vec{\Lambda}_l$ is a learned diagonal matrix, and $\vec{\mu}_l$ is a learned vector.
+%%The claim is that each component of $\vec{z}_l$ controls a different semantic attribute, and that larger $l$ correspond to higher-level attributes.
+But their goal is clearly different from ours.
+  
+\textbf{Limitations.~} 
+We acknowledge several limitations of our work.
+First, generating $P\eig = 10K$ samples during training can impose a burden on memory when $\vec{x}$ is high dimensional.
+In the multicoil MRI experiment, $\vec{x}\in\Real^d$ for $d=2.4\mathrm{e}6$, which limited us to $K=1$ at batch size 2.
+Second, although our focus is on designing a fast and accurate posterior sampler, more work is needed on how to best use the generated samples across different applications. 
+Using them to compute rigorous uncertainty intervals seems like a promising direction \cite{Angelopoulos:ICML:22,Teneggi:ICML:23,Narnhofer:JIS:24}.
+Third, the application to MRI is preliminary; additional tuning and validation is needed before it can be considered for clinical practice.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion} \label{sec:conclusion}
+In this work, we proposed pcaGAN, a novel image-recovery cGAN that enforces correctness in the $K$ principal components of the conditional covariance matrix $\Sigxgyhat$, as well as in the conditional mean $\muxgyhat$ and trace-covariance $\tr(\Sigxgyhat)$.
+%We detailed our approach and provided intuition behind each component of the proposed regularization.
+Experiments with synthetic Gaussian data showed pcaGAN outperforming both rcGAN \cite{Bendel:NIPS:23} and NPPC \cite{Nehme:NIPS:23} in Wasserstein-2 distance across a range of problem sizes.
+Experiments on MNIST denoising, accelerated multicoil MRI, and large-scale image inpainting showed pcaGAN outperforming several other cGANs and diffusion models in CFID, FID, PSNR, SSIM, LPIPS, and DISTS metrics.
+Furthermore, pcaGAN generates samples 3--4 orders-of-magnitude faster than the tested diffusion models.
+The proposed pcaGAN thus provides fast and accurate posterior sampling for image recovery problems, which enables uncertainty quantification, fairness in recovery, and easy navigation of the perception/distortion trade-off.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{ack}
+The authors are funded in part by the National Institutes of Health under grant R01-EB029957.
+%and the National Science Foundation under grant CCF-1955587. 
+\end{ack}
+
+\bibliographystyle{ieeetr}
+\small
+\bibliography{macros_abbrev,books,misc,sparse,mri,machine}
+\normalsize
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\appendix
+\counterwithin{figure}{section}
+\counterwithin{equation}{section}
+\begin{center}
+\Large \bf Supplementary Materials
+\end{center}
+
+\section{Synthetic Gaussian priors}\label{app:gaussian}
+\Algref{priors} captures how we construct the Gaussian priors used in \secref{gaussianexp}.
+
+\begin{algorithm}[h]
+\caption{Gaussian prior generation}\label{alg:priors}
+\begin{algorithmic}[1]
+
+\State $\muxd{100} \sim \mc{N}(\vec{0}, \vec{I}_{100})$
+\State $\evaltd{k}{100} \sim \mc{N}(0, 1)$ ~for~ $k=1,\dots,100$
+\State $\evald{k}{100} = |\evaltd{k}{100}|$ ~for~ $k=1,\dots,100$
+\State $\evecud{k}{100} \sim \mc{N}(\vec{0}, \vec{I}_{100})$ ~for~ $k=1,\dots,100$
+\State $[\vec{Q},\vec{R}] = \text{QRdecomp}([\evecud{1}{100} \evecud{2}{100} \dots \evecud{100}{100}])$
+\State $\evecd{k}{100} = [\vec{Q}]_{:k}$ ~for~ $k=1,\dots,100$
+
+\State
+\For{$d=90,80,\dots,10$}
+\State $\muxd{d} = [\muxd{100}]_{0:d}$
+\State $\evald{k}{d} = \evald{k}{100}$ ~for~ $k=1,\dots,d$
+\State $\evecud{k}{d} = \evecd{k,0:d}{100}$ ~for~ $k=1,\dots,d$
+\State $[\vec{Q},\vec{R}] = \text{QRdecomp}([\evecud{1}{d} \evecud{2}{d} \dots \evecud{d}{d}])$
+\State $\evecd{k}{d} = [\vec{Q}]_{:k}$ ~for~ $k=1,\dots,d$
+\EndFor
+
+\end{algorithmic}
+\end{algorithm}
+We begin with dimension $d=100$, generating random mean $\muxd{100}\in\Real^{100}$ and eigenvalues $\{\evald{k}{100}\}_{k=1}^{100}$.
+To construct the eigenvectors $\{\evecd{k}{100}\}_{k=1}^{100}$, we perform a QR decomposition on a 100$\times$100 matrix with i.i.d.\ $\mc{N}(0,1)$ entries and set $\evecd{k}{100}$ as the $k$th column of $\vec{Q}$.
+For each remaining $d\in\{90,80,\dots,10\}$, we construct $\muxd{d}$, $\{\evald{k}{d}\}$, and $\evecud{k}{d}$ by truncating the previous quantities to ensure some level of continuity across $d$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conditional Fr\'echet inception distance} \label{app:cfid}
+We quantify posterior-approximation accuracy using conditional Fr\'{e}chet inception distance (CFID) \cite{Soloveitchik:21}, which approximates the conditional Wasserstein distance
+\begin{align}
+\CWD \defn \Ey\{W_2(\pxgy(\cdot,\vec{y}),\pxhgy(\cdot,\vec{y}))\} 
+\label{eq:CWD} .
+\end{align}
+In \eqref{CWD}, $W_2(\pa,\pb)$ denotes the Wasserstein-2 distance between distributions $\pa$ and $\pb$, defined as
+\begin{align}
+&W_2(\pa,\pb) 
+\defn \min_{\pab\in \Pi(\pa,\pb)} \Eab\{\|\vec{a}-\vec{b}\|^2_2\} 
+\label{eq:Pi} ,
+\end{align}
+where $\Pi(\pa,\pb) \defn \textstyle \big\{\pab : \pa=\int \pab\deriv \vec{b} \text{~and~} \pb=\int \pab \deriv \vec{a} \big\} $ denotes the set of joint distributions $\pab$ with marginal distributions $\pa$ and $\pb$.
+Similarly to how FID \cite{Heusel:NIPS:17} is computed for marginal distributions, CFID approximates \eqref{CWD} for conditional distributions.
+In particular, the random vectors $\vec{x}$, $\hvec{x}$, and $\vec{y}$ are replaced by low-dimensional embeddings $\uvec{x}$, $\huvec{x}$, and $\uvec{y}$, generated by the convolutional layers of a deep network (e.g., InceptionV3 or VGG-16 or AlexNet), and the embedding distributions $\pxugyu$ and $\pxuhgyu$ are approximated by multivariate Gaussians.
+We compute CFID using the code from \cite{Bendel:github:23}, which is described in \cite{Bendel:NIPS:23}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Additional MRI results for acceleration \texorpdfstring{$R=4$}{R=4}} \label{app:mri}
+
+\begin{table*}[t]
+  % \color{blue}
+  \caption{Average PSNR, SSIM, LPIPS, and DISTS of $\hvec{x}\avgP$ versus $P$ for $R=4$ MRI}
+  \vspace{0.1in}
+  \label{tab:versusPr4}
+  \centering
+  \resizebox{1.0\textwidth}{!}{%
+  \begin{tabular}{lcccccccccccc}
+    \toprule
+    & \multicolumn{6}{c}{PSNR$\uparrow$} 
+        & \multicolumn{6}{c}{SSIM$\uparrow$}\\ 
+    \cmidrule(lr){2-7} \cmidrule(lr){8-13}
+    Model & $P\!=$1 & $P\!=$2 & $P\!=$4 & $P\!=$8 & $P\!=$16 & $P\!=$32
+          & $P\!=$1 & $P\!=$2 & $P\!=$4 & $P\!=$8 & $P\!=$16 & $P\!=$32\\
+    \midrule
+    E2E-VarNet (Sriram et al. \cite{Sriram:MICCAI:20}) & \bf 39.93 & - & - & - & - & - & \bf 0.9641 & - & - & - & - & -\\
+    Langevin (Jalal et al. \cite{Jalal:NIPS:21}) 
+          & 36.04 & 37.02 & 37.65 & 37.99 & 38.17 & 38.27 &  0.8989 & 0.9138 & 0.9218 & 0.9260 & 0.9281 & 0.9292\\
+    cGAN (Adler \& \"Oktem \cite{Adler:18}) 
+          & 35.63 & 36.64 & 37.24 & 37.56 & 37.73 & 37.82 &  0.9330 & 0.9445 & 0.9478 & 0.9480 & 0.9477 & 0.9473\\
+    pscGAN (Ohayon et al. \cite{Ohayon:ICCVW:21}) 
+          & 39.44 & 39.46 & 39.46 & 39.47 & 39.47 & 39.47 &  0.9558 & 0.9546 & 0.9539 & 0.9535 & 0.9533 & 0.9532\\
+    rcGAN (Bendel et al. \cite{Bendel:NIPS:23}) 
+          & 36.96 & 38.14 & 38.84 & 39.24 & 39.44 & 39.55 &  0.9440 & 0.9526 & 0.9544 & 0.9542 & 0.9537 & 0.9533\\
+    pcaGAN (Ours) & 37.32 & 38.43 & 39.11 & 39.47 & 39.67 & 39.77 &  0.9463 & 0.9541 & 0.9557 & 0.9553 & 0.9546 & 0.9542\\
+    % Latent cGAN (Ours) & 35.77 & 36.63 & 37.10 & 37.36 & 37.48 & 37.55 &  0.9355 & 0.9427 & 0.9455 & 0.9465 & 0.9468 & 0.9469\\
+    % Pixel + Laten cGAN (Ours) & 36.92 & 38.06 & 38.74 & 39.12 & 39.33 & 39.43 &  0.9440 & 0.9522 & 0.9540 & 0.9539 & 0.9535 & 0.9531\\
+    & \multicolumn{6}{c}{LPIPS$\downarrow$} 
+        & \multicolumn{6}{c}{DISTS$\downarrow$}\\ 
+    \cmidrule(lr){2-7} \cmidrule(lr){8-13}
+    Model & $P\!=$1 & $P\!=$2 & $P\!=$4 & $P\!=$8 & $P\!=$16 & $P\!=$32
+          & $P\!=$1 & $P\!=$2 & $P\!=$4 & $P\!=$8 & $P\!=$16 & $P\!=$32\\
+    \midrule
+    E2E-VarNet (Sriram et al. \cite{Sriram:MICCAI:20}) & 0.0316 & - & - & - & - & - & 0.0859 & - & - & - & - & -\\
+    Langevin (Jalal et al. \cite{Jalal:NIPS:21}) 
+          & 0.0545 & 0.0394 & 0.0336 & 0.0320 & 0.0317 & 0.0316 &  0.1116 & 0.0921 & 0.0828 & 0.0793 & 0.0781 & 0.0777\\
+    cGAN (Adler \& \"Oktem \cite{Adler:18}) 
+          & 0.0285 & 0.0255 & 0.0273 & 0.0298 & 0.0316 & 0.0327 &  0.0972 & 0.0857 & 0.0878 & 0.0930 & 0.0967 & 0.0990\\
+    pscGAN (Ohayon et al. \cite{Ohayon:ICCVW:21}) 
+          & 0.0245 & 0.0247 & 0.0248 & 0.0249 & 0.0249 & 0.0249 &  0.0767 & 0.0790 & 0.0801 & 0.0807 & 0.0810 & 0.0811\\
+    rcGAN (Bendel et al. \cite{Bendel:NIPS:23}) 
+          & 0.0175 & 0.0164 & 0.0188 & 0.0216 & 0.0235 & 0.0245 & 0.0546 & 0.0563 & 0.0667 & 0.0755 & 0.0809 & 0.0837\\
+    pcaGAN (Ours) & 0.0164 & \bf 0.0159 & 0.0188 & 0.0214 & 0.0231 & 0.0242 &  \bf 0.0542 & 0.0548 & 0.0662 & 0.0754 & 0.0811 & 0.0843\\
+    % Latent cGAN (Ours) & 0.0319 & 0.0231 & 0.0211 & 0.0213 & 0.0218 & 0.0219 &  0.0736 & 0.0638 & 0.0622 & 0.0645 & 0.0660 & 0.0667\\
+    % Pixel + Latent cGAN (Ours) & 0.0164 & \bf 0.0162 & 0.0194 & 0.0223 & 0.0244 & 0.0257 &  \bf 0.0476 & 0.0538 & 0.0665 & 0.0766 & 0.0824 & 0.0857\\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\tabref{versusPr4} shows PSNR, SSIM, LPIPS \cite{Zhang:CVPR:18}, and DISTS \cite{Ding:TPAMI:20} for the $P$-sample average $\hvec{x}\avgP$ at $P\in\{1,2,4,8,16,32\}$ for $R=4$.
+In this case, the E2E-VarNet attains the best PSNR and SSIM, while pcaGAN performs best in LPIPS and DISTS when $P=2$ and $P=1$, respectively.
+These results, in conjunction with the $R=8$ results discussed in \secref{MRIexperiments}, show that pcaGAN yields a notable improvement over rcGAN in all metrics.
+
+\MRIavgsampsamp{3}{0.97}{1.4}{1.12}{0.9}{2.0}{4}
+
+\Figref{avgsampsamp_3_4} shows zoomed versions of two recoveries $\hvec{x}_i$ and the sample average $\hvec{x}\avgP$ with $P=32$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Implementation details}\label{app:implementation}
+In each experiment, all cGANs were trained using the Adam optimizer with a learning rate of $10^{-3}$, $\beta_1=0$, and $\beta_2=0.99$ as in \cite{Karras:ICLR:18}.
+
+\subsection{Synthetic Gaussian recovery}\label{app:implementation_gaussian}
+\textbf{cGAN training.~}
+We choose $\betaadv=10^{-5}$, $n\batch=64$, $P\train=2$, and train for 100 epochs for both rcGAN and pcaGAN.
+Running PyTorch on a server with 4 Tesla A100 GPUs, each with 82~GB of memory, the cGAN training for $d=100$ takes approximately 8 hours, with training time decreasing with smaller $d$.
+For pcaGAN, we choose $K=d$ for each $d$ in this experiment (unless otherwise noted) and $\betapca=10^{-2}$.
+
+\textbf{cGAN architecture.~}
+We exploit the Gaussian nature of the problem, constructing $G_{\vec{\theta}}$ with two dense layers; one which takes in $\vec{y}$ as input and one which takes in $\vec{z}$ as input.
+The output of each layer is added, yielding $\hvec{x}$.
+Similarly, $D_{\vec{\phi}}$ is comprised of a single dense layer which takes in the concatenation of $\vec{x}$ / $\hvec{x}$ and $\vec{y}$ and outputs a scalar.
+We use this architecture for both rcGAN and pcaGAN.
+Note that there is no listed license for rcGAN.
+
+\textbf{NPPC.~}
+For NPPC, we use the suggested hyperparameters from \cite{Nehme:NIPS:23} and opt to train the MMSE network \emph{before} training NPPC.
+We use the suggested architectures from their Gaussian denoising experiment and train for 100 epochs with $n\batch=64$.
+We leverage the authors' implementation in \cite{Nehme:github:23}, modifying it for this Gaussian problem.
+There is no listed license for NPPC.
+
+\subsection{MNIST denoising}
+The MNIST dataset is available under the GNU general public license, which we respect through our use.
+
+\textbf{cGAN training.~}
+We choose $\betaadv=10^{-5}$, $n\batch=64$, $P\train=2$, and train for 125 epochs for both rcGAN and pcaGAN.
+Running PyTorch on a server with 4 Tesla A100 GPUs, each with 82~GB of memory, the cGAN training for $d=100$ takes approximately 8 hours, with training time decreasing with smaller $d$.
+For pcaGAN, we train two models, one with $K=5$ and one with $K=10$.
+In both cases, $\betapca=10^{-1}$, $E\evec=25$, and $E\eval=50$.
+
+\textbf{cGAN architecture.~}
+For both cGANs, the generator is the standard UNet which takes in the concatenation of $\vec{y}$ and code $\vec{z}$.
+The network consists of 3 pooling layers and 32 initial channels.
+The convolutions use a kernel of size $3\times 3$, instance normalization, and leaky ReLU activations with a negative slope of $0.1$.
+For the encoder portion of the UNet, we use max pooling with a kernel size of $2\times 2$ to reduce spatial resolution by a factor of 2.
+For the decoder portion of the UNet, we use nearest-neighbor interpolation to increase spatial resolution by a factor of 2.
+The discriminator is simply the encoder portion of the UNet with an additional dense layer appended to map the UNet's latent space to a scalar output.
+Note that there is no listed license for rcGAN.
+
+\textbf{NPPC.~}
+For NPPC, we do not modify the authors' implementation in \cite{Nehme:github:23} in any way.
+We first train the MMSE reconstruction network and then train the NPPC network.
+There is no listed license for NPPC.
+
+\subsection{Accelerated MRI}
+For our MRI experiments, we use the fastMRI dataset which is available under the MIT license, which we respect through our use.
+
+\textbf{cGAN training.~}
+We choose $\betaadv = 10^{-5}$, $\betapca=10^{-2}$, $n\batch=2$, $P\train=2$, $K=1$, $E\evec=25$, and $E\eval=50$ for pcaGAN.
+For rcGAN, pscGAN , and Adler's cGAN, we use the hyperparameters and training procedure described in \cite{Bendel:NIPS:23}.
+All models were trained for 100 epochs using the Adam optimizer \cite{Kingma:ICLR:15} with a learning rate of $10^{-3}$, $\beta_1=0$, and $\beta_2=0.99$, as in \cite{Karras:ICLR:18}.
+Running PyTorch on a server with 4 Tesla A100 GPUs, each with 82~GB of memory, the training of each MRI cGAN took approximately 1 day.
+Note that there is no listed license for rcGAN, pscGAN, or Adler and \"Oktem's cGAN.
+
+\textbf{cGAN architecture.~} 
+All four cGANs used the same generator and discriminator architectures described in \cite{Bendel:NIPS:23}, except that Adler and \"Oktem's discriminator used extra input channels to facilitate the 3-input loss.
+
+\textbf{E2E-VarNet.~}
+For the Sriram et al.'s E2E-VarNet \cite{Sriram:MICCAI:20}, we use the same training procedure and hyperparameters outlined in \cite{Jalal:NIPS:21} with modification to the sampling pattern as in \cite{Bendel:NIPS:23}.
+As in \cite{Jalal:NIPS:21}, we use the SENSE-based coil-combined image as the ground truth instead of the RSS image.
+The E2E-VarNet is available under the MIT license, which we respect.
+
+\textbf{Langevin approach.~} 
+For Jalal et al.'s MRI approach \cite{Jalal:NIPS:21}, we do not modify the authors' implementation from \cite{Jalal:github:21} other than replacing the default sampling pattern with the GRO sampling mask. 
+We borrow both generated samples and results from \cite{Bendel:NIPS:23}.
+The authors' code is available under the MIT license, which we respect.
+
+\subsection{FFHQ Inpainting} \label{app:inpainting}
+For our inpainting experiment, we use the FFHQ dataset which is available under the Creative Commons BY-NC-SA 4.0 license, which we respect through our use.
+
+\textbf{cGAN training.~} 
+We choose $\betaadv = 5\times 10^{-3}$, $\betapca=10^{-3}$, $n\batch=5$, $P\train=2$, $K=2$, $E\evec=25$, and $E\eval=50$ for pcaGAN.
+Running PyTorch on a server with 4 Tesla A100 GPUs, each with 82~GB of memory, the training of our cGAN took approximately 1.5 days.
+
+\textbf{cGAN architecture.~}
+As in \cite{Bendel:NIPS:23}, we use the CoModGAN networks from \cite{Zhao:ICLR:21} which extend the StyleGAN2 \cite{Karras:CVPR:20} network.
+The StyleGAN2 architecture is available under the NVIDIA Source Code License, which we respect.
+
+\textbf{rcGAN.~} 
+We follow the training procedure outlined in \cite{Bendel:NIPS:23}, only modifying the inpainting mask to be random.
+The total training time on a server with 4 NVIDIA A100 GPUs, each with 82~GB of memory, is roughly 1 day.
+There is no listed license for rcGAN.
+
+\textbf{pscGAN.~}
+We use the same training procedure outlined in \cite{Bendel:NIPS:23}, modifying the inpainting masks to be random and using the $\mathcal{L}_{2,P}$ objective described briefly in \secref{background} with $P\!=\!8$.
+The total training time on a server with 4 NVIDIA A100 GPUs, each with 82~GB of memory, is roughly 1.5 days.
+There is no listed license for pscGAN.
+
+\textbf{CoModGAN.~} 
+We use the PyTorch implementation of CoModGAN from \cite{Zeng:github:22} and train the model. 
+The total training time on a server with 4 NVIDIA A100 GPUs, each with 82~GB of memory, is roughly 1 day.
+There is no listed license for CoModGAN, beyond the NVIDIA Source Code License.
+
+\subsubsection{Diffusion Methods}
+For all three diffusion methods, we use the pretrained weights from \cite{Chung:ICLR:23}.
+
+\textbf{DPS.~} 
+We use the suggested settings for the $256\times256$ FFHQ dataset and the code from the official PyTorch implementation \cite{Chung:github:23}.
+We found the LPIPS-minimizing step-size $\zeta$ via grid search over a 1000 image validation set.
+We generate 1 sample for all 20\,000 images in our test set, using a batch-size of 1 and 1000 NFEs.
+The total generation time on a server with 4 NVIDIA A100 GPUs, each with 82~GB of memory, is roughly 9 days.
+There is no listed license for DPS.
+
+\textbf{DDNM.~}
+We use the code from the official PyTorch implementation \cite{Wang:github:23}.
+We generate 1 sample for all 20\,000 images in our test set, using a batch-size of 1 and 100 NFEs.
+The total generation time on a server with 4 NVIDIA A100 GPUs, each with 82~GB of memory, is roughly 1.5 days.
+There is no listed license for DDNM.
+
+\textbf{DDRM.~}
+We use the code from the official PyTorch implementation \cite{Kawar:github:22}.
+We generate 1 sample for all 20\,000 images in our test set, using a batch-size of 1 and 20 NFEs.
+The total generation time on a server with 4 NVIDIA A100 GPUs, each with 82~GB of memory, is roughly 5.5 hours.
+There is no listed license for DDRM.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{Additional reconstruction plots}
+\subsection{MNIST denoising} \label{app:mnistfigs}
+
+\mnistFigBody{4}{h!}
+\mnistFigBody{0}{h!}
+\mnistFigBody{7}{h!}
+
+\clearpage
+\subsection{MRI at acceleration \texorpdfstring{$R=4$}{R=4}} \label{app:mriR4plots}
+
+\MRIzoomedappfig{4}{5.0}{1.55}{4.95}{1.05}{4}{1.85}
+\MRIzoomedappfig{2}{5.35}{1.3}{4.95}{0.8}{4}{1.85}
+
+\clearpage
+\subsection{MRI at acceleration \texorpdfstring{$R=8$}{R=8}} \label{app:mriR8plots}
+
+\MRIzoomedappfig{4}{5.0}{1.55}{4.95}{1.05}{8}{1.85}
+\MRIzoomedappfig{2}{5.35}{1.3}{4.95}{0.8}{8}{1.85}
+
+\clearpage
+\subsection{Inpainting} \label{app:inpaintfigs}
+
+\inpaintingFigRow{503}{h}
+\inpaintingFigRow{623}{h}
+\inpaintingFigRow{387}{h}
+\inpaintingFigRow{729}{h}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
