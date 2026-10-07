@@ -54,6 +54,18 @@ def coverage_from_ranks(rank, N, levels=LEVELS):
     return out
 
 
+def hb_pvalue(r_hat, alpha, n):
+    """Hoeffding-Bentkus p-value for H0: R > alpha given empirical risk r_hat (Bates et al. 2021, eq. 13)."""
+    from scipy.stats import binom
+
+    r = np.minimum(r_hat, alpha)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        h1 = np.where(r > 0, r * np.log(r / alpha), 0.0) + (1 - r) * np.log((1 - r) / (1 - alpha))
+    p_h = np.exp(-n * h1)
+    p_b = np.e * binom.cdf(np.ceil(n * np.asarray(r_hat)), n, alpha)
+    return np.minimum(p_h, p_b)
+
+
 def deciles(a, n=10):
     sub = np.asarray(a).ravel()[:: max(1, a.size // 2_000_000)]
     return np.quantile(sub, np.linspace(0, 1, n + 1)[1:-1])
@@ -144,7 +156,10 @@ for key in args.models:
     res["A5_map_crps"] = (mae - gmd / 2).mean(1).tolist()
     res["A5_map_es"] = maps["es_fair"].tolist()
 
-    # ---- A6: RCPS with per-map losses, Hoeffding UCB over maps
+    # ---- A6: RCPS with per-map losses (n = #calibration maps). Two bounds:
+    #   naive Hoeffding UCB  R_hat + sqrt(log(1/delta)/(2n))   (as calibration.py, for continuity)
+    #   Hoeffding-Bentkus (Bates et al. 2021): certify R(lam) <= alpha iff p_HB(R_hat, alpha) < delta,
+    #   p_HB = min(exp(-n h1(min(R_hat, alpha), alpha)), e * P(Bin(n, alpha) <= ceil(n R_hat)))
     rng = np.random.default_rng(args.seed)
     perm = rng.permutation(n_maps)
     cal, test = perm[: n_maps // 2], perm[n_maps // 2:]
@@ -153,25 +168,27 @@ for key in args.models:
     P = maps["rho_hist"].sum(-1)[:, 0]
     a6 = []
     delta = 0.05
+    n = len(cal)
     for li, L in enumerate(maps["rcps_levels"]):
         cum = np.cumsum(maps["rho_hist"][:, li, :], axis=1)[:, :-1]  # count(rho <= edge_{k+1})
-        loss = 1 - cum / P[:, None]  # (n_maps, n_lam)
-        n = len(cal)
-        ucb = loss[cal].mean(0) + np.sqrt(np.log(1 / delta) / (2 * n))
+        loss = 1 - cum / P[:, None]  # (n_maps, n_lam), non-increasing in lam
         alpha = 1 - L
-        ok = ucb <= alpha
-        suffix_ok = np.flip(np.logical_and.accumulate(np.flip(ok)))
-        if suffix_ok.any():
-            j = int(np.argmax(suffix_ok))
-            lam_hat = float(lam_grid[j])
-            test_cov = float(1 - loss[test, j].mean())
-            width = float(2 * lam_hat * maps["half_width"][test, li].mean())
-        else:
-            lam_hat, test_cov, width = None, None, None
-        j1 = int(np.searchsorted(lam_grid, 1.0))
-        a6.append({"level": float(L), "lam_hat": lam_hat, "test_cov": test_cov, "width": width,
-                   "raw_cal_cov": float(1 - loss[cal, j1].mean()), "raw_width": float(2 * maps["half_width"][test, li].mean()),
-                   "hoeffding_penalty": float(np.sqrt(np.log(1 / delta) / (2 * n)))})
+        r_hat = loss[cal].mean(0)
+        row = {"level": float(L), "raw_cal_cov": float(1 - loss[cal, int(np.searchsorted(lam_grid, 1.0))].mean()),
+               "raw_width": float(2 * maps["half_width"][test, li].mean()),
+               "hoeffding_penalty": float(np.sqrt(np.log(1 / delta) / (2 * n)))}
+        certs = {"hoeffding": r_hat + np.sqrt(np.log(1 / delta) / (2 * n)) <= alpha,
+                 "HB": hb_pvalue(r_hat, alpha, n) < delta}
+        for name, ok in certs.items():
+            suffix_ok = np.flip(np.logical_and.accumulate(np.flip(ok)))
+            if suffix_ok.any():
+                j = int(np.argmax(suffix_ok))
+                lam_hat = float(lam_grid[j])
+                row[name] = {"lam_hat": lam_hat, "test_cov": float(1 - loss[test, j].mean()),
+                             "width": float(2 * lam_hat * maps["half_width"][test, li].mean())}
+            else:
+                row[name] = {"lam_hat": None, "test_cov": None, "width": None, "note": "cannot certify on grid lam<=5"}
+        a6.append(row)
     res["A6"] = a6
     R[key] = res
     print(key, "done", flush=True)
