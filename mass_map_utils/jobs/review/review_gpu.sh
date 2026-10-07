@@ -12,6 +12,7 @@
 source /share/apps/anaconda/3-2022.05/etc/profile.d/conda.sh
 conda activate cGAN
 export WANDB_MODE=disabled
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
 set -x
 nvidia-smi --query-gpu=name,memory.total --format=csv
 cd /home/jjwhit/.herdr/worktrees/rcGAN/crps-review/mass_map_utils/scripts/review

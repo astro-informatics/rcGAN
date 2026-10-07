@@ -26,6 +26,9 @@ args = p.parse_args()
 FIG = OUT_ROOT + "figures/"
 os.makedirs(FIG, exist_ok=True)
 os.makedirs(OUT_ROOT + "analysis", exist_ok=True)
+TAG = "" if args.stats_dir == "stats" else "_" + args.stats_dir
+FIG = FIG if not TAG else OUT_ROOT + f"figures/{args.stats_dir}/"
+os.makedirs(FIG, exist_ok=True)
 LEVELS = np.round(np.arange(0.05, 1.0, 0.05), 2)
 COLORS = {"R": "#d62728", "F3": "#1f77b4", "F100": "#17becf", "FB": "#9467bd", "S": "#ff7f0e", "NL": "#7f7f7f"}
 mask = np.load("/home/jjwhit/rcGAN/mass_map_utils/cosmos/cosmos_mask.npy", allow_pickle=True).astype(bool)
@@ -186,7 +189,7 @@ if ref in R:
                                       "t": float(d.mean() / (d.std(ddof=1) / np.sqrt(d.size))) if d.std() > 0 else 0.0,
                                       "boot95": np.percentile(boots, [2.5, 97.5]).tolist()}
 
-json.dump(R, open(OUT_ROOT + "analysis/stageA.json", "w"))
+json.dump(R, open(OUT_ROOT + f"analysis/stageA{TAG}.json", "w"))
 
 # ---- figures
 fig, ax = plt.subplots(1, 2, figsize=(12, 4))

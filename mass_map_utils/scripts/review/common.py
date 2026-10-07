@@ -87,9 +87,22 @@ def sample(model, y, n, chunk=64, seed=None):
     """n posterior samples for a single observation y (4, H, W) -> (n, H, W) in kappa units."""
     if seed is not None:
         torch.manual_seed(seed)
-    out = []
+    chunk = min(chunk, _CHUNK.get("max", chunk))
+    out, done = [], 0
     y = y.to(model.device)
-    for s in range(0, n, chunk):
-        k = min(chunk, n - s)
-        out.append(model(y.unsqueeze(0).expand(k, -1, -1, -1).contiguous())[:, 0])
+    while done < n:
+        k = min(chunk, n - done)
+        try:
+            out.append(model(y.unsqueeze(0).expand(k, -1, -1, -1).contiguous())[:, 0])
+            done += k
+        except torch.cuda.OutOfMemoryError:
+            if chunk == 1:
+                raise
+            torch.cuda.empty_cache()
+            chunk = max(1, chunk // 2)
+            print(f"OOM: reducing sampling chunk to {chunk}", flush=True)
+    _CHUNK["max"] = chunk
     return to_kappa(torch.cat(out), model.args)
+
+
+_CHUNK = {}  # remembers reduced chunk sizes after OOM
