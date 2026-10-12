@@ -23,6 +23,8 @@ p.add_argument("--n-maps", type=int, default=100)
 p.add_argument("--n-samp", type=int, default=256)
 p.add_argument("--chunks", type=int, nargs="+", default=[8, 2])
 p.add_argument("--n-maps-chunk-check", type=int, default=10)
+p.add_argument("--chunk-check-only", action="store_true", help="only the train-mode chunk-size comparison")
+p.add_argument("--out", default="bn_coverage.json")
 args = p.parse_args()
 
 torch.set_float32_matmul_precision("medium")
@@ -59,9 +61,11 @@ def run(model, mode, chunk, n_maps):
 res = {}
 for key in args.models:
     model = load_model(MODELS[key])  # fresh: running stats untouched by train-mode passes below
-    r = {"eval": run(model, "eval", 32, args.n_maps)}
-    # train-mode passes update running stats; they are never used again (eval runs above, model discarded after)
-    r[f"train_chunk{args.chunks[0]}"] = run(model, "train", args.chunks[0], args.n_maps)
+    r = {}
+    if not args.chunk_check_only:
+        r["eval"] = run(model, "eval", 32, args.n_maps)
+        # train-mode passes update running stats; they are never used again (eval runs above, model discarded after)
+        r[f"train_chunk{args.chunks[0]}"] = run(model, "train", args.chunks[0], args.n_maps)
     for c in args.chunks[1:]:
         r[f"train_chunk{c}_first{args.n_maps_chunk_check}"] = run(model, "train", c, args.n_maps_chunk_check)
     r[f"train_chunk{args.chunks[0]}_first{args.n_maps_chunk_check}"] = run(model, "train", args.chunks[0], args.n_maps_chunk_check)
@@ -71,4 +75,4 @@ for key in args.models:
     torch.cuda.empty_cache()
 
 os.makedirs(OUT_ROOT + "a0", exist_ok=True)
-json.dump(res, open(OUT_ROOT + "a0/bn_coverage.json", "w"), indent=1)
+json.dump(res, open(OUT_ROOT + "a0/" + args.out, "w"), indent=1)

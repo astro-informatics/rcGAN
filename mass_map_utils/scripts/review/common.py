@@ -88,7 +88,7 @@ def sample(model, y, n, chunk=64, seed=None):
     if seed is not None:
         torch.manual_seed(seed)
     chunk = min(chunk, _CHUNK.get("max", chunk))
-    out, done = [], 0
+    out, done, oom = [], 0, False
     y = y.to(model.device)
     while done < n:
         k = min(chunk, n - done)
@@ -100,8 +100,10 @@ def sample(model, y, n, chunk=64, seed=None):
                 raise
             torch.cuda.empty_cache()
             chunk = max(1, chunk // 2)
+            oom = True
             print(f"OOM: reducing sampling chunk to {chunk}", flush=True)
-    _CHUNK["max"] = chunk
+    if oom:  # only remember a reduction forced by OOM (a deliberately small chunk must not cap later calls)
+        _CHUNK["max"] = chunk
     return to_kappa(torch.cat(out), model.args)
 
 
