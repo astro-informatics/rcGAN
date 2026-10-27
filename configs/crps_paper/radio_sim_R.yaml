@@ -28,7 +28,7 @@ adv_weight: 1e-5
 batch_size: 8
 accumulate_grad_batches: 2  # effective batch 16, as the original 4 GPUs x 2 x accumulate 2
 
-num_epochs: 100
+num_epochs: 70  # budget: 70 epochs for R, F, MS (R and F were launched with 100 and stopped after epoch index 69)
 psnr_gain_tol: 0.25
 
 num_workers: 4
