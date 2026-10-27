@@ -6,7 +6,7 @@
 #SBATCH --mem-per-cpu 8G
 ##SBATCH --gres=gpu:v100:1
 #SBATCH --gres=gpu:a100:1
-#SBATCH --time 1-0:00:00
+#SBATCH --time 2-0:00:00
 #SBATCH --job-name jupyter-notebook
 #SBATCH --mail-use=ucasjjw@ucl.ac.uk
 #SBATCH --mail-type=ALL

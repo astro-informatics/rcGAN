@@ -47,7 +47,8 @@ if __name__ == '__main__':
             model = rcGAN(cfg, args.exp_name, args.num_gpus)
         elif cfg.experience == 'mass_mapping':
             dm = MMDataModule(cfg)
-            model = mmGAN(cfg, args.exp_name, args.num_gpus)
+            model = mmGAN(cfg, args.exp_name, args.num_gpus,
+                           crps_mode=args.crps_mode, crps_alpha=args.crps_alpha)
         elif cfg.experience == 'radio':
             cfg.num_workers = args.num_gpus # set number of workers to same as gpu
             dm = RadioDataModule(cfg)
