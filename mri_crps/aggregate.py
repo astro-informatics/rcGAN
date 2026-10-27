@@ -316,7 +316,7 @@ for k in args.names:
     axs[2].plot(v['epoch'], v['val_psnr_8'], color=COL.get(k.split('_')[0]), label=f'{k} P=8')
     axs[2].plot(v['epoch'], v['val_psnr_1'], color=COL.get(k.split('_')[0]), ls='--', label=f'{k} P=1')
     axs[3].plot(v['epoch'], v['beta_std'], color=COL.get(k.split('_')[0]), label=k)
-axs[0].set(title='generator regulariser (rolling mean)\n(MS ep. 0-30: g_loss from Slurm log)', xlabel='step')
+axs[0].set(title='generator regulariser (rolling mean)\n(MS ep. 0-30: g_loss from Slurm log)', xlabel='step', yscale='log')
 axs[1].set(title='critic loss (rolling mean)', xlabel='step')
 axs[2].set(title='validation PSNR', xlabel='epoch')
 axs[3].set(title='rcGAN beta (fixed for F, MS)', xlabel='epoch')
