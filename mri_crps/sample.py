@@ -46,6 +46,8 @@ if __name__ == '__main__':
     args = p.parse_args()
     torch.set_float32_matmul_precision('highest')
     torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.allow_tf32 = False  # strict fp32 on A100s too (eval jobs may land on either GPU type)
+    torch.backends.cuda.matmul.allow_tf32 = False
 
     ds = CachedSliceData('test', with_maps=True)
     n_items = len(ds) if args.max_items is None else min(args.max_items, len(ds))
