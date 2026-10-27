@@ -54,6 +54,16 @@ assert models.lightning.mmGAN.__file__.startswith(WT), models.lightning.mmGAN.__
 which, script = sys.argv[1], sys.argv[2]
 if which == "joint":
     import jt_common
+    import torch
+
+    # torch 1.13's cuFFT fails on the L40S node (CUFFT_INTERNAL_ERROR). There, run jt_common's FFTs on the CPU
+    # (same float32/complex64 transforms, results moved back to the GPU); nothing else changes.
+    if torch.cuda.is_available() and "L40S" in torch.cuda.get_device_name():
+        def _on_cpu(f):
+            return lambda x, *a, **k: f(x.cpu(), *a, **k).to(x.device)
+
+        torch.fft.fft2, torch.fft.ifft2 = _on_cpu(torch.fft.fft2), _on_cpu(torch.fft.ifft2)
+        print("L40S: torch.fft.fft2/ifft2 run on the CPU", flush=True)
 
     jt_common.MODELS, jt_common.load_model, jt_common.OUT = common.MODELS, load_model, EVAL + "joint/"
     script = os.path.join(JT, script)
