@@ -13,7 +13,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from utils.parse_args import create_arg_parser
 from models.lightning.rcGAN import rcGAN
 from pytorch_lightning import seed_everything
-from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.loggers import WandbLogger, CSVLogger
 from data.lightning.MassMappingDataModule import MMDataModule
 from data.lightning.RadioDataModule import RadioDataModule
 from models.lightning.mmGAN import mmGAN
@@ -91,7 +91,7 @@ if __name__ == '__main__':
         callbacks=[checkpoint_callback_epoch],
         num_sanity_val_steps=2,
         profiler="simple",
-        logger=wandb_logger,
+        logger=[wandb_logger, CSVLogger(save_dir=cfg.checkpoint_dir + 'csv', name=args.exp_name)],
         benchmark=False,
         log_every_n_steps=10,
         accumulate_grad_batches=accumulate_grad_batches

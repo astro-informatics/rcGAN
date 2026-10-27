@@ -14,6 +14,7 @@ from models.archs.radio.generator import UNetModel
 from models.archs.radio.discriminator import DiscriminatorModel
 from evaluation_scripts.metrics import psnr
 from torchmetrics.functional import peak_signal_noise_ratio
+from proper_scores import fair_crps, ms_fair_crps, plugin_crps
 
 class riGAN(pl.LightningModule):
     def __init__(self, args, exp_name, num_gpus):
@@ -41,6 +42,11 @@ class riGAN(pl.LightningModule):
             out_chans=self.out_chans,
             input_im_size=self.args.im_size
         )
+
+        # Regulariser: 'rcgan' (L1 - beta*std with beta auto-tuned on validation PSNR, the repo default),
+        # 'fair' / 'ms_fair' / 'plugin' (proper_scores.py, weight 1, no beta tuning).
+        self.reg = self.args.__dict__.get('reg', 'rcgan')
+        self.adv_scale = self.args.__dict__.get('adv_scale', 1.0)  # 0 for the "no adversarial loss" ablation
 
         self.std_mult = 1
         self.is_good_model = 0
@@ -118,7 +124,7 @@ class riGAN(pl.LightningModule):
         elif self.current_epoch <= 22:
             adv_weight = 1e-4
 
-        return - adv_weight * gen_pred_loss.mean()
+        return - self.adv_scale * adv_weight * gen_pred_loss.mean()
 
     def l1_std_p(self, avg_recon, gens, x):
         return F.l1_loss(avg_recon, x) - self.std_mult * np.sqrt(
@@ -154,7 +160,19 @@ class riGAN(pl.LightningModule):
 
             # adversarial loss is binary cross-entropy
             g_loss = self.adversarial_loss_generator(y, gens)
-            g_loss += self.l1_std_p(avg_recon, gens, x)
+            if self.reg == 'rcgan':
+                reg_loss = self.l1_std_p(avg_recon, gens, x)
+            elif self.reg == 'fair':
+                reg_loss = fair_crps(gens, x)
+            elif self.reg == 'ms_fair':
+                reg_loss = ms_fair_crps(gens, x)
+            elif self.reg == 'plugin':
+                reg_loss = plugin_crps(gens, x)
+            else:
+                raise ValueError(f"unknown reg {self.reg}")
+            self.log('adv_loss', g_loss.detach(), on_step=True, on_epoch=True)
+            self.log('reg_loss', reg_loss.detach(), on_step=True, on_epoch=True)
+            g_loss += reg_loss
 
             self.log('g_loss', g_loss, prog_bar=True)
 
@@ -253,7 +271,11 @@ class riGAN(pl.LightningModule):
         psnr_diff = (avg_single_psnr + 2.5) - avg_psnr
 
         mu_0 = 2e-2
-        self.std_mult += mu_0 * psnr_diff
+        if self.reg == 'rcgan':  # beta tuning only for the rcGAN regulariser
+            self.std_mult += mu_0 * psnr_diff
+        self.log('val_psnr_8', float(avg_psnr), rank_zero_only=True)
+        self.log('val_psnr_1', float(avg_single_psnr), rank_zero_only=True)
+        self.log('std_mult', float(self.std_mult), rank_zero_only=True)
 
         if np.abs(psnr_diff) <= self.args.psnr_gain_tol:
             self.is_good_model = 1
