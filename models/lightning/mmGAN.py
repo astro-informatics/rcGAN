@@ -16,7 +16,7 @@ from torchmetrics.functional import peak_signal_noise_ratio
 from models.lightning.proper_scores import ms_fair_crps
 
 class mmGAN(pl.LightningModule):
-    def __init__(self, args, exp_name, num_gpus, crps_mode=None, crps_alpha=None, adv_scale=1.0):
+    def __init__(self, args, exp_name, num_gpus, crps_mode=None, crps_alpha=None, adv_scale=1.0, ms_level_weights=None):
         super().__init__()
         self.args = args # This is the cfg object
         self.exp_name = exp_name
@@ -27,8 +27,12 @@ class mmGAN(pl.LightningModule):
         self.crps_mode = crps_mode if crps_mode is not None else "alpha_fair"
         self.crps_alpha = crps_alpha if crps_alpha is not None else 0.95 # Only used if crps_mode is "alpha_fair"
         # "ms" = multiscale fair CRPS (proper_scores.ms_fair_crps, default Haar levels).
+        # "ms_sigma" = the same with fixed level weights 1/sigma_s (ms_level_weights, from the training truths).
         # adv_scale multiplies the generator's adversarial loss (0 = critic ablation, "-noadv").
         self.adv_scale = adv_scale
+        self.ms_level_weights = ms_level_weights
+        if self.crps_mode == "ms_sigma":
+            assert ms_level_weights is not None, "ms_sigma needs ms_level_weights"
 
         self.in_chans = args.in_chans + 2  # Two extra dimensions of the added noise 
         self.out_chans = args.out_chans
@@ -170,6 +174,8 @@ class mmGAN(pl.LightningModule):
             return self.alpha_fair_crps_loss(gens, x, self.crps_alpha)
         elif self.crps_mode == "ms":
             return ms_fair_crps(gens, x)
+        elif self.crps_mode == "ms_sigma":
+            return ms_fair_crps(gens, x, level_weights=self.ms_level_weights)
         else:
             raise ValueError(f"Invalid CRPS mode: {self.crps_mode}")
 

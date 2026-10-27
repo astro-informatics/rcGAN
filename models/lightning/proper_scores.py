@@ -15,6 +15,9 @@ Definitions (P = number of samples per measurement):
                    Level 0 is the per-pixel fair CRPS. Each level is a set of linear projections of
                    the field, so the sum is proper for the joint distribution and strictly proper for
                    the set of all pooled marginals; it is still unbiased (fair) for every P >= 2.
+    MS-sigma   = the same with fixed per-level weights 1/sigma_s (sigma_s = std of the level-s coefficients of the
+                   training truths), so every level contributes in standardised units. Added 2026-10-27 because the
+                   unweighted MS is dominated by the coarse levels for red-spectrum images.
 """
 import math
 
@@ -49,10 +52,26 @@ def default_levels(h, w, coarsest=4):
     return max(1, int(math.floor(math.log2(min(h, w) / coarsest))) + 1)
 
 
-def ms_fair_crps(gens, x, n_levels=None):
+def haar_levels(field, n_levels):
+    """Orthonormal Haar scaling coefficients of `field` (N, C, H, W) at levels 0..n_levels-1."""
+    out = [field]
+    for _ in range(1, n_levels):
+        field = 2.0 * F.avg_pool2d(field, 2, ceil_mode=True)
+        out.append(field)
+    return out
+
+
+def ms_fair_crps(gens, x, n_levels=None, level_weights=None):
+    """Multiscale fair CRPS. level_weights=None gives the original unweighted average over levels ("MS").
+    For "MS-sigma", pass level_weights = 1 / sigma_s, where sigma_s is the standard deviation of the level-s
+    coefficients of the TRAINING truths (fixed constants, see `haar_level_std`), so each level's CRPS is in
+    standardised units. Fixed positive weights keep the score proper and fair."""
     B, P, C, H, W = gens.shape
     if n_levels is None:
         n_levels = default_levels(H, W)
+    if level_weights is None:
+        level_weights = [1.0] * n_levels
+    assert len(level_weights) == n_levels
     g = gens.reshape(B * P, C, H, W)
     t = x
     total = 0.0
@@ -61,8 +80,24 @@ def ms_fair_crps(gens, x, n_levels=None):
             # orthonormal Haar scaling coefficients: block sum / block side = 2 * avg_pool each level
             g = 2.0 * F.avg_pool2d(g, 2, ceil_mode=True)
             t = 2.0 * F.avg_pool2d(t, 2, ceil_mode=True)
-        total = total + fair_crps(g.view(B, P, C, g.shape[-2], g.shape[-1]), t)
+        total = total + level_weights[s] * fair_crps(g.view(B, P, C, g.shape[-2], g.shape[-1]), t)
     return total / n_levels
+
+
+@torch.no_grad()
+def haar_level_std(truth_batches, n_levels):
+    """sigma_s for MS-sigma: std over the training truths of the level-s Haar scaling coefficients, pooled over
+    coefficients and channels, computed in exactly the units the loss sees. `truth_batches` yields (N, C, H, W)
+    tensors (use >= 1000 training items). Returns a list of n_levels floats; save it with the run config."""
+    n = [0] * n_levels
+    s1 = [0.0] * n_levels
+    s2 = [0.0] * n_levels
+    for xb in truth_batches:
+        for s, c in enumerate(haar_levels(xb.double(), n_levels)):
+            n[s] += c.numel()
+            s1[s] += c.sum().item()
+            s2[s] += (c * c).sum().item()
+    return [math.sqrt(max(s2[s] / n[s] - (s1[s] / n[s]) ** 2, 1e-12)) for s in range(n_levels)]
 
 
 def fair_energy_score(gens, x):
@@ -91,3 +126,7 @@ if __name__ == "__main__":
     print("plugin P=2: calibrated", plugin_crps(cal, xs).item(), "| sd 0.5", plugin_crps(0.5 * cal, xs).item())
     print("levels for 300x300:", default_levels(300, 300), "| 384:", default_levels(384, 384))
     print("ms_fair_crps runs:", ms_fair_crps(g, x).item())
+    sig = haar_level_std([x], 3)
+    w = [1 / v for v in sig]
+    print("haar_level_std:", [round(v, 3) for v in sig], "| MS-sigma runs:", ms_fair_crps(g, x, 3, w).item())
+    assert abs(ms_fair_crps(g, x, 3, [1, 1, 1]).item() - ms_fair_crps(g, x, 3).item()) < 1e-12

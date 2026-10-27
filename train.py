@@ -47,9 +47,13 @@ if __name__ == '__main__':
             model = rcGAN(cfg, args.exp_name, args.num_gpus)
         elif cfg.experience == 'mass_mapping':
             dm = MMDataModule(cfg)
+            ms_level_weights = None
+            if args.ms_sigma_file is not None:
+                with open(args.ms_sigma_file) as f:
+                    ms_level_weights = json.load(f)["weights"]
             model = mmGAN(cfg, args.exp_name, args.num_gpus,
                            crps_mode=args.crps_mode, crps_alpha=args.crps_alpha,
-                           adv_scale=args.adv_scale)
+                           adv_scale=args.adv_scale, ms_level_weights=ms_level_weights)
         elif cfg.experience == 'radio':
             cfg.num_workers = args.num_gpus # set number of workers to same as gpu
             dm = RadioDataModule(cfg)

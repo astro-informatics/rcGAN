@@ -22,5 +22,7 @@ def create_arg_parser():
                              'Overrides the default hard-coded in mmGAN.__init__ when set.')
     parser.add_argument('--adv-scale', type=float, default=1.0,
                         help='Multiplier on the generator adversarial loss for mmGAN (0 = no adversarial loss).')
+    parser.add_argument('--ms-sigma-file', type=str, default=None,
+                        help='JSON with "weights" (1/sigma_s per Haar level) for --crps-mode ms_sigma.')
 
     return parser

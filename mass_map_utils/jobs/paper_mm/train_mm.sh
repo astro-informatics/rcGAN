@@ -28,6 +28,7 @@ echo "slurm CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 # With PICK_FREE_GPUS=1, use the 4 highest-index GPUs that have < 1 GB in use instead.
 if [ "$PICK_FREE_GPUS" = 1 ]; then
   export PICKED=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F', ' '$2 < 1000 {print $1}' | sort -n | tail -4 | sort -n | paste -sd,)
+  [ $(echo $PICKED | tr , '\n' | grep -c .) -lt 4 ] && { echo "fewer than 4 free GPUs ($PICKED); using Slurm's"; PICKED=; }
   echo "picked GPUs $PICKED"  # srun re-sets CUDA_VISIBLE_DEVICES per task, so it is set again inside the step
 fi
 EXP=$1; shift
