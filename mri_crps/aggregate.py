@@ -39,7 +39,7 @@ LEVELS = z0['levels']
 EXACT = z0['exact']
 rng = np.random.default_rng(0)
 C = np.stack([np.bincount(rng.integers(0, n, n), minlength=n) for _ in range(args.B)]).astype(float)  # (B, n) counts
-COL = {'R': 'tab:red', 'F': 'tab:blue', 'MS': 'tab:green', 'S': 'tab:orange'}
+COL = {'R': 'tab:red', 'F': 'tab:blue', 'MS': 'tab:green', 'MSsig': 'tab:purple', 'S': 'tab:orange'}
 FIG = OUT / 'figures'
 FIG.mkdir(exist_ok=True)
 
