@@ -21,7 +21,7 @@ from utils.mri.transforms import to_tensor
 from models.lightning.proper_scores import fair_crps, ms_fair_crps, plugin_crps
 
 class rcGAN(pl.LightningModule):
-    def __init__(self, args, exp_name, num_gpus, reg='rcgan', adv_scale=1.0):
+    def __init__(self, args, exp_name, num_gpus, reg='rcgan', adv_scale=1.0, level_weights=None):
         super().__init__()
         self.args = args
         self.exp_name = exp_name
@@ -29,8 +29,12 @@ class rcGAN(pl.LightningModule):
         # Regulariser on the generator: 'rcgan' (l1 - beta * std, beta auto-tuned on validation data),
         # 'fair' (fair CRPS), 'ms' (multiscale fair CRPS) or 'plugin' (plug-in CRPS); CRPS losses have
         # weight 1 and no beta tuning. adv_scale multiplies the adversarial loss (0 = no critic).
+        # 'ms_sigma' is MS with fixed level weights 1/sigma_s (sigma_s from the training truths, mri_crps/compute_sigma.py).
         self.reg = reg
         self.adv_scale = adv_scale
+        self.level_weights = level_weights
+        if reg == 'ms_sigma':
+            assert level_weights is not None
 
         self.in_chans = args.in_chans + 2
         self.out_chans = args.out_chans
@@ -171,6 +175,8 @@ class rcGAN(pl.LightningModule):
                 reg_loss = fair_crps(gens, x)
             elif self.reg == 'ms':
                 reg_loss = ms_fair_crps(gens, x)
+            elif self.reg == 'ms_sigma':
+                reg_loss = ms_fair_crps(gens, x, n_levels=len(self.level_weights), level_weights=self.level_weights)
             elif self.reg == 'plugin':
                 reg_loss = plugin_crps(gens, x)
             else:

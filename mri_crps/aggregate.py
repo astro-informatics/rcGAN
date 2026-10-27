@@ -246,14 +246,14 @@ def save(fig, name):
 
 def errline(ax, x, e, k, **kw):
     v, lo, hi = np.array(e['val']), np.array(e['lo']), np.array(e['hi'])
-    ax.plot(x, v, color=COL.get(k), marker='o', ms=3, label=k, **kw)
-    ax.fill_between(x, lo, hi, color=COL.get(k), alpha=0.2, lw=0)
+    ax.plot(x, v, color=COL.get(k.split('_')[0]), marker='o', ms=3, label=k, **kw)
+    ax.fill_between(x, lo, hi, color=COL.get(k.split('_')[0]), alpha=0.2, lw=0)
 
 
 fig, axs = plt.subplots(1, 3, figsize=(13, 3.6))
 for k in args.names:
     errline(axs[0], EXACT, cal['pix_cov_minus_exact'][k], k)
-    axs[1].bar(np.arange(10) + 0.25 * (args.names.index(k) - 1), cal['pix_rankhist_density'][k], width=0.25, color=COL.get(k), label=k)
+    axs[1].bar(np.arange(10) + 0.25 * (args.names.index(k) - 1), cal['pix_rankhist_density'][k], width=0.25, color=COL.get(k.split('_')[0]), label=k)
     errline(axs[2], EXACT, jc['patch16_cov_minus_exact'][k], k)
 axs[0].axhline(0, color='k', lw=0.8)
 axs[0].set(xlabel='nominal level', ylabel='coverage - nominal', title='per-pixel coverage (fg mask)')
@@ -305,13 +305,13 @@ for k in args.names:
     if df is None:
         continue
     g = df.dropna(subset=['g_loss'])
-    axs[0].plot(g['step'], g['g_reg'].rolling(50, min_periods=1).mean(), color=COL.get(k), label=k)
+    axs[0].plot(g['step'], g['g_reg'].rolling(50, min_periods=1).mean(), color=COL.get(k.split('_')[0]), label=k)
     d = df.dropna(subset=['d_loss'])
-    axs[1].plot(d['step'], d['d_loss'].rolling(50, min_periods=1).mean(), color=COL.get(k), label=k)
+    axs[1].plot(d['step'], d['d_loss'].rolling(50, min_periods=1).mean(), color=COL.get(k.split('_')[0]), label=k)
     v = df.dropna(subset=['val_psnr_8'])
-    axs[2].plot(v['epoch'], v['val_psnr_8'], color=COL.get(k), label=f'{k} P=8')
-    axs[2].plot(v['epoch'], v['val_psnr_1'], color=COL.get(k), ls='--', label=f'{k} P=1')
-    axs[3].plot(v['epoch'], v['beta_std'], color=COL.get(k), label=k)
+    axs[2].plot(v['epoch'], v['val_psnr_8'], color=COL.get(k.split('_')[0]), label=f'{k} P=8')
+    axs[2].plot(v['epoch'], v['val_psnr_1'], color=COL.get(k.split('_')[0]), ls='--', label=f'{k} P=1')
+    axs[3].plot(v['epoch'], v['beta_std'], color=COL.get(k.split('_')[0]), label=k)
 axs[0].set(title='generator regulariser (rolling mean)', xlabel='step')
 axs[1].set(title='critic loss (rolling mean)', xlabel='step')
 axs[2].set(title='validation PSNR', xlabel='epoch')
