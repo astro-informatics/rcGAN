@@ -64,6 +64,10 @@ if __name__ == '__main__':
 
     ckpt_dir = os.path.join(cfg.checkpoint_dir, args.exp_name)
     os.makedirs(ckpt_dir, exist_ok=True)
+    # CSVLogger version 0 overwrites metrics.csv on resume: keep the earlier part
+    old = Path(cfg.checkpoint_dir) / 'logs' / args.exp_name / 'version_0' / 'metrics.csv'
+    if old.exists():
+        old.rename(old.with_name(f"metrics_upto_{os.environ.get('SLURM_JOB_ID', 'local')}_{int(old.stat().st_mtime)}.csv"))
     logger = CSVLogger(save_dir=os.path.join(cfg.checkpoint_dir, 'logs'), name=args.exp_name, version=0)
     checkpoint_callback = ModelCheckpoint(
         monitor='epoch', mode='max', dirpath=ckpt_dir, filename='checkpoint-{epoch}',

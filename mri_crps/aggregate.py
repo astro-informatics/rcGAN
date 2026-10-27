@@ -214,8 +214,12 @@ RES['diversity'] = dv
 
 # ---------------------------------------------------------------- training logs
 def read_log(k):
-    f = OUT / 'ckpt' / 'logs' / k / 'version_0' / 'metrics.csv'
-    return pd.read_csv(f) if f.exists() else None
+    # metrics.csv plus earlier parts kept on resume (metrics_*.csv; for MS also the Slurm-recovered epochs 0-30)
+    fs = sorted((OUT / 'ckpt' / 'logs' / k / 'version_0').glob('metrics*.csv'))
+    if not fs:
+        return None
+    df = pd.concat([pd.read_csv(f) for f in fs], ignore_index=True)
+    return df.sort_values('step', kind='stable').reset_index(drop=True)
 
 
 tr = {}
@@ -305,14 +309,14 @@ for k in args.names:
     if df is None:
         continue
     g = df.dropna(subset=['g_loss'])
-    axs[0].plot(g['step'], g['g_reg'].rolling(50, min_periods=1).mean(), color=COL.get(k.split('_')[0]), label=k)
+    axs[0].plot(g['step'], g['g_reg'].fillna(g['g_loss']).rolling(50, min_periods=1).mean(), color=COL.get(k.split('_')[0]), label=k)
     d = df.dropna(subset=['d_loss'])
     axs[1].plot(d['step'], d['d_loss'].rolling(50, min_periods=1).mean(), color=COL.get(k.split('_')[0]), label=k)
     v = df.dropna(subset=['val_psnr_8'])
     axs[2].plot(v['epoch'], v['val_psnr_8'], color=COL.get(k.split('_')[0]), label=f'{k} P=8')
     axs[2].plot(v['epoch'], v['val_psnr_1'], color=COL.get(k.split('_')[0]), ls='--', label=f'{k} P=1')
     axs[3].plot(v['epoch'], v['beta_std'], color=COL.get(k.split('_')[0]), label=k)
-axs[0].set(title='generator regulariser (rolling mean)', xlabel='step')
+axs[0].set(title='generator regulariser (rolling mean)\n(MS ep. 0-30: g_loss from Slurm log)', xlabel='step')
 axs[1].set(title='critic loss (rolling mean)', xlabel='step')
 axs[2].set(title='validation PSNR', xlabel='epoch')
 axs[3].set(title='rcGAN beta (fixed for F, MS)', xlabel='epoch')
