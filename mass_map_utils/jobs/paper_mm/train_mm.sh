@@ -21,5 +21,7 @@ set -x
 nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv
 cd $WT
 git log -1 --format=%H
+# log GPU memory/utilisation every 10 min (diagnostics; GPUs on these nodes are not cgroup-isolated)
+nvidia-smi --query-gpu=timestamp,index,utilization.gpu,memory.used --format=csv -l 600 > /share/gpu0/jjwhit/crps_review/paper/mm/logs/${SLURM_JOB_NAME}_${SLURM_JOB_ID}_gpu.csv &
 EXP=$1; shift
 srun python -u train.py --config ./configs/paper_mm.yml --exp-name $EXP --num-gpus 4 "$@"
