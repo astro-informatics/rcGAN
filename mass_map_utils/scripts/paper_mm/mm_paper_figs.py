@@ -27,8 +27,11 @@ p = argparse.ArgumentParser()
 p.add_argument("--models", nargs="+", default=["R", "F100", "MS", "FNA", "MSNA"])
 p.add_argument("--map", type=int, default=0)
 p.add_argument("--B", type=int, default=2000)
+p.add_argument("--sub", default="main", help="joint-test subdirectory (main, or a probe)")
 args = p.parse_args()
-MOD = [k for k in args.models if os.path.exists(os.path.join(EVAL, "joint/main", k, "meta.json"))]
+if args.sub != "main":
+    FIG = os.path.join(FIG, args.sub)
+MOD = [k for k in args.models if os.path.exists(os.path.join(EVAL, f"joint/{args.sub}", k, "meta.json"))]
 # categorical slots in fixed order (blue, orange, aqua, yellow, magenta); colour follows the method
 COL = {"R": "#2a78d6", "F100": "#eb6834", "MS": "#1baf7a", "FNA": "#eda100", "MSNA": "#e87ba4"}
 LAB = {"R": "rcGAN (R)", "F100": "fair CRPS (F)", "MS": "multiscale fair CRPS (MS)", "FNA": "F, no critic", "MSNA": "MS, no critic"}
@@ -49,12 +52,13 @@ def save(fig, name):
     print("wrote", name)
 
 
-def load(k, name, sub="joint/main"):
+def load(k, name, sub=None):
+    sub = sub or f"joint/{args.sub}"
     return np.load(os.path.join(EVAL, sub, k, name + ".npy"), mmap_mode="r")
 
 
-meta = json.load(open(os.path.join(EVAL, "joint/main", MOD[0], "meta.json")))
-N, n_maps = meta["n_samp"], min(json.load(open(os.path.join(EVAL, "joint/main", k, "meta.json")))["n_done"] for k in MOD)
+meta = json.load(open(os.path.join(EVAL, f"joint/{args.sub}", MOD[0], "meta.json")))
+N, n_maps = meta["n_samp"], min(json.load(open(os.path.join(EVAL, f"joint/{args.sub}", k, "meta.json")))["n_done"] for k in MOD)
 rng = np.random.default_rng(0)
 C = np.stack([np.bincount(rng.integers(0, n_maps, n_maps), minlength=n_maps) for _ in range(args.B)]).astype(float)
 
@@ -80,7 +84,7 @@ def cov_curve(r):
     return hit, np.full((len(r), 1), r.shape[1], dtype=float)
 
 
-stageA = all(os.path.exists(os.path.join(EVAL, "stageA/stats", k, "pix_rank.npy")) for k in MOD)
+stageA = args.sub == "main" and all(os.path.exists(os.path.join(EVAL, "stageA/stats", k, "pix_rank.npy")) for k in MOD)
 panels = [("pix", "per pixel" + (" (1000 maps)" if stageA else f" ({n_maps} maps)")), ("pm16", "16-px patch mean (4.6′)"),
           ("pm64", "64-px patch mean (18.6′)")]
 covres = {}
@@ -180,8 +184,8 @@ save(fig, "fig_mm_patch_cov")
 
 # ------------------------------------------------------------------ gallery
 i = args.map
-gal = [k for k in MOD if os.path.exists(os.path.join(EVAL, "joint/main", k, "fig_samples.npz"))]
-Z = {k: np.load(os.path.join(EVAL, "joint/main", k, "fig_samples.npz")) for k in gal}
+gal = [k for k in MOD if os.path.exists(os.path.join(EVAL, f"joint/{args.sub}", k, "fig_samples.npz"))]
+Z = {k: np.load(os.path.join(EVAL, f"joint/{args.sub}", k, "fig_samples.npz")) for k in gal}
 msk = Z[gal[0]]["mask"].astype(bool)
 x = Z[gal[0]][f"x{i}"]
 for k in gal:
