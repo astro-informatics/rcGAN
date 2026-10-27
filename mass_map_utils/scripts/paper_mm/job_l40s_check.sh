@@ -6,6 +6,7 @@
 #SBATCH --time=01:00:00
 #SBATCH --gres=gpu:1
 #SBATCH -w compute-gpu-0-5
+#SBATCH --nice=0
 #SBATCH -o /share/gpu0/jjwhit/crps_review/paper/mm/logs/%x_%j.out
 #SBATCH -e /share/gpu0/jjwhit/crps_review/paper/mm/logs/%x_%j.err
 # jt_sample for F100 on 4 maps on the L40S node (CPU FFT patch in mm_run.py), compared with the original run.

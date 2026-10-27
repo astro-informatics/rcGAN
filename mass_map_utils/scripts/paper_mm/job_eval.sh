@@ -20,8 +20,10 @@ git log -1 --format=%H
 # Slurm does not isolate GPUs on these nodes: if the assigned GPU already holds > 1 GB of someone else's memory,
 # switch to the highest-index GPU with < 1 GB in use.
 if [ -n "$CUDA_VISIBLE_DEVICES" ]; then
-  used=$(nvidia-smi -i $CUDA_VISIBLE_DEVICES --query-gpu=memory.used --format=csv,noheader,nounits | head -1)
-  if [ "${used:-0}" -gt 1000 ]; then
+  used=$(nvidia-smi -i $CUDA_VISIBLE_DEVICES --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | head -1)
+  # a non-numeric answer means Slurm handed out an index that does not exist (gpu-0-5 is over-allocated): treat as busy
+  [[ "$used" =~ ^[0-9]+$ ]] || used=99999
+  if [ "$used" -gt 1000 ]; then
     free=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F', ' '$2 < 1000 {print $1}' | sort -n | tail -1)
     [ -n "$free" ] && echo "assigned GPU $CUDA_VISIBLE_DEVICES busy (${used} MiB); using GPU $free" && export CUDA_VISIBLE_DEVICES=$free
   fi
