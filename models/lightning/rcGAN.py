@@ -18,13 +18,19 @@ from models.archs.mri.discriminator import DiscriminatorModel
 from evaluation_scripts.metrics import psnr
 from torchmetrics.functional import peak_signal_noise_ratio
 from utils.mri.transforms import to_tensor
+from models.lightning.proper_scores import fair_crps, ms_fair_crps, plugin_crps
 
 class rcGAN(pl.LightningModule):
-    def __init__(self, args, exp_name, num_gpus):
+    def __init__(self, args, exp_name, num_gpus, reg='rcgan', adv_scale=1.0):
         super().__init__()
         self.args = args
         self.exp_name = exp_name
         self.num_gpus = num_gpus
+        # Regulariser on the generator: 'rcgan' (l1 - beta * std, beta auto-tuned on validation data),
+        # 'fair' (fair CRPS), 'ms' (multiscale fair CRPS) or 'plugin' (plug-in CRPS); CRPS losses have
+        # weight 1 and no beta tuning. adv_scale multiplies the adversarial loss (0 = no critic).
+        self.reg = reg
+        self.adv_scale = adv_scale
 
         self.in_chans = args.in_chans + 2
         self.out_chans = args.out_chans
@@ -121,13 +127,16 @@ class rcGAN(pl.LightningModule):
         for k in range(y.shape[0] - 1):
             gen_pred_loss += torch.mean(fake_pred[k + 1])
 
+        # Repo schedule: 1e-2 for epochs 0-4, 1e-4 for epochs 5-22, then 1e-5 (of 100 epochs).
+        # adv_epochs lets reduced-budget runs keep the same fractions of training.
+        e1, e2 = getattr(self.args, 'adv_epochs', [4, 22])
         adv_weight = 1e-5
-        if self.current_epoch <= 4:
+        if self.current_epoch <= e1:
             adv_weight = 1e-2
-        elif self.current_epoch <= 22:
+        elif self.current_epoch <= e2:
             adv_weight = 1e-4
 
-        return - adv_weight * gen_pred_loss.mean()
+        return - self.adv_scale * adv_weight * gen_pred_loss.mean()
 
     def l1_std_p(self, avg_recon, gens, x):
         return F.l1_loss(avg_recon, x) - self.std_mult * np.sqrt(
@@ -155,10 +164,23 @@ class rcGAN(pl.LightningModule):
             avg_recon = torch.mean(gens, dim=1)
 
             # adversarial loss is binary cross-entropy
-            g_loss = self.adversarial_loss_generator(y, gens)
-            g_loss += self.l1_std_p(avg_recon, gens, x)
+            adv_loss = self.adversarial_loss_generator(y, gens)
+            if self.reg == 'rcgan':
+                reg_loss = self.l1_std_p(avg_recon, gens, x)
+            elif self.reg == 'fair':
+                reg_loss = fair_crps(gens, x)
+            elif self.reg == 'ms':
+                reg_loss = ms_fair_crps(gens, x)
+            elif self.reg == 'plugin':
+                reg_loss = plugin_crps(gens, x)
+            else:
+                raise ValueError(f'Unknown regulariser: {self.reg}')
+            g_loss = adv_loss + reg_loss
 
             self.log('g_loss', g_loss, prog_bar=True)
+            self.log('g_adv', adv_loss)
+            self.log('g_reg', reg_loss)
+            self.log('std_mult', float(self.std_mult))
 
             return g_loss
 
@@ -233,7 +255,7 @@ class rcGAN(pl.LightningModule):
         self.log('psnr_1_step', psnr_1s.mean(), on_step=True, on_epoch=False, prog_bar=True)
 
         if batch_idx == 0:
-            if self.global_rank == 0 and self.current_epoch % 5 == 0 and fig_count == 0:
+            if self.global_rank == 0 and self.current_epoch % 5 == 0 and fig_count == 0 and hasattr(self.logger, "log_image"):
                 fig_count += 1
                 avg_gen_np = mag_avg_gen[0, 0, :, :].cpu().numpy()
                 gt_np = mag_gt[0, 0, :, :].cpu().numpy()
@@ -264,7 +286,12 @@ class rcGAN(pl.LightningModule):
         psnr_diff = psnr_diff
 
         mu_0 = 2e-2
-        self.std_mult += mu_0 * psnr_diff
+        if self.reg == 'rcgan':
+            self.std_mult += mu_0 * psnr_diff
+        self.log('val_psnr_8', float(avg_psnr), sync_dist=False)
+        self.log('val_psnr_1', float(avg_single_psnr), sync_dist=False)
+        self.log('val_psnr_diff', float(psnr_diff), sync_dist=False)
+        self.log('beta_std', float(self.std_mult), sync_dist=False)
 
         if np.abs(psnr_diff) <= self.args.psnr_gain_tol:
             self.is_good_model = 1

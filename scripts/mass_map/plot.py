@@ -108,19 +108,19 @@ if __name__ == "__main__":
                 np_stds["mmGAN"] = np.std(np.stack(np_samps["mmGAN"]), axis=0)
 
                 # Save arrays - gt, avg, samps, std, zfr
-                np.save(cfg.save_path + f"np_gt_{fig_count}.npy", np_gt)
-                np.save(cfg.save_path + f"np_zfr_{fig_count}.npy", np_zfr)
+                np.save(cfg.save_path + f"kappa/np_gt_{fig_count:04d}.npy", np_gt)
+                np.save(cfg.save_path + f"gamma/np_zfr_{fig_count:04d}.npy", np_zfr)
                 np.save(
-                    cfg.save_path + f"np_avgs_{fig_count}.npy",
+                    cfg.save_path + f"np_avgs_{fig_count:04d}.npy",
                     np_avgs["mmGAN"],
                 )
                 np.save(
-                    cfg.save_path + f"np_stds_{fig_count}.npy",
+                    cfg.save_path + f"np_stds_{fig_count:04d}.npy",
                     np_stds["mmGAN"],
                 )
-                np.save(cfg.save_path + f"np_ks_{fig_count}.npy", np_ks)
+                np.save(cfg.save_path + f"np_ks_{fig_count:04d}.npy", np_ks)
                 np.save(
-                    cfg.save_path + f"np_samps_{fig_count}.npy",
+                    cfg.save_path + f"recon/np_samps_{fig_count:04d}.npy",
                     np_samps["mmGAN"],
                 )
 
