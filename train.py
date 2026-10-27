@@ -13,7 +13,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from utils.parse_args import create_arg_parser
 from models.lightning.rcGAN import rcGAN
 from pytorch_lightning import seed_everything
-from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.loggers import WandbLogger, CSVLogger
 from data.lightning.MassMappingDataModule import MMDataModule
 from data.lightning.RadioDataModule import RadioDataModule
 from models.lightning.mmGAN import mmGAN
@@ -47,7 +47,9 @@ if __name__ == '__main__':
             model = rcGAN(cfg, args.exp_name, args.num_gpus)
         elif cfg.experience == 'mass_mapping':
             dm = MMDataModule(cfg)
-            model = mmGAN(cfg, args.exp_name, args.num_gpus)
+            model = mmGAN(cfg, args.exp_name, args.num_gpus,
+                           crps_mode=args.crps_mode, crps_alpha=args.crps_alpha,
+                           adv_scale=args.adv_scale)
         elif cfg.experience == 'radio':
             cfg.num_workers = args.num_gpus # set number of workers to same as gpu
             dm = RadioDataModule(cfg)
@@ -62,9 +64,11 @@ if __name__ == '__main__':
     wandb_logger = WandbLogger(
         project=cfg.experience,
         name=args.exp_name,
-        log_model=True,
+        log_model=os.environ.get('WANDB_MODE') != 'offline',  # offline: don't stage 20 x 1.5 GB checkpoints
         save_dir=cfg.checkpoint_dir + 'wandb'
     )
+    # plain-text loss curves next to the checkpoints (wandb stays the first logger, used for images)
+    csv_logger = CSVLogger(save_dir=cfg.checkpoint_dir + args.exp_name + '/', name='csv_logs')
 
     
     os.makedirs(cfg.checkpoint_dir + args.exp_name + '/', exist_ok=True)
@@ -90,7 +94,7 @@ if __name__ == '__main__':
         callbacks=[checkpoint_callback_epoch],
         num_sanity_val_steps=2,
         profiler="simple",
-        logger=wandb_logger,
+        logger=[wandb_logger, csv_logger],
         benchmark=False,
         log_every_n_steps=10,
         accumulate_grad_batches=accumulate_grad_batches

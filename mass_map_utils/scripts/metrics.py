@@ -1,5 +1,6 @@
 import numpy as np
 import json
+import glob
 from scipy import ndimage
 import sys
 import yaml
@@ -20,6 +21,8 @@ with open(args.config, "r") as f:
     cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
 data_dir = cfg.save_path
+kappa_dir = data_dir + "kappa/"
+recon_dir = data_dir + "recon/"
 mask = np.load(
     cfg.cosmo_dir_path + "cosmos_mask.npy", allow_pickle=True
 ).astype(bool)
@@ -33,13 +36,13 @@ std2 = np.load(
 kernel = MMDataTransform.compute_fourier_kernel(cfg.im_size)
 np_kss = {}
 
-# r_ks = []
+r_ks = []
 r_gan = []
-# rmse_ks = []
+rmse_ks = []
 rmse_gan = []
-# psnr_ks = []
+psnr_ks = []
 psnr_gan = []
-# snr_ks = []
+snr_ks = []
 snr_gan = []
 r_std_abs_error = []
 r_abs_error_sims = []
@@ -48,12 +51,16 @@ all_psnr_vals = []
 all_r_vals = []
 within_std_count = []
 
-# Change the range of this loop to be the size of your validation set.
-for map in range(1, 101):
-    np_gts = np.load(data_dir + f"np_gt_{map}.npy")
-    np_samps = np.load(data_dir + f"np_samps_{map}.npy")
-    np_avgs = np.load(data_dir + f"np_avgs_{map}.npy")
-    np_stds = np.load(data_dir + f"np_stds_{map}.npy")
+# Number of saved maps is auto-detected from what plot.py actually wrote,
+# rather than assuming a fixed count (plot.py's --num-figs can vary run to run).
+num_maps = len(glob.glob(kappa_dir + "np_gt_*.npy"))
+print(f"Found {num_maps} saved maps in {kappa_dir}")
+
+for map in range(1, num_maps + 1):
+    np_gts = np.load(kappa_dir + f"np_gt_{map:04d}.npy")
+    np_samps = np.load(recon_dir + f"np_samps_{map:04d}.npy")
+    np_avgs = np.load(data_dir + f"np_avgs_{map:04d}.npy")
+    np_stds = np.load(data_dir + f"np_stds_{map:04d}.npy")
 
     gamma_sim = MMDataTransform.forward_model(np_gts, kernel) + (
         std1 * np.random.randn(cfg.im_size, cfg.im_size) + 1.0j * std2 * np.random.randn(cfg.im_size, cfg.im_size)
@@ -67,15 +74,15 @@ for map in range(1, 101):
     gan = np_avgs.real
 
     r_gan.append(pearsoncoeff(gt, gan, mask))
-    # r_ks.append(pearsoncoeff(gt, ks, mask))
+    r_ks.append(pearsoncoeff(gt, ks, mask))
 
-    # rmse_ks.append(rmse(ks, gt, mask))
+    rmse_ks.append(rmse(ks, gt, mask))
     rmse_gan.append(rmse(gan, gt, mask))
 
-    # psnr_ks.append(psnr(gt, ks, mask))
+    psnr_ks.append(psnr(gt, ks, mask))
     psnr_gan.append(psnr(gt, gan, mask))
 
-    # snr_ks.append(snr(gt, ks, mask))
+    snr_ks.append(snr(gt, ks, mask))
     snr_gan.append(snr(gt, gan, mask))
 
     abs_error_gan = np.abs(gan - gt)
@@ -112,13 +119,13 @@ for map in range(1, 101):
     all_r_vals.append(r_vals)
 
 results_dict = {
-    # "r_ks_avg": float(np.mean(r_ks)),
+    "r_ks_avg": float(np.mean(r_ks)),
     "r_gan_avg": float(np.mean(r_gan)),
-    # "rmse_ks_avg": float(np.mean(rmse_ks)),
+    "rmse_ks_avg": float(np.mean(rmse_ks)),
     "rmse_gan_avg": float(np.mean(rmse_gan)),
-    # "psnr_ks_avg": float(np.mean(psnr_ks)),
+    "psnr_ks_avg": float(np.mean(psnr_ks)),
     "psnr_gan_avg": float(np.mean(psnr_gan)),
-    # "snr_ks_avg": float(np.mean(snr_ks)),
+    "snr_ks_avg": float(np.mean(snr_ks)),
     "snr_gan_avg": float(np.mean(snr_gan)),
     "r_std_abs_error_avg": float(np.mean(r_std_abs_error)),
     "r_abs_error_sims_avg": float(np.mean(r_abs_error_sims)),
