@@ -44,7 +44,7 @@ class riGAN(pl.LightningModule):
         )
 
         # Regulariser: 'rcgan' (L1 - beta*std with beta auto-tuned on validation PSNR, the repo default),
-        # 'fair' / 'ms_fair' / 'plugin' (proper_scores.py, weight 1, no beta tuning).
+        # 'fair' / 'ms_fair' / 'ms_fair_sigma' / 'plugin' (proper_scores.py, weight 1, no beta tuning).
         self.reg = self.args.__dict__.get('reg', 'rcgan')
         self.adv_scale = self.args.__dict__.get('adv_scale', 1.0)  # 0 for the "no adversarial loss" ablation
 
@@ -166,6 +166,9 @@ class riGAN(pl.LightningModule):
                 reg_loss = fair_crps(gens, x)
             elif self.reg == 'ms_fair':
                 reg_loss = ms_fair_crps(gens, x)
+            elif self.reg == 'ms_fair_sigma':  # MS-sigma: fixed weights 1/sigma_s from the training truths (config)
+                reg_loss = ms_fair_crps(gens, x, n_levels=len(self.args.level_weights),
+                                        level_weights=self.args.level_weights)
             elif self.reg == 'plugin':
                 reg_loss = plugin_crps(gens, x)
             else:
