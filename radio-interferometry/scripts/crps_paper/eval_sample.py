@@ -120,7 +120,7 @@ def main():
                            "rank_clip_all", "rank_clip_src", "rank_clip_bg", "rank_clip_tru", "rank_clip_zero",
                            "mask_frac", "patch_rank", "patch_src_rank", "pow_samp", "pow_true", "pow_mean",
                            "pow_cross", "pow_rank", "pow_logsamp", "es", "vs", "crps", "mscrps", "v", "e", "e_pix_src",
-                           "v_pix_src", "pair_d", "truth_d", "near_ident", "pix_pit_absdev", "time"]}
+                           "v_pix_src", "pair_d", "truth_d", "near_ident", "pix_pit_absdev", "flux", "time"]}
     figs = {}
     with torch.no_grad():
         for i in range(len(X)):
@@ -172,6 +172,9 @@ def main():
             rec["vs"].append(variogram(S, x))
             rec["crps"].append(fair_crps(S[None, :, None], x[None, None]).item())
             rec["mscrps"].append(ms_fair_crps(S[None, :, None], x[None, None]).item())
+            # total flux: truth, sample mean, sample sd, clipped-sample mean
+            fl = S.sum((1, 2))
+            rec["flux"].append([x.sum().item(), fl.mean().item(), fl.std().item(), S.clamp_min(0).sum((1, 2)).mean().item()])
             # 4. diversity / collapse
             var = S.var(0)
             rec["v"].append(var.mean().item())

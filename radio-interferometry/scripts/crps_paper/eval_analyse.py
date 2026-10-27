@@ -73,11 +73,14 @@ def main():
     ap.add_argument("--ref", default="R")
     ap.add_argument("--suffix", default="")
     ap.add_argument("--out", default=OUT)
+    ap.add_argument("--n-max", type=int, default=None, help="use only the first n test images (late-epoch check)")
     a = ap.parse_args()
     globals()["OUT"] = a.out
 
     S = {t: dict(np.load(f"{OUT}/stats_{t}.npz")) for t in a.tags}
     n = min(len(s["psnr"]) for s in S.values())
+    if a.n_max:
+        n = min(n, a.n_max)
     N = int(S[a.tags[0]]["n_samp"])
     rng = np.random.default_rng(0)
     idx = rng.integers(0, n, size=(NB, n))
@@ -141,7 +144,11 @@ def main():
         "pow_ratio_sample_over_truth": pow_ratio("pow_samp", "pow_true"),
         "pow_ratio_mean_over_truth": pow_ratio("pow_mean", "pow_true"),
         "pow_ratio_cross_over_truth": pow_ratio("pow_cross", "pow_true"),
-        "bandpower_rank_calerr": bandrank_ce(), "bandpower_cov90_minus_exact": bandrank_cov90(),
+        "bandpower_rank_calerr": bandrank_ce(),
+        "flux_rel_bias": lambda s: (lambda ix: s["flux"][:n][ix, 1].sum() / s["flux"][:n][ix, 0].sum() - 1),
+        "flux_rel_bias_clipped": lambda s: (lambda ix: s["flux"][:n][ix, 3].sum() / s["flux"][:n][ix, 0].sum() - 1),
+        "flux_z_rms": lambda s: (lambda ix: np.sqrt((((s["flux"][:n][ix, 1] - s["flux"][:n][ix, 0]) / s["flux"][:n][ix, 2]) ** 2).mean())),
+        "flux_z_mean": lambda s: (lambda ix: ((s["flux"][:n][ix, 1] - s["flux"][:n][ix, 0]) / s["flux"][:n][ix, 2]).mean()), "bandpower_cov90_minus_exact": bandrank_cov90(),
     }
     for j, s_ in enumerate(PATCH):
         metrics[f"cov_patch{s_}"] = cov("patch_rank", j)
@@ -195,7 +202,10 @@ def print_tables(res, tags):
     print("metric | " + " | ".join(tags))
     for nm in ["psnr_P1", "psnr_P8", "psnr_P32", "ssim_P1", "ssim_P8", "ssim_P32", "crps_fair", "ms_crps_fair",
                "energy_score", "variogram_local", "spread_skill_v_over_e", "spread_skill_src_v_over_e", "pairdist_ratio",
-               "near_identical_frac_5pct", "calerr_pix_all", "calerr_pix_src"]:
+               "near_identical_frac_5pct", "calerr_pix_all", "calerr_pix_src", "calerr_clip_all", "calerr_clip_src",
+               "flux_rel_bias", "flux_rel_bias_clipped", "flux_z_rms", "flux_z_mean"]:
+        if nm not in res["models"][tags[0]]:
+            continue
         print(nm, "|", row(nm, d=4))
     for nm in ["cov_pix_all", "cov_pix_src", "cov_pix_bg", "cov_clip_all", "cov_clip_src", "cov_pix_truthmask"] + [f"cov_patch{s}" for s in PATCH]:
         for j, lv in enumerate(LEVELS):
