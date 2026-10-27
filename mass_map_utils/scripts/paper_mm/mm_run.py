@@ -26,6 +26,7 @@ MODELS = {
     "R": OLD_CKPT + "mmgan_training_real_output",
     "F100": OLD_CKPT + "mmgan_crps_alpha_100",
     "MS": NEW_CKPT + "mmgan_crps_ms",
+    "MSS": NEW_CKPT + "mmgan_crps_ms_sigma",
     "FNA": NEW_CKPT + "mmgan_crps_fair_noadv",
     "MSNA": NEW_CKPT + "mmgan_crps_ms_noadv",
 }

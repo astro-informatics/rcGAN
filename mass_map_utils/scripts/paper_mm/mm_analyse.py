@@ -25,12 +25,12 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 OUT = "/share/gpu0/jjwhit/crps_review/paper/mm/eval/joint/"
 p = argparse.ArgumentParser()
-p.add_argument("--models", nargs="+", default=["R", "F100", "MS", "FNA", "MSNA"])
+p.add_argument("--models", nargs="+", default=["R", "F100", "MS", "MSS", "FNA", "MSNA"])
 p.add_argument("--sub", default="main")
 p.add_argument("--B", type=int, default=2000)
 args = p.parse_args()
 MOD = args.models
-COL = {"R": "#2a78d6", "F100": "#eb6834", "MS": "#1baf7a", "FNA": "#eda100", "MSNA": "#e87ba4", "S": "#8c8c8c", "FB": "#555555", "NL": "#b0b0b0"}
+COL = {"R": "#2a78d6", "F100": "#eb6834", "MS": "#1baf7a", "MSS": "#008300", "FNA": "#eda100", "MSNA": "#e87ba4", "S": "#8c8c8c", "FB": "#555555", "NL": "#b0b0b0"}
 FIG = os.path.join(OUT, "figures" if args.sub == "main" else f"figures_{args.sub}")
 AN = os.path.join(OUT, "analysis" if args.sub == "main" else f"analysis_{args.sub}")
 os.makedirs(FIG, exist_ok=True)

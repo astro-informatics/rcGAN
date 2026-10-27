@@ -8,7 +8,7 @@ per-pixel ranks (EVAL/stageA/stats/<key>/pix_rank.npy, 1000 maps).
   fig_mm_gallery     truth, posterior mean, 3 samples, posterior SD for the same map
 
 Bootstrap: B = 2000 resamples over maps, rng seed 0, same indices for every model.
-Usage: python mm_paper_figs.py [--models R F100 MS FNA MSNA] [--map 0]
+Usage: python mm_paper_figs.py [--models R F100 MS MSS FNA MSNA] [--map 0]
 """
 import argparse
 import json
@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 EVAL = "/share/gpu0/jjwhit/crps_review/paper/mm/eval/"
 FIG = "/share/gpu0/jjwhit/crps_review/paper/mm/figures/"
 p = argparse.ArgumentParser()
-p.add_argument("--models", nargs="+", default=["R", "F100", "MS", "FNA", "MSNA"])
+p.add_argument("--models", nargs="+", default=["R", "F100", "MS", "MSS", "FNA", "MSNA"])
 p.add_argument("--map", type=int, default=0)
 p.add_argument("--B", type=int, default=2000)
 p.add_argument("--sub", default="main", help="joint-test subdirectory (main, or a probe)")
@@ -33,9 +33,9 @@ if args.sub != "main":
     FIG = os.path.join(FIG, args.sub)
 MOD = [k for k in args.models if os.path.exists(os.path.join(EVAL, f"joint/{args.sub}", k, "meta.json"))]
 # categorical slots in fixed order (blue, orange, aqua, yellow, magenta); colour follows the method
-COL = {"R": "#2a78d6", "F100": "#eb6834", "MS": "#1baf7a", "FNA": "#eda100", "MSNA": "#e87ba4"}
-LAB = {"R": "rcGAN (R)", "F100": "fair CRPS (F)", "MS": "multiscale fair CRPS (MS)", "FNA": "F, no critic", "MSNA": "MS, no critic"}
-LS = {"R": "-", "F100": "-", "MS": "-", "FNA": "--", "MSNA": "--"}
+COL = {"R": "#2a78d6", "F100": "#eb6834", "MS": "#1baf7a", "MSS": "#008300", "FNA": "#eda100", "MSNA": "#e87ba4"}
+LAB = {"R": "rcGAN (R)", "F100": "fair CRPS (F)", "MS": "multiscale fair CRPS (MS)", "MSS": "MS, 1/σ level weights (MS-σ)", "FNA": "F, no critic", "MSNA": "MS, no critic"}
+LS = {"R": "-", "F100": "-", "MS": "-", "MSS": "-", "FNA": "--", "MSNA": "--"}
 INK, MUTED, GRID = "#1f1f1e", "#6b6a66", "#e6e6e3"
 plt.rcParams.update({"font.size": 8, "axes.titlesize": 8.5, "axes.labelsize": 8, "legend.fontsize": 7.5,
                      "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True, "grid.color": GRID,
