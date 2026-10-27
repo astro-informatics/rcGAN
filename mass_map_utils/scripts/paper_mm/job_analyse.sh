@@ -21,3 +21,4 @@ SA=""; for k in $M; do [ -e /share/gpu0/jjwhit/crps_review/paper/mm/eval/stageA/
 python -u mm_run.py stageA a_analyse.py --models $SA --ref F100
 python -u mm_recon_summary.py $M
 python -u mm_paper_figs.py --models $M
+python -u mm_loss_curves.py
