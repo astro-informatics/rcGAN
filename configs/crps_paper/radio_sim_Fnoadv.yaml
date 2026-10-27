@@ -1,0 +1,35 @@
+# CRPS paper, radio domain (simulated MeerKAT-like data, see radio-interferometry/scripts/crps_paper/simulate_meerkat.py).
+# Identical to configs/radio_meerkat_macro.yaml except paths, im_size=128, per-GPU batch size and epochs (budget),
+# and the regulariser 'reg'.
+checkpoint_dir: /share/gpu0/jjwhit/crps_review/paper/radio/models/
+data_path: /share/gpu0/jjwhit/crps_review/paper/radio/data/
+
+experience: radio
+reg: fair # F with adversarial weight 0 ("no adversarial loss" ablation)
+adv_scale: 0.0
+
+num_z_test: 32
+num_z_valid: 8
+num_z_train: 2
+
+in_chans: 2  # dirty image + PSF
+out_chans: 1
+im_size: 128
+
+alt_upsample: False
+norm: macro
+
+lr: 0.001
+beta_1: 0
+beta_2: 0.99
+
+gp_weight: 10
+adv_weight: 1e-5
+
+batch_size: 8
+accumulate_grad_batches: 2  # effective batch 16, as the original 4 GPUs x 2 x accumulate 2
+
+num_epochs: 70  # budget: 70 epochs for R, F, MS (R and F were launched with 100 and stopped after epoch index 69)
+psnr_gain_tol: 0.25
+
+num_workers: 4

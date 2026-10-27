@@ -28,7 +28,7 @@ PATCH = [1, 2, 4, 8, 16, 32, 64, 128]
 K_EDGES = np.array([1, 2, 3, 4, 6, 8, 11, 16, 23, 32, 45, 64, 91], dtype=float)  # 12 radial |k| bins (91 = corner)
 VS_LAGS = [(0, 1), (1, 0), (1, 1), (1, -1)]
 FIG_IMAGES = [0, 1, 2, 3]
-MASK_THRESH = 0.02  # source mask: Gaussian-smoothed (sigma 2 px) dirty image > 0.02, dilated by 2 px
+MASK_REL = 0.1  # source mask (y-measurable, same for all models): Gaussian-smoothed (sigma 2 px) dirty > 0.1 * max(dirty), dilated 2 px
 
 
 def gauss_smooth(img, sigma):
@@ -38,7 +38,7 @@ def gauss_smooth(img, sigma):
 
 
 def source_mask(dirty):
-    m = (gauss_smooth(dirty, 2.0) > MASK_THRESH).float()
+    m = (gauss_smooth(dirty, 2.0) > MASK_REL * dirty.max()).float()
     return F.max_pool2d(m[None, None], 5, stride=1, padding=2)[0, 0] > 0
 
 
@@ -99,11 +99,14 @@ def main():
     ap.add_argument("--n-test", type=int, default=1000)
     ap.add_argument("--n-samp", type=int, default=128)
     ap.add_argument("--chunk", type=int, default=32)
+    ap.add_argument("--device", default="cuda")
+    ap.add_argument("--out", default=OUT)
     a = ap.parse_args()
-    os.makedirs(OUT, exist_ok=True)
-    dev = "cuda"
+    os.makedirs(a.out, exist_ok=True)
+    dev = a.device
 
     model = riGAN.load_from_checkpoint(a.ckpt, map_location="cpu").to(dev).eval()
+    model.args.num_workers = 0
     print("reg", model.reg, "std_mult", model.std_mult, "epoch ckpt", a.ckpt, flush=True)
     tr = DATA + "train/"
     mx, sx, my, sy, mu, su = [float(np.load(tr + f"{k}.npy")) for k in
@@ -187,8 +190,8 @@ def main():
     out = {k: np.array(v) for k, v in rec.items()}
     out["k_eff"] = spec.k_eff
     out["n_samp"] = N
-    np.savez_compressed(f"{OUT}/stats_{a.tag}.npz", **out)
-    np.save(f"{OUT}/figs_{a.tag}.npy", figs, allow_pickle=True)
+    np.savez_compressed(f"{a.out}/stats_{a.tag}.npz", **out)
+    np.save(f"{a.out}/figs_{a.tag}.npy", figs, allow_pickle=True)
     print("done", a.tag, flush=True)
 
 

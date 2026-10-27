@@ -72,7 +72,10 @@ def main():
     ap.add_argument("tags", nargs="+")
     ap.add_argument("--ref", default="R")
     ap.add_argument("--suffix", default="")
+    ap.add_argument("--out", default=OUT)
     a = ap.parse_args()
+    globals()["OUT"] = a.out
+
     S = {t: dict(np.load(f"{OUT}/stats_{t}.npz")) for t in a.tags}
     n = min(len(s["psnr"]) for s in S.values())
     N = int(S[a.tags[0]]["n_samp"])
@@ -182,7 +185,7 @@ def print_tables(res, tags):
     print("metric | " + " | ".join(tags))
     for nm in ["psnr_P1", "psnr_P8", "psnr_P32", "ssim_P1", "ssim_P8", "ssim_P32", "crps_fair", "ms_crps_fair",
                "energy_score", "variogram_local", "spread_skill_v_over_e", "spread_skill_src_v_over_e", "pairdist_ratio",
-               "near_identical_frac_5pct", "calerr_pix_all", "calerr_pix_src", "bandpower_rank_calerr"]:
+               "near_identical_frac_5pct", "calerr_pix_all", "calerr_pix_src"]:
         print(nm, "|", row(nm, d=4))
     for nm in ["cov_pix_all", "cov_pix_src", "cov_pix_bg"] + [f"cov_patch{s}" for s in PATCH]:
         for j, lv in enumerate(LEVELS):
