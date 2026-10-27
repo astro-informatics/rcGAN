@@ -116,7 +116,8 @@ def main():
     UV = np.load(DATA + "test/uv.npy")[: a.n_test]
     spec = Spec(dev)
     N = a.n_samp
-    rec = {k: [] for k in ["psnr", "ssim", "rank_pix_all", "rank_pix_src", "rank_pix_bg", "rank_pix_tru",
+    rec = {k: [] for k in ["psnr", "ssim", "rank_pix_all", "rank_pix_src", "rank_pix_bg", "rank_pix_tru", "rank_pix_zero",
+                           "rank_clip_all", "rank_clip_src", "rank_clip_bg", "rank_clip_tru", "rank_clip_zero",
                            "mask_frac", "patch_rank", "patch_src_rank", "pow_samp", "pow_true", "pow_mean",
                            "pow_cross", "pow_rank", "pow_logsamp", "es", "vs", "crps", "mscrps", "v", "e", "e_pix_src",
                            "v_pix_src", "pair_d", "truth_d", "near_ident", "pix_pit_absdev", "time"]}
@@ -139,8 +140,12 @@ def main():
             msk = source_mask(d)
             tru = x > 0
             r = ranks(S.reshape(N, -1), x.reshape(-1)).reshape(H, H)
-            for k, sel in [("all", torch.ones_like(msk)), ("src", msk), ("bg", ~msk), ("tru", tru)]:
+            # positivity-clipped samples (monotone projection onto the sky support x >= 0): ties at 0 are randomised,
+            # which gives the randomised PIT of the atom at 0 (truth is exactly 0 on ~86% of pixels)
+            rc = ranks(S.clamp_min(0).reshape(N, -1), x.reshape(-1)).reshape(H, H)
+            for k, sel in [("all", torch.ones_like(msk)), ("src", msk), ("bg", ~msk), ("tru", tru), ("zero", ~tru)]:
                 rec[f"rank_pix_{k}"].append(torch.bincount(r[sel], minlength=N + 1).cpu().numpy())
+                rec[f"rank_clip_{k}"].append(torch.bincount(rc[sel], minlength=N + 1).cpu().numpy())
             rec["mask_frac"].append([msk.float().mean().item(), tru.float().mean().item(), (msk & tru).float().sum().item() / max(tru.sum().item(), 1)])
             # 3a. patch-mean coverage (all patches; and patches with >= 50% source-mask pixels)
             pr, psr = [], []

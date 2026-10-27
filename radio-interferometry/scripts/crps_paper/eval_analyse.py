@@ -130,7 +130,12 @@ def main():
         "near_identical_frac_1pct": mean_of("near_ident", 0), "near_identical_frac_5pct": mean_of("near_ident", 1),
         "near_identical_frac_10pct": mean_of("near_ident", 2),
         "cov_pix_all": cov("rank_pix_all"), "cov_pix_src": cov("rank_pix_src"), "cov_pix_bg": cov("rank_pix_bg"),
-        "cov_pix_truthmask": cov("rank_pix_tru"),
+        "cov_pix_truthmask": cov("rank_pix_tru"), "cov_pix_truthzero": cov("rank_pix_zero"),
+        "cov_clip_all": cov("rank_clip_all"), "cov_clip_src": cov("rank_clip_src"), "cov_clip_bg": cov("rank_clip_bg"),
+        "cov_clip_truthmask": cov("rank_clip_tru"), "cov_clip_truthzero": cov("rank_clip_zero"),
+        "calerr_clip_all": ce("rank_clip_all"), "calerr_clip_src": ce("rank_clip_src"),
+        "pit_bias_disp_clip_all": disp("rank_clip_all"), "pit_bias_disp_clip_src": disp("rank_clip_src"),
+        "pit_bias_disp_pix_truthmask": disp("rank_pix_tru"),
         "calerr_pix_all": ce("rank_pix_all"), "calerr_pix_src": ce("rank_pix_src"), "calerr_pix_bg": ce("rank_pix_bg"),
         "pit_bias_disp_pix_all": disp("rank_pix_all"), "pit_bias_disp_pix_src": disp("rank_pix_src"),
         "pow_ratio_sample_over_truth": pow_ratio("pow_samp", "pow_true"),
@@ -149,7 +154,10 @@ def main():
         res["models"][t] = {}
         boots[t] = {}
         for name, mk in metrics.items():
-            pt, lo, hi, bs = boot(mk(s), n, idx)
+            try:
+                pt, lo, hi, bs = boot(mk(s), n, idx)
+            except KeyError:
+                continue
             boots[t][name] = (pt, bs)
             res["models"][t][name] = {"est": np.round(pt, 5).tolist(), "lo": np.round(lo, 5).tolist(),
                                       "hi": np.round(hi, 5).tolist()}
@@ -162,6 +170,8 @@ def main():
                 continue
             dd = {}
             for name in metrics:
+                if name not in boots[t] or name not in boots[a.ref]:
+                    continue
                 p1, b1 = boots[t][name]
                 p0, b0 = boots[a.ref][name]
                 db = b1 - b0
@@ -187,7 +197,7 @@ def print_tables(res, tags):
                "energy_score", "variogram_local", "spread_skill_v_over_e", "spread_skill_src_v_over_e", "pairdist_ratio",
                "near_identical_frac_5pct", "calerr_pix_all", "calerr_pix_src"]:
         print(nm, "|", row(nm, d=4))
-    for nm in ["cov_pix_all", "cov_pix_src", "cov_pix_bg"] + [f"cov_patch{s}" for s in PATCH]:
+    for nm in ["cov_pix_all", "cov_pix_src", "cov_pix_bg", "cov_clip_all", "cov_clip_src", "cov_pix_truthmask"] + [f"cov_patch{s}" for s in PATCH]:
         for j, lv in enumerate(LEVELS):
             if lv in (0.5, 0.9):
                 print(nm, lv, "|", row(nm, j))
