@@ -27,8 +27,12 @@ echo "slurm CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 # Slurm does not isolate GPU devices on these nodes (other users' processes sit on the "allocated" indices).
 # With PICK_FREE_GPUS=1, use the 4 highest-index GPUs that have < 1 GB in use instead.
 if [ "$PICK_FREE_GPUS" = 1 ]; then
-  export CUDA_VISIBLE_DEVICES=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F', ' '$2 < 1000 {print $1}' | sort -n | tail -4 | sort -n | paste -sd,)
-  echo "picked CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+  export PICKED=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F', ' '$2 < 1000 {print $1}' | sort -n | tail -4 | sort -n | paste -sd,)
+  echo "picked GPUs $PICKED"  # srun re-sets CUDA_VISIBLE_DEVICES per task, so it is set again inside the step
 fi
 EXP=$1; shift
-srun python -u train.py --config ./configs/paper_mm.yml --exp-name $EXP --num-gpus 4 "$@"
+if [ -n "$PICKED" ]; then
+  srun bash -c 'export CUDA_VISIBLE_DEVICES=$PICKED; echo "task $SLURM_PROCID CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"; exec python -u train.py "$@"' _ --config ./configs/paper_mm.yml --exp-name $EXP --num-gpus 4 "$@"
+else
+  srun python -u train.py --config ./configs/paper_mm.yml --exp-name $EXP --num-gpus 4 "$@"
+fi
