@@ -23,5 +23,12 @@ cd $WT
 git log -1 --format=%H
 # log GPU memory/utilisation every 10 min (diagnostics; GPUs on these nodes are not cgroup-isolated)
 nvidia-smi --query-gpu=timestamp,index,utilization.gpu,memory.used --format=csv -l 600 > /share/gpu0/jjwhit/crps_review/paper/mm/logs/${SLURM_JOB_NAME}_${SLURM_JOB_ID}_gpu.csv &
+echo "slurm CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+# Slurm does not isolate GPU devices on these nodes (other users' processes sit on the "allocated" indices).
+# With PICK_FREE_GPUS=1, use the 4 highest-index GPUs that have < 1 GB in use instead.
+if [ "$PICK_FREE_GPUS" = 1 ]; then
+  export CUDA_VISIBLE_DEVICES=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F', ' '$2 < 1000 {print $1}' | sort -n | tail -4 | sort -n | paste -sd,)
+  echo "picked CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+fi
 EXP=$1; shift
 srun python -u train.py --config ./configs/paper_mm.yml --exp-name $EXP --num-gpus 4 "$@"
