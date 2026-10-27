@@ -1,0 +1,20 @@
+#!/bin/bash
+# Usage: sbatch -J <name> --gres=gpu:1 job_eval.sh <stageA|joint|py> <script.py> [args...]
+#SBATCH -p GPU
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=48G
+#SBATCH --time=24:00:00
+#SBATCH --output=/share/gpu0/jjwhit/crps_review/paper/mm/logs/%x_%j.out
+#SBATCH --error=/share/gpu0/jjwhit/crps_review/paper/mm/logs/%x_%j.err
+source /share/apps/anaconda/3-2022.05/etc/profile.d/conda.sh
+conda activate cGAN
+export WANDB_MODE=disabled
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+WT=/home/jjwhit/.herdr/worktrees/rcGAN/crps-paper-mm
+export PYTHONPATH=$WT
+set -x
+nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv
+cd $WT/mass_map_utils/scripts/paper_mm
+git log -1 --format=%H
+if [ "$1" = py ]; then shift; python -u "$@"; else python -u mm_run.py "$@"; fi
