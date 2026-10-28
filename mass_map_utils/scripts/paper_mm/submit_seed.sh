@@ -20,7 +20,9 @@ case $KEY in
 esac
 K=$KEY$SEED
 NOV100=--exclude=compute-gpu-0-0,compute-gpu-0-1  # V100 16 GB: batch 9 OOMs
-T=$(PICK_FREE_GPUS=1 sbatch --parsable -J tr_$K --gres=gpu:4 $NOV100 ${TDEP:+--dependency=$TDEP} $WT/mass_map_utils/jobs/paper_mm/train_mm.sh \
+# TR_EXCLUDE (env) overrides the training exclude list, e.g. to keep a run off a node another seed run is using
+EXC=${TR_EXCLUDE:+--exclude=$TR_EXCLUDE}; EXC=${EXC:-$NOV100}
+T=$(PICK_FREE_GPUS=1 sbatch --parsable -J tr_$K --gres=gpu:4 $EXC ${TDEP:+--dependency=$TDEP} $WT/mass_map_utils/jobs/paper_mm/train_mm.sh \
     $EXP $A --seed $SEED --ckpt-from-epoch 80)
 sub(){ name=$1; dep=$2; shift 2; sbatch --parsable -J $name --gres=gpu:1 $NOV100 -o $L/${name}_%j.out -e $L/${name}_%j.err --dependency=$dep "$@"; }
 P=$(cat $LAST 2>/dev/null || true)
