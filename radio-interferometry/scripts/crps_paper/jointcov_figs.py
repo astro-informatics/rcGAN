@@ -116,6 +116,20 @@ def main():
     ax[0, 0].legend(fontsize=7)
     fig.tight_layout()
     save(fig, "fig_cov90_vs_scale")
+    # 90% coverage error tables (model; worst |null| error over all stats/scales in the last column)
+    lines = []
+    for d, ttl in D:
+        cols = [(st, k) for st in STATS for k in KORDER if curve(next(iter(d["methods"].values())), "model", st, k)]
+        cols = [c for c in cols if c[0] != "pixel" or c[1] == "1"]
+        lines += [f"### {ttl}", "", "| method | " + " | ".join(f"{st}@{k}" for st, k in cols) + " | max abs null |",
+                  "|---" * (len(cols) + 2) + "|"]
+        for m, res in d["methods"].items():
+            i90 = list(res["model"]["levels"]).index(0.9)
+            nul = max(abs(curve(res, "null", st, k)[0][i90] - 0.9) for st, k in cols)
+            lines.append(f"| {m} | " + " | ".join(f"{curve(res, 'model', st, k)[0][i90] - 0.9:+.2f}" for st, k in cols)
+                         + f" | {nul:.3f} |")
+        lines.append("")
+    open(OUT + "tables_cov90.md", "w").write("\n".join(lines))
     print("figures in", OUT)
 
 
