@@ -6,6 +6,7 @@ per-pixel ranks (EVAL/stageA/stats/<key>/pix_rank.npy, 1000 maps).
   fig_mm_power       per-sample power / truth and posterior-mean transfer vs ell
   fig_mm_patch_cov   90% coverage - exact and mean z^2 vs patch size
   fig_mm_gallery     truth, posterior mean, 3 samples, posterior SD for the same map
+  fig_mm_gallery_zoom 64-px crop of sample 1 and of sample 1 - posterior mean, per model
 
 Bootstrap: B = 2000 resamples over maps, rng seed 0, same indices for every model.
 Usage: python mm_paper_figs.py [--models R F100 MS MSS FNA MSNA] [--map 0]
@@ -216,6 +217,35 @@ cax2 = fig.add_axes([0.91, 0.12, 0.012, 0.3])
 fig.colorbar(plt.cm.ScalarMappable(norm=plt.Normalize(*vlim), cmap="viridis"), cax=cax1, label="κ")
 fig.colorbar(plt.cm.ScalarMappable(norm=plt.Normalize(0, smax), cmap="magma"), cax=cax2, label="SD(κ)")
 save(fig, "fig_mm_gallery")
+
+# zoom: a W x W crop (the most unmasked one on a W/2 grid) of one sample per model, and of its fluctuation about
+# the posterior mean, so pixel-scale texture is visible
+W = 64
+win = [(a, b) for a in range(0, msk.shape[0] - W + 1, W // 2) for b in range(0, msk.shape[1] - W + 1, W // 2)]
+a, b = max(win, key=lambda ab: msk[ab[0]:ab[0] + W, ab[1]:ab[1] + W].sum())
+cr = (slice(a, a + W), slice(b, b + W))
+dlim = max(np.percentile(np.abs(Z[k][f"samp{i}"][0] - Z[k][f"m{i}"])[msk], 99.5) for k in gal)
+fig, axs = plt.subplots(2, len(gal) + 1, figsize=(1.25 * (len(gal) + 1) + 0.5, 2.75), squeeze=False)
+for c_, k in enumerate(["truth"] + gal):
+    top = x if k == "truth" else Z[k][f"samp{i}"][0]
+    bot = x - Z[gal[0]][f"m{i}"] if k == "truth" else Z[k][f"samp{i}"][0] - Z[k][f"m{i}"]
+    for r_, (im, cm, lo, hi) in enumerate([(top, "viridis", *vlim), (bot, "RdBu_r", -dlim, dlim)]):
+        ax = axs[r_, c_]
+        ax.imshow(np.where(msk, im, np.nan)[cr], cmap=cm, vmin=lo, vmax=hi, interpolation="nearest")
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.grid(False)
+        for s_ in ax.spines.values():
+            s_.set_visible(False)
+    axs[0, c_].set_title("truth" if k == "truth" else LAB[k], fontsize=6.5)
+axs[0, 0].set_ylabel("map / sample 1", fontsize=7)
+axs[1, 0].set_ylabel("minus post. mean", fontsize=7)
+axs[1, 0].set_xlabel(f"(mean of {LAB[gal[0]]})", fontsize=6)
+fig.subplots_adjust(wspace=0.04, hspace=0.06, right=0.9)
+fig.colorbar(plt.cm.ScalarMappable(norm=plt.Normalize(*vlim), cmap="viridis"), cax=fig.add_axes([0.91, 0.52, 0.012, 0.33]), label="κ")
+fig.colorbar(plt.cm.ScalarMappable(norm=plt.Normalize(-dlim, dlim), cmap="RdBu_r"), cax=fig.add_axes([0.91, 0.12, 0.012, 0.33]),
+             label="Δκ")
+save(fig, "fig_mm_gallery_zoom")
 
 json.dump({"models": MOD, "n_maps": n_maps, "N": N, "pixel_coverage_source": "stageA 1000 maps" if stageA else "joint pm1",
            "coverage": covres, "power": specres, "patch": patchres}, open(os.path.join(FIG, "paper_figs_data.json"), "w"), indent=1)
