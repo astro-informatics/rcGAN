@@ -237,7 +237,7 @@ for c_, k in enumerate(["truth"] + gal):
         ax.grid(False)
         for s_ in ax.spines.values():
             s_.set_visible(False)
-    axs[0, c_].set_title("truth" if k == "truth" else LAB[k], fontsize=6.5)
+    axs[0, c_].set_title("truth" if k == "truth" else LAB[k].replace(", ", ",\n").replace(" (", "\n("), fontsize=6.5)
 axs[0, 0].set_ylabel("map / sample 1", fontsize=7)
 axs[1, 0].set_ylabel("minus post. mean", fontsize=7)
 axs[1, 0].set_xlabel(f"(mean of {LAB[gal[0]]})", fontsize=6)
