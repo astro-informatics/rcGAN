@@ -13,4 +13,8 @@ V=$(sbatch --parsable -J val_$KEY $D $O --time=06:00:00 job_eval.sh py $WT/scrip
 J=$(sbatch --parsable -J jt_$KEY --dependency=afterok:$V $O --time=10:00:00 job_eval.sh joint jt_sample.py --model $KEY --n-samp 256 --n-maps 300 --chunk 64)
 A=$(sbatch --parsable -J sA_$KEY --dependency=afterok:$V $O --time=16:00:00 job_eval.sh stageA a_sample_stats.py --model $KEY --n-samp 256 --n-maps 1000 --chunk 64)
 R=$(sbatch --parsable -J rec_$KEY --dependency=afterok:$V $O --time=06:00:00 job_eval.sh stageA $PWD/mm_recon.py --model $KEY --n-maps 1000)
-echo "$KEY: validate $V -> jt $J, stageA $A, recon $R"
+# storage: once checkpoint_best exists, delete the remaining per-epoch checkpoints (keep best + csv logs)
+C=$(sbatch --parsable -J rm_$KEY --dependency=afterok:$V -p GPU --ntasks=1 --cpus-per-task=1 --mem=1G --time=00:10:00 \
+  -o /share/gpu0/jjwhit/crps_review/paper/mm/logs/rm_${KEY}_%j.out \
+  --wrap "D=/share/gpu0/jjwhit/crps_review/paper/mm/ckpt/$EXP; test -s \$D/checkpoint_best.ckpt && rm -v \$D/checkpoint-epoch=*.ckpt")
+echo "$KEY: validate $V -> jt $J, stageA $A, recon $R, cleanup $C"

@@ -30,6 +30,12 @@ MODELS = {
     "FNA": NEW_CKPT + "mmgan_crps_fair_noadv",
     "MSNA": NEW_CKPT + "mmgan_crps_ms_noadv",
 }
+# seeds follow-up (BRIEF_mm_seeds.md): ES<n> = fair energy score + critic; R<n> = rcGAN loss retrained on this branch;
+# F<n> / MS<n> / MSS<n> = extra seeds (seed 0 of F is F100, of MS is MS, of MS-sigma is MSS)
+SEED_RUNS = {"ES": "mmgan_es_s", "R": "mmgan_rcgan_s", "F": "mmgan_crps_fair_s", "MS": "mmgan_crps_ms_s", "MSS": "mmgan_crps_ms_sigma_s"}
+for _k, _exp in SEED_RUNS.items():
+    for _s in range(3):
+        MODELS[f"{_k}{_s}"] = NEW_CKPT + f"{_exp}{_s}"
 
 sys.path[:0] = [WT, REVIEW, JT]
 import models.lightning.mmGAN  # noqa: E402,F401  (paper-mm version, cached before common.py adds crps-review)

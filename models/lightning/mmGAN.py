@@ -13,7 +13,8 @@ from models.archs.mass_map.generator import UNetModel
 from models.archs.mass_map.discriminator import DiscriminatorModel
 from evaluation_scripts.metrics import psnr
 from torchmetrics.functional import peak_signal_noise_ratio
-from models.lightning.proper_scores import ms_fair_crps
+import math
+from models.lightning.proper_scores import fair_energy_score, ms_fair_crps
 
 class mmGAN(pl.LightningModule):
     def __init__(self, args, exp_name, num_gpus, crps_mode=None, crps_alpha=None, adv_scale=1.0, ms_level_weights=None):
@@ -28,6 +29,10 @@ class mmGAN(pl.LightningModule):
         self.crps_alpha = crps_alpha if crps_alpha is not None else 0.95 # Only used if crps_mode is "alpha_fair"
         # "ms" = multiscale fair CRPS (proper_scores.ms_fair_crps, default Haar levels).
         # "ms_sigma" = the same with fixed level weights 1/sigma_s (ms_level_weights, from the training truths).
+        # "es" = fair energy score (proper_scores.fair_energy_score, Euclidean norm over the whole normalised field)
+        #   divided by sqrt(C*H*W), the toy benchmark's scaling (toy/losses.py:full_energy).
+        # "rcgan" = the original rcGAN regulariser: L1 of the P-sample mean - beta * std term (l1_std_p), with beta
+        #   updated after every validation epoch (mu_0 = 2e-2), as in the code that trained mmgan_training_real_output.
         # adv_scale multiplies the generator's adversarial loss (0 = critic ablation, "-noadv").
         self.adv_scale = adv_scale
         self.ms_level_weights = ms_level_weights
@@ -176,6 +181,8 @@ class mmGAN(pl.LightningModule):
             return ms_fair_crps(gens, x)
         elif self.crps_mode == "ms_sigma":
             return ms_fair_crps(gens, x, level_weights=self.ms_level_weights)
+        elif self.crps_mode == "es":
+            return fair_energy_score(gens, x) / math.sqrt(gens[0, 0].numel())
         else:
             raise ValueError(f"Invalid CRPS mode: {self.crps_mode}")
 
@@ -276,12 +283,13 @@ class mmGAN(pl.LightningModule):
             for z in range(self.args.num_z_train):
                 gens[:, z, :, :, :] = self.forward(y)
 
-            # avg_recon = torch.mean(gens, dim=1)
-
             # adversarial loss is binary cross-entropy
             g_loss = self.adversarial_loss_generator(y, gens)
-            # g_loss += self.l1_std_p(avg_recon, gens, x)  # old rcGAN L1+std loss, superseded by CRPS
-            g_loss += self.crps_loss(gens, x)
+            if self.crps_mode == "rcgan":
+                avg_recon = torch.mean(gens, dim=1)
+                g_loss += self.l1_std_p(avg_recon, gens, x)  # old rcGAN L1+std loss
+            else:
+                g_loss += self.crps_loss(gens, x)
 
 
             self.log('g_loss', g_loss, prog_bar=True)
@@ -385,7 +393,8 @@ class mmGAN(pl.LightningModule):
         psnr_diff = (avg_single_psnr + 2.5) - avg_psnr
 
         mu_0 = 2e-2
-        # self.std_mult += mu_0 * psnr_diff
+        if self.crps_mode == "rcgan":
+            self.std_mult += mu_0 * psnr_diff
 
         if np.abs(psnr_diff) <= self.args.psnr_gain_tol:
             self.is_good_model = 1

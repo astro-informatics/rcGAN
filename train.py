@@ -28,7 +28,7 @@ def load_object(dct):
 if __name__ == '__main__':
     torch.set_float32_matmul_precision('medium')
     args = create_arg_parser().parse_args()
-    seed_everything(0, workers=True)
+    seed_everything(args.seed, workers=True)
 
     print(f"Experiment Name: {args.exp_name}")
     print(f"Number of GPUs: {args.num_gpus}")
@@ -76,7 +76,12 @@ if __name__ == '__main__':
 
     
     os.makedirs(cfg.checkpoint_dir + args.exp_name + '/', exist_ok=True)
-    checkpoint_callback_epoch = ModelCheckpoint(
+    class FromEpochCheckpoint(ModelCheckpoint):
+        # --ckpt-from-epoch N: write no per-epoch checkpoints before epoch N (validation only uses epochs 80-99)
+        def _should_skip_saving_checkpoint(self, trainer):
+            return trainer.current_epoch < args.ckpt_from_epoch or super()._should_skip_saving_checkpoint(trainer)
+
+    checkpoint_callback_epoch = FromEpochCheckpoint(
         monitor='epoch',
         mode='max',
         dirpath=cfg.checkpoint_dir + args.exp_name + '/',
