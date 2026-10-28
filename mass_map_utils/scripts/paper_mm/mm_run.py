@@ -37,43 +37,48 @@ for _k, _exp in SEED_RUNS.items():
     for _s in range(3):
         MODELS[f"{_k}{_s}"] = NEW_CKPT + f"{_exp}{_s}"
 
-sys.path[:0] = [WT, REVIEW, JT]
-import models.lightning.mmGAN  # noqa: E402,F401  (paper-mm version, cached before common.py adds crps-review)
-import common  # noqa: E402
+
+def main():
+    global load_model
+    sys.path[:0] = [WT, REVIEW, JT]
+    import models.lightning.mmGAN  # noqa: E402,F401  (paper-mm version, cached before common.py adds crps-review)
+    import common  # noqa: E402
+
+    def load_model(exp, ckpt="checkpoint_best.ckpt", device="cuda"):
+        from models.lightning.mmGAN import mmGAN
+
+        path = exp if os.path.isabs(exp) else MODELS[exp]
+        model = mmGAN.load_from_checkpoint(checkpoint_path=os.path.join(path, ckpt), map_location="cpu")
+        print(f"loaded {path}/{ckpt}: crps_mode={model.crps_mode} adv_scale={getattr(model, 'adv_scale', 1.0)}", flush=True)
+        return model.to(device).eval()
+
+    common.MODELS.clear()
+    common.MODELS.update(MODELS)
+    common.load_model = load_model
+    common.OUT_ROOT = EVAL + "stageA/"
+    assert models.lightning.mmGAN.__file__.startswith(WT), models.lightning.mmGAN.__file__
+
+    which, script = sys.argv[1], sys.argv[2]
+    if which == "joint":
+        import jt_common
+        import torch
+
+        # torch 1.13's cuFFT fails on the L40S node (CUFFT_INTERNAL_ERROR). There, run jt_common's FFTs on the CPU
+        # (same float32/complex64 transforms, results moved back to the GPU); nothing else changes.
+        if torch.cuda.is_available() and "L40S" in torch.cuda.get_device_name():
+            def _on_cpu(f):
+                return lambda x, *a, **k: f(x.cpu(), *a, **k).to(x.device)
+
+            torch.fft.fft2, torch.fft.ifft2 = _on_cpu(torch.fft.fft2), _on_cpu(torch.fft.ifft2)
+            print("L40S: torch.fft.fft2/ifft2 run on the CPU", flush=True)
+
+        jt_common.MODELS, jt_common.load_model, jt_common.OUT = common.MODELS, load_model, EVAL + "joint/"
+        script = os.path.join(JT, script)
+    else:
+        script = os.path.join(REVIEW, script)
+    sys.argv = [script] + sys.argv[3:]
+    runpy.run_path(script, run_name="__main__")
 
 
-def load_model(exp, ckpt="checkpoint_best.ckpt", device="cuda"):
-    from models.lightning.mmGAN import mmGAN
-
-    path = exp if os.path.isabs(exp) else MODELS[exp]
-    model = mmGAN.load_from_checkpoint(checkpoint_path=os.path.join(path, ckpt), map_location="cpu")
-    print(f"loaded {path}/{ckpt}: crps_mode={model.crps_mode} adv_scale={getattr(model, 'adv_scale', 1.0)}", flush=True)
-    return model.to(device).eval()
-
-
-common.MODELS.clear()
-common.MODELS.update(MODELS)
-common.load_model = load_model
-common.OUT_ROOT = EVAL + "stageA/"
-assert models.lightning.mmGAN.__file__.startswith(WT), models.lightning.mmGAN.__file__
-
-which, script = sys.argv[1], sys.argv[2]
-if which == "joint":
-    import jt_common
-    import torch
-
-    # torch 1.13's cuFFT fails on the L40S node (CUFFT_INTERNAL_ERROR). There, run jt_common's FFTs on the CPU
-    # (same float32/complex64 transforms, results moved back to the GPU); nothing else changes.
-    if torch.cuda.is_available() and "L40S" in torch.cuda.get_device_name():
-        def _on_cpu(f):
-            return lambda x, *a, **k: f(x.cpu(), *a, **k).to(x.device)
-
-        torch.fft.fft2, torch.fft.ifft2 = _on_cpu(torch.fft.fft2), _on_cpu(torch.fft.ifft2)
-        print("L40S: torch.fft.fft2/ifft2 run on the CPU", flush=True)
-
-    jt_common.MODELS, jt_common.load_model, jt_common.OUT = common.MODELS, load_model, EVAL + "joint/"
-    script = os.path.join(JT, script)
-else:
-    script = os.path.join(REVIEW, script)
-sys.argv = [script] + sys.argv[3:]
-runpy.run_path(script, run_name="__main__")
+if __name__ == "__main__":  # guard: spawned worker processes (mm_jointcov.py) import this file as __mp_main__
+    main()
