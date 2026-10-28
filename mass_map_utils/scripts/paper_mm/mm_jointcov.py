@@ -69,6 +69,10 @@ def run_parallel(sample_fn, cases, mask, ks, seed=0, n_jobs=16):
     sys.path.insert(0, "/home/jjwhit/.herdr/worktrees/rcGAN/crps-paper-mm/mass_map_utils/scripts/paper_mm")
     from jc_worker import pits_job
 
+    # one BLAS/OpenMP thread per worker (read by the spawned children at import): unset, each of the n_jobs workers
+    # starts one thread per core and the node is oversubscribed (it halved this job's and a co-located training's speed)
+    for v in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+        os.environ[v] = "1"
     acc, nul = jointcov.Accumulator(), jointcov.Accumulator()
     pending = collections.deque()
     with ProcessPoolExecutor(n_jobs, mp_context=mp.get_context("spawn")) as ex:
