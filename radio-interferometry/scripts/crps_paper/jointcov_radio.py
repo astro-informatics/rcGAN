@@ -34,7 +34,7 @@ MASKDESC = {"none": "none (full 128x128 field)", "src": "per-image source mask (
 NOTES = {
     "none": ("Simulated MeerKAT fallback data (thresholded kappaTNG sky, 128 px; 86% of truth pixels exactly 0). Test set = first n_cases "
              "of radio/data/test, fixed noise; N = 128 samples per image, latent seeds torch.manual_seed(1000+i), final checkpoint (epoch 69) "
-             "of every variant, same seeds and chunking as reports/06_radio.md (bit-identical samples only on the same GPU model; CUDA randn depends on it). Raw samples (no positivity clipping): with the zero atom, per-pixel "
+             "of every variant, same per-image seeds as reports/06_radio.md but generated in chunks of 4 (06_radio.md: 32), so the latent draws differ from 06_radio.md (Monte Carlo-level differences only). Raw samples (no positivity clipping): with the zero atom, per-pixel "
              "PITs at background pixels depend on how the sample noise floor sits around 0, so the 'pixel' curve is the raw-rank diagnostic "
              "of 06_radio.md (cov_pix_all), not its positivity-clipped variant. Full field, no mask."),
     "src": ("As jointcov.json but restricted to the per-image y-measurable source mask (Gaussian-smoothed dirty image > 0.1 max, "
@@ -66,7 +66,7 @@ def main():
     ap.add_argument("--variant", default="none", choices=["none", "src", "clip"])
     ap.add_argument("--n-test", type=int, default=1000)
     ap.add_argument("--n-samp", type=int, default=128)
-    ap.add_argument("--chunk", type=int, default=32)
+    ap.add_argument("--chunk", type=int, default=4)  # small chunks: ~8 processes share one 16 GB V100
     ap.add_argument("--out", default=BASE, help="output dir (a scratch dir for smoke tests)")
     a = ap.parse_args()
     dev = "cuda" if torch.cuda.is_available() else "cpu"
