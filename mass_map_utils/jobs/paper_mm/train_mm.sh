@@ -26,6 +26,12 @@ nvidia-smi --query-gpu=timestamp,index,utilization.gpu,memory.used --format=csv 
 echo "slurm CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 # Slurm does not isolate GPU devices on these nodes (other users' processes sit on the "allocated" indices).
 # With PICK_FREE_GPUS=1, use the 4 highest-index GPUs that have < 1 GB in use instead.
+# Slurm's own assignment is kept whenever all 4 of its GPUs are free (avoids two jobs that start together picking the same GPUs).
+if [ "$PICK_FREE_GPUS" = 1 ] && [ -n "$CUDA_VISIBLE_DEVICES" ]; then
+  busy=$(nvidia-smi -i $CUDA_VISIBLE_DEVICES --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | awk '!($1 < 1000)' | wc -l)
+  nok=$(nvidia-smi -i $CUDA_VISIBLE_DEVICES --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | grep -c .)
+  [ "$busy" = 0 ] && [ "$nok" = 4 ] && { echo "Slurm's GPUs $CUDA_VISIBLE_DEVICES are free; keeping them"; PICK_FREE_GPUS=0; }
+fi
 if [ "$PICK_FREE_GPUS" = 1 ]; then
   export PICKED=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F', ' '$2 < 1000 {print $1}' | sort -n | tail -4 | sort -n | paste -sd,)
   [ $(echo $PICKED | tr , '\n' | grep -c .) -lt 4 ] && { echo "fewer than 4 free GPUs ($PICKED); using Slurm's"; PICKED=; }
