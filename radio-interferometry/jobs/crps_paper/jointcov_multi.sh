@@ -2,7 +2,7 @@
 # Usage: sbatch -J jc_radio_<x> --cpus-per-task=<n procs> jointcov_multi.sh M:variant [M:variant ...]
 # Runs one jointcov_radio.py process per spec concurrently on one GPU (sampling is ~1% of the time; jointcov is single-core numpy).
 #SBATCH -p GPU
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:v100:1
 #SBATCH --ntasks=1
 #SBATCH --mem=64G
 #SBATCH --time=12:00:00
@@ -29,6 +29,7 @@ L=/share/gpu0/jjwhit/crps_review/paper/radio/logs
 for spec in "$@"; do
   M=${spec%%:*}; V=${spec#*:}
   python -u jointcov_radio.py --method $M --variant $V > $L/jc_${M}_${V}_${SLURM_JOB_ID}.log 2>&1 &
+  sleep 20  # stagger CUDA/cuDNN initialisation
 done
 wait
 tail -n 2 $L/jc_*_${SLURM_JOB_ID}.log
