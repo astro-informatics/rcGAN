@@ -28,11 +28,16 @@ p = argparse.ArgumentParser()
 p.add_argument("--models", nargs="+", default=["R", "F100", "MS", "MSS", "FNA", "MSNA"])
 p.add_argument("--sub", default="main")
 p.add_argument("--B", type=int, default=2000)
+p.add_argument("--tag", default="", help="output suffix (analysis_<tag>, figures_<tag>), e.g. seeds; inputs still from --sub")
 args = p.parse_args()
 MOD = args.models
 COL = {"R": "#2a78d6", "F100": "#eb6834", "MS": "#1baf7a", "MSS": "#008300", "FNA": "#eda100", "MSNA": "#e87ba4", "S": "#8c8c8c", "FB": "#555555", "NL": "#b0b0b0"}
-FIG = os.path.join(OUT, "figures" if args.sub == "main" else f"figures_{args.sub}")
-AN = os.path.join(OUT, "analysis" if args.sub == "main" else f"analysis_{args.sub}")
+COL.update({"F": COL["F100"], "ES": "#6250d6"})
+for k in MOD:  # seed runs (ES0, F1, R2, MSS1, ...) take their method's colour
+    COL.setdefault(k, COL[k.rstrip("0123456789")])
+tag = args.tag or ("" if args.sub == "main" else args.sub)
+FIG = os.path.join(OUT, f"figures_{tag}" if tag else "figures")
+AN = os.path.join(OUT, f"analysis_{tag}" if tag else "analysis")
 os.makedirs(FIG, exist_ok=True)
 os.makedirs(AN, exist_ok=True)
 plt.rcParams.update({"font.size": 9, "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True,
