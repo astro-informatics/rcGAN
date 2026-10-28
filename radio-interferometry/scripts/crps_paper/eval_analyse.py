@@ -220,10 +220,15 @@ def print_tables(res, tags):
 
 def figures(res, S, tags, n, N, suffix):
     K = np.array(res["k_eff"])
-    fig, ax = plt.subplots(1, 3, figsize=(15, 4.2))
+    fig, ax = plt.subplots(1, 4, figsize=(20, 4.2))
+    ax = [ax[0], ax[1], ax[3], ax[2]]  # patch panel last
     for t in tags:
         m = res["models"][t]
-        for a_, key, ttl in [(ax[0], "cov_pix_all", "per-pixel, all"), (ax[1], "cov_pix_src", "per-pixel, source mask")]:
+        for a_, key, ttl in [(ax[0], "cov_pix_all", "per-pixel, all (raw ranks; zero atom)"),
+                             (ax[1], "cov_clip_all", "per-pixel, all (positivity-clipped, randomised PIT)"),
+                             (ax[3], "cov_clip_src", "per-pixel, source mask (clipped)")]:
+            if key not in m:
+                continue
             e, lo, hi = (np.array(m[key][q]) for q in ("est", "lo", "hi"))
             a_.errorbar(LEVELS, e, yerr=[e - lo, hi - e], marker="o", capsize=3, label=t, color=COLORS.get(t))
             a_.set_title(ttl)
@@ -232,7 +237,7 @@ def figures(res, S, tags, n, N, suffix):
         lo = np.array([m[f"cov_patch{s}"]["lo"][j90] for s in PATCH])
         hi = np.array([m[f"cov_patch{s}"]["hi"][j90] for s in PATCH])
         ax[2].errorbar(PATCH, e, yerr=[e - lo, hi - e], marker="o", capsize=3, label=t, color=COLORS.get(t))
-    for a_ in ax[:2]:
+    for a_ in (ax[0], ax[1], ax[3]):
         a_.axhline(0, color="k", lw=0.8)
         a_.set_xlabel("nominal level")
         a_.set_ylabel("coverage - exact level")
