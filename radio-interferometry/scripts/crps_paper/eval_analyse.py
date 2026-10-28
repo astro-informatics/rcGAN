@@ -17,7 +17,7 @@ OUT = "/share/gpu0/jjwhit/crps_review/paper/radio/eval/"
 LEVELS = [0.1, 0.3, 0.5, 0.7, 0.8, 0.9, 0.95]
 PATCH = [1, 2, 4, 8, 16, 32, 64, 128]
 NB = 2000
-COLORS = {"R": "#1f77b4", "F": "#d62728", "MS": "#2ca02c"}
+COLORS = {"R": "#1f77b4", "F": "#d62728", "MS": "#2ca02c", "MSsigma": "#ff7f0e", "Fnoadv": "#9467bd"}
 
 
 def interval(N, a):
@@ -195,6 +195,9 @@ def print_tables(res, tags):
     def row(name, j=None, d=3):
         out = []
         for t in tags:
+            if name not in res["models"][t]:
+                out.append("n/a")
+                continue
             m = res["models"][t][name]
             e, l, h = (m["est"], m["lo"], m["hi"]) if j is None else (m["est"][j], m["lo"][j], m["hi"][j])
             out.append(f"{e:.{d}f} [{l:.{d}f}, {h:.{d}f}]")
@@ -204,10 +207,12 @@ def print_tables(res, tags):
                "energy_score", "variogram_local", "spread_skill_v_over_e", "spread_skill_src_v_over_e", "pairdist_ratio",
                "near_identical_frac_5pct", "calerr_pix_all", "calerr_pix_src", "calerr_clip_all", "calerr_clip_src",
                "flux_rel_bias", "flux_rel_bias_clipped", "flux_z_rms", "flux_z_mean"]:
-        if nm not in res["models"][tags[0]]:
+        if not any(nm in res["models"][t] for t in tags):
             continue
         print(nm, "|", row(nm, d=4))
     for nm in ["cov_pix_all", "cov_pix_src", "cov_pix_bg", "cov_clip_all", "cov_clip_src", "cov_pix_truthmask"] + [f"cov_patch{s}" for s in PATCH]:
+        if not any(nm in res["models"][t] for t in tags):
+            continue
         for j, lv in enumerate(LEVELS):
             if lv in (0.5, 0.9):
                 print(nm, lv, "|", row(nm, j))

@@ -17,7 +17,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 BASE = "/share/gpu0/jjwhit/crps_review/paper/radio/"
-COLORS = {"R": "#1f77b4", "F": "#d62728", "MS": "#2ca02c", "Fnoadv": "#9467bd"}
+COLORS = {"R": "#1f77b4", "F": "#d62728", "MS": "#2ca02c", "MSsigma": "#ff7f0e", "Fnoadv": "#9467bd"}
 
 
 def progress(path):
