@@ -1,7 +1,7 @@
 """Marginal + joint coverage (shared ~/crps_review/paper/common/jointcov.py) for the radio variants.
 
 Same test set, samples and latent seeds as eval_sample.py (first --n-test test images, torch.manual_seed(1000 + i),
-chunk 32, N = 128, generator in eval mode, sky units). Raw samples (no positivity clipping). Samples are generated on the
+N = 128 (chunk 4 by default; eval_sample.py used 32), generator in eval mode, sky units). Raw samples (no positivity clipping). Samples are generated on the
 fly and never stored. Variants: 'none' (raw samples, full 128x128 field; primary), 'src' (raw, restricted to the
 y-measurable source mask of eval_sample.py, per image) and 'clip' (samples clamped at 0, full field). Each (method, variant)
 result goes to jointcov_parts/<variant>/<key>.json and is merged under a file lock into jointcov.json / jointcov_srcmask.json /
