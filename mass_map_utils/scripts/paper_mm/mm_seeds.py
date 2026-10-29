@@ -145,7 +145,10 @@ for g, a in agg.items():
     for m, _, nd in COLS:
         mu, sd = a["mean"].get(m), a["sd"].get(m)
         sc = 1e3 if m.startswith("rmse") else 1
-        cs.append("–" if mu is None else (f"{sc * mu:.{nd}f}" + (f" ± {sc * sd:.{nd}f}" if sd is not None else "")))
+        sg = "+" if m.startswith(("patch", "jc_")) else ""
+        n = a.get("n", {}).get(m, 0)
+        cs.append("–" if mu is None else (f"{sc * mu:{sg}.{nd}f}" + (f" ± {sc * sd:.{nd}f}" if sd is not None else "")
+                                          + (f" (n={n})" if n < len(a["runs"]) else "")))
     L.append(f"| {g} ({len(a['runs'])}) | " + " | ".join(cs) + " |")
 open(EVAL + "seeds_tables.md", "w").write("\n".join(L) + "\n")
 print("\n".join(L))
