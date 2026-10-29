@@ -4,7 +4,7 @@
 #   KEY in ES / R / F / MS / MSS; exp name and key as in mm_run.py SEED_RUNS (e.g. ES0 -> mmgan_es_s0).
 # Training: train_mm.sh on 4 GPUs, same config as every other paper-mm run, per-epoch checkpoints only for epochs 80-99.
 # Evaluation is one serial stream over all seed runs (at most 1 eval GPU next to the 8 training GPUs):
-#   validate -> jt (300 maps) -> recon (1000) -> stage-A (1000), each afterany the previous; the stream's last job id
+#   validate -> jt (300 maps) -> recon (1000) -> stage-A (1000) -> jointcov (BRIEF_jointcov.md), each afterany the previous; the stream's last job id
 #   is kept in $LAST so the next run's chain queues behind it. Epoch checkpoints are deleted once checkpoint_best exists.
 set -e
 KEY=$1; SEED=$2; TDEP=$3
@@ -30,7 +30,8 @@ V=$(sub val_$K afterok:$T${P:+,afterany:$P} --time=06:00:00 $S/job_eval.sh py $W
 J=$(sub jt_$K afterany:$V --time=10:00:00 $S/job_eval.sh joint jt_sample.py --model $K --n-samp 256 --n-maps 300 --chunk 64)
 R=$(sub rec_$K afterany:$J --time=06:00:00 $S/job_eval.sh stageA $S/mm_recon.py --model $K --n-maps 1000)
 G=$(sub sA_$K afterany:$R --time=16:00:00 $S/job_eval.sh stageA a_sample_stats.py --model $K --n-samp 256 --n-maps 1000 --chunk 64)
+JC=$(sub jc_$K afterany:$G --time=03:00:00 --cpus-per-task=16 --mem=64G $S/job_eval.sh stageA $S/mm_jointcov.py --models $K)
 C=$(sbatch --parsable -J rm_$K --dependency=afterok:$V -p GPU --ntasks=1 --cpus-per-task=1 --mem=1G --time=00:10:00 -o $L/rm_${K}_%j.out \
     --wrap "D=/share/gpu0/jjwhit/crps_review/paper/mm/ckpt/$EXP; test -s \$D/checkpoint_best.ckpt && rm -v \$D/checkpoint-epoch=*.ckpt")
-echo $G > $LAST
-echo "$(date '+%F %T') $K ($EXP, seed $SEED): train $T${TDEP:+ ($TDEP)} -> val $V -> jt $J -> rec $R -> sA $G; cleanup $C" | tee -a $L/seeds_jobs.log
+echo $JC > $LAST
+echo "$(date '+%F %T') $K ($EXP, seed $SEED): train $T${TDEP:+ ($TDEP)} -> val $V -> jt $J -> rec $R -> sA $G -> jc $JC; cleanup $C" | tee -a $L/seeds_jobs.log
