@@ -29,14 +29,25 @@ p.add_argument("--models", nargs="+", default=["R", "F100", "MS", "MSS", "FNA", 
 p.add_argument("--map", type=int, default=0)
 p.add_argument("--B", type=int, default=2000)
 p.add_argument("--sub", default="main", help="joint-test subdirectory (main, or a probe)")
+p.add_argument("--out", default="", help="figure subdirectory for this model set, e.g. seeds (default: --sub, or figures/ for main)")
 args = p.parse_args()
-if args.sub != "main":
-    FIG = os.path.join(FIG, args.sub)
+if args.out or args.sub != "main":
+    FIG = os.path.join(FIG, args.out or args.sub)
+    os.makedirs(FIG, exist_ok=True)
 MOD = [k for k in args.models if os.path.exists(os.path.join(EVAL, f"joint/{args.sub}", k, "meta.json"))]
 # categorical slots in fixed order (blue, orange, aqua, yellow, magenta); colour follows the method
 COL = {"R": "#2a78d6", "F100": "#eb6834", "MS": "#1baf7a", "MSS": "#008300", "FNA": "#eda100", "MSNA": "#e87ba4"}
 LAB = {"R": "rcGAN (R)", "F100": "fair CRPS (F)", "MS": "multiscale fair CRPS (MS)", "MSS": "MS, 1/σ level weights (MS-σ)", "FNA": "F, no critic", "MSNA": "MS, no critic"}
 LS = {"R": "-", "F100": "-", "MS": "-", "MSS": "-", "FNA": "--", "MSNA": "--"}
+# seeds follow-up: ES = slot 7 (violet); seed runs (ES0, F1, R2, MSS1, ...) take their method's colour, R<n> dash-dot (retrained R)
+COL["ES"], LAB["ES"], LS["ES"] = "#6250d6", "fair energy score (ES)", "-"
+COL["F"], LAB["F"], LS["F"] = COL["F100"], LAB["F100"], "-"
+for _k in args.models:
+    if _k not in COL:
+        _b, _s = _k.rstrip("0123456789"), _k[len(_k.rstrip("0123456789")):]
+        COL[_k] = COL[_b]
+        LAB[_k] = ("rcGAN loss, paper branch" if _b == "R" else LAB[_b]) + f", seed {_s}"
+        LS[_k] = "-." if _b == "R" else LS[_b]
 INK, MUTED, GRID = "#1f1f1e", "#6b6a66", "#e6e6e3"
 plt.rcParams.update({"font.size": 8, "axes.titlesize": 8.5, "axes.labelsize": 8, "legend.fontsize": 7.5,
                      "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True, "grid.color": GRID,
@@ -247,5 +258,8 @@ fig.colorbar(plt.cm.ScalarMappable(norm=plt.Normalize(-dlim, dlim), cmap="RdBu_r
              label="Δκ")
 save(fig, "fig_mm_gallery_zoom")
 
+_pfd = os.path.join(FIG, "paper_figs_data.json")
+_keep = {k: v for k, v in (json.load(open(_pfd)) if os.path.exists(_pfd) else {}).items()
+         if k not in ("models", "n_maps", "N", "pixel_coverage_source", "coverage", "power", "patch")}  # e.g. "seeds" (mm_seeds.py)
 json.dump({"models": MOD, "n_maps": n_maps, "N": N, "pixel_coverage_source": "stageA 1000 maps" if stageA else "joint pm1",
-           "coverage": covres, "power": specres, "patch": patchres}, open(os.path.join(FIG, "paper_figs_data.json"), "w"), indent=1)
+           "coverage": covres, "power": specres, "patch": patchres, **_keep}, open(_pfd, "w"), indent=1)

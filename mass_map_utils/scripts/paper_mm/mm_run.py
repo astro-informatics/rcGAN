@@ -55,7 +55,8 @@ def main():
     common.MODELS.clear()
     common.MODELS.update(MODELS)
     common.load_model = load_model
-    common.OUT_ROOT = EVAL + "stageA/"
+    # MM_STAGEA_ROOT: alternative stage-A root for a separate analysis (e.g. eval/stageA_seeds/, whose stats/ links to stageA/stats)
+    common.OUT_ROOT = os.environ.get("MM_STAGEA_ROOT", EVAL + "stageA/")
     assert models.lightning.mmGAN.__file__.startswith(WT), models.lightning.mmGAN.__file__
 
     which, script = sys.argv[1], sys.argv[2]
