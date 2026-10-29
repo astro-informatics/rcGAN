@@ -62,7 +62,7 @@ def merge(N, n_cases):
     os.replace(tmp, ROOT + "jointcov.json")
 
 
-def run_parallel(sample_fn, cases, mask, ks, seed=0, n_jobs=16):
+def run_parallel(sample_fn, cases, mask, ks, seed=0, n_jobs=16, null_index=0):
     """jointcov.run(..., null_check=True) with the per-case PITs computed in a process pool: the same jointcov.pits_case and
     Accumulator; only the randomisation stream differs (one rng per case and role, seeded by (seed, case, role))
     instead of one sequential stream. GPU sampling stays in this process; at most n_jobs + 2 cases are in flight."""
@@ -78,8 +78,9 @@ def run_parallel(sample_fn, cases, mask, ks, seed=0, n_jobs=16):
     with ProcessPoolExecutor(n_jobs, mp_context=mp.get_context("spawn")) as ex:
         for c in cases:
             x, y = sample_fn(c)
+            rest = np.delete(x, null_index, axis=0)  # null check: sample null_index as truth vs the other N - 1
             pending.append((ex.submit(pits_job, x, y, mask, ks, [seed, c, 0]),
-                            ex.submit(pits_job, x[1:], x[0], mask, ks, [seed, c, 1])))
+                            ex.submit(pits_job, rest, x[null_index], mask, ks, [seed, c, 1])))
             while len(pending) > n_jobs + 2:
                 a, b = pending.popleft()
                 acc.add(a.result())
@@ -99,6 +100,7 @@ def main():
     p.add_argument("--chunk", type=int, default=64)
     p.add_argument("--n-jobs", type=int, default=16)
     p.add_argument("--part-suffix", default="", help="e.g. _test for a short timing run (not merged)")
+    p.add_argument("--null-index", type=int, default=0, help="sample used as pseudo-truth in the null check (jointcov.run: 0)")
     args = p.parse_args()
 
     cfg = load_cfg()
@@ -119,7 +121,7 @@ def main():
                 print(f"[{k}] map {i + 1}/{n_maps}  {time.time() - t0:.0f}s", flush=True)
             return S, x
 
-        res = run_parallel(sample_fn, range(n_maps), mask, KS, seed=0, n_jobs=args.n_jobs)
+        res = run_parallel(sample_fn, range(n_maps), mask, KS, seed=0, n_jobs=args.n_jobs, null_index=args.null_index)
         part = {"key": j, "model": k, "exp": MODELS[k], "ckpt": "checkpoint_best.ckpt", "n_maps": n_maps, "N": args.N,
                 "seconds": time.time() - t0, "result": res}
         if args.part_suffix:
