@@ -10,6 +10,7 @@
 #SBATCH --time=2-00:00:00
 #SBATCH --output=/share/gpu0/jjwhit/crps_review/paper/mm/logs/%x_%j.out
 #SBATCH --error=/share/gpu0/jjwhit/crps_review/paper/mm/logs/%x_%j.err
+#SBATCH --open-mode=append
 source /share/apps/anaconda/3-2022.05/etc/profile.d/conda.sh
 conda activate cGAN
 export WANDB_MODE=offline
@@ -34,13 +35,17 @@ if [ "$PICK_FREE_GPUS" = 1 ] && [ -n "$CUDA_VISIBLE_DEVICES" ]; then
 fi
 if [ "$PICK_FREE_GPUS" = 1 ]; then
   # gpu-0-5 advertises 10 GPUs but has 9, so Slurm can hand out a 4-GPU slot with only 3 real free GPUs (and a non-existent index):
-  # wait up to 1 h for 4 free GPUs instead of falling back to Slurm's assignment, which then fails at start-up
-  for i in $(seq 30); do
+  # wait up to 20 min for 4 free GPUs instead of falling back to Slurm's assignment, which then fails at start-up; then requeue
+  # (same job id, so the eval chain's afterok dependency survives) rather than hold an idle 4-GPU allocation
+  for i in $(seq 10); do
     export PICKED=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F', ' '$2 < 1000 {print $1}' | sort -n | tail -4 | sort -n | paste -sd,)
     [ $(echo $PICKED | tr , '\n' | grep -c .) -ge 4 ] && break
     echo "$(date '+%T') fewer than 4 free GPUs ($PICKED); waiting"; PICKED=; sleep 120
   done
-  [ -z "$PICKED" ] && { echo "no 4 free GPUs after 1 h; giving up"; exit 1; }
+  if [ -z "$PICKED" ]; then
+    [ "${SLURM_RESTART_COUNT:-0}" -lt 24 ] && { echo "no 4 free GPUs after 20 min; requeueing (restart ${SLURM_RESTART_COUNT:-0})"; kill %1 2>/dev/null; scontrol requeue $SLURM_JOB_ID; sleep 300; }
+    echo "no 4 free GPUs; giving up"; exit 1
+  fi
   echo "picked GPUs $PICKED"  # srun re-sets CUDA_VISIBLE_DEVICES per task, so it is set again inside the step
 fi
 EXP=$1; shift
