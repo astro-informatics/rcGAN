@@ -26,10 +26,11 @@ git log -1 --format=%H
 nvidia-smi --query-gpu=timestamp,index,utilization.gpu,memory.used --format=csv -l 600 > /share/gpu0/jjwhit/crps_review/paper/mm/logs/${SLURM_JOB_NAME}_${SLURM_JOB_ID}_gpu.csv &
 echo "slurm CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 # Slurm does not isolate GPU devices on these nodes (other users' processes sit on the "allocated" indices).
-# With PICK_FREE_GPUS=1, use the 4 highest-index GPUs that have < 1 GB in use instead.
+# With PICK_FREE_GPUS=1, use the 4 highest-index GPUs that have < 4 GB in use instead (training needs ~16 GB of 40/48; idle
+# foreign contexts of ~1 GB, e.g. a notebook on gpu-0-3 GPU 3, would otherwise block a node for hours).
 # Slurm's own assignment is kept whenever all 4 of its GPUs are free (avoids two jobs that start together picking the same GPUs).
 if [ "$PICK_FREE_GPUS" = 1 ] && [ -n "$CUDA_VISIBLE_DEVICES" ]; then
-  busy=$(nvidia-smi -i $CUDA_VISIBLE_DEVICES --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | awk '!($1 < 1000)' | wc -l)
+  busy=$(nvidia-smi -i $CUDA_VISIBLE_DEVICES --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | awk '!($1 < 4000)' | wc -l)
   nok=$(nvidia-smi -i $CUDA_VISIBLE_DEVICES --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | grep -c .)
   [ "$busy" = 0 ] && [ "$nok" = 4 ] && { echo "Slurm's GPUs $CUDA_VISIBLE_DEVICES are free; keeping them"; PICK_FREE_GPUS=0; }
 fi
@@ -38,7 +39,7 @@ if [ "$PICK_FREE_GPUS" = 1 ]; then
   # wait up to 20 min for 4 free GPUs instead of falling back to Slurm's assignment, which then fails at start-up; then requeue
   # (same job id, so the eval chain's afterok dependency survives) rather than hold an idle 4-GPU allocation
   for i in $(seq 10); do
-    export PICKED=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F', ' '$2 < 1000 {print $1}' | sort -n | tail -4 | sort -n | paste -sd,)
+    export PICKED=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F', ' '$2 < 4000 {print $1}' | sort -n | tail -4 | sort -n | paste -sd,)
     [ $(echo $PICKED | tr , '\n' | grep -c .) -ge 4 ] && break
     echo "$(date '+%T') fewer than 4 free GPUs ($PICKED); waiting"; PICKED=; sleep 120
   done
