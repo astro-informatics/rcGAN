@@ -30,7 +30,7 @@ echo "slurm CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
 # foreign contexts of ~1 GB, e.g. a notebook on gpu-0-3 GPU 3, would otherwise block a node for hours).
 # Slurm's own assignment is kept whenever all 4 of its GPUs are free (avoids two jobs that start together picking the same GPUs).
 if [ "$PICK_FREE_GPUS" = 1 ] && [ -n "$CUDA_VISIBLE_DEVICES" ]; then
-  busy=$(nvidia-smi -i $CUDA_VISIBLE_DEVICES --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | awk '!($1 < 4000)' | wc -l)
+  busy=$(nvidia-smi -i $CUDA_VISIBLE_DEVICES --query-gpu=memory.used,memory.free,utilization.gpu --format=csv,noheader,nounits 2>/dev/null | awk -F', ' '!($1 < 4000 || ($2 > 30000 && $3 < 5))' | wc -l)
   nok=$(nvidia-smi -i $CUDA_VISIBLE_DEVICES --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | grep -c .)
   [ "$busy" = 0 ] && [ "$nok" = 4 ] && { echo "Slurm's GPUs $CUDA_VISIBLE_DEVICES are free; keeping them"; PICK_FREE_GPUS=0; }
 fi
@@ -39,7 +39,8 @@ if [ "$PICK_FREE_GPUS" = 1 ]; then
   # wait up to 20 min for 4 free GPUs instead of falling back to Slurm's assignment, which then fails at start-up; then requeue
   # (same job id, so the eval chain's afterok dependency survives) rather than hold an idle 4-GPU allocation
   for i in $(seq 10); do
-    export PICKED=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -F', ' '$2 < 4000 {print $1}' | sort -n | tail -4 | sort -n | paste -sd,)
+    # free = < 4 GB used, or idle (< 5% util) with > 30 GB free (orphaned foreign contexts on the 80 GB A100s, e.g. 10.8 GB on gpu-0-2 GPU 3)
+    export PICKED=$(nvidia-smi --query-gpu=index,memory.used,memory.free,utilization.gpu --format=csv,noheader,nounits | awk -F', ' '$2 < 4000 || ($3 > 30000 && $4 < 5) {print $1}' | sort -n | tail -4 | sort -n | paste -sd,)
     [ $(echo $PICKED | tr , '\n' | grep -c .) -ge 4 ] && break
     echo "$(date '+%T') fewer than 4 free GPUs ($PICKED); waiting"; PICKED=; sleep 120
   done
