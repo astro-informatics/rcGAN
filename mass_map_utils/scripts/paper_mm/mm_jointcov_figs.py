@@ -78,7 +78,7 @@ for j in keys:
     ax.plot(lv, 100 * curve(j, "pixel", 1)[0], label=D["labels"][j], **style(j))
 finish(ax, "per-pixel coverage (marginal)")
 ax.set_ylabel("empirical − nominal (pp)")
-ax.legend(frameon=False, ncol=1, loc="best")
+ax.legend(frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(1.02, 1), fontsize=6.5)  # 18 methods: keep the legend off the curves
 save(fig, "fig_jc_marginal")
 
 # (ii) whole footprint
@@ -91,7 +91,7 @@ for ax, st, t in zip(axs, ["maxz", "depth", "avgrank"],
         ax.plot(lv, 100 * curve(j, st, "full")[0], label=D["labels"][j], **style(j))
     finish(ax, f"footprint: {t}")
 axs[0].set_ylabel("empirical − nominal (pp)")
-axs[-1].legend(frameon=False, loc="best")
+fig.legend(*axs[-1].get_legend_handles_labels(), frameon=False, loc="upper center", bbox_to_anchor=(0.5, 0), ncol=4, fontsize=6.5)
 save(fig, "fig_jc_full")
 
 # (iii) 90% error vs region size
@@ -110,5 +110,5 @@ for ax, st in zip(axs, ["mean", "maxz", "depth", "avgrank"]):
     ax.set_title(f"{st}: 90% coverage − 90")
     ax.set_xlabel("region side (px; all = footprint)")
 axs[0].set_ylabel("pp")
-axs[-1].legend(frameon=False, loc="lower left", fontsize=6.5)
+fig.legend(*axs[-1].get_legend_handles_labels(), frameon=False, loc="upper center", bbox_to_anchor=(0.5, 0), ncol=5, fontsize=6.5)
 save(fig, "fig_jc_vs_size")
