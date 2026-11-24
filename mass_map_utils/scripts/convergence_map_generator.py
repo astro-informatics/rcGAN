@@ -57,7 +57,15 @@ flat_mesh1 = flat_mesh1[perm]
 flat_mesh2 = flat_mesh2[perm]
 
 
-dst_dir = "/share/gpu0/jjwhit/kappa_cosmos_simulations/"
+# Cropping and clipping are folded in from cropper.py (which is now no longer
+# needed in the pipeline): only the central 300x300 crop of each map is written,
+# never the full 1024x1024 map.
+center_size = 300 # Size of COSMOS maps
+center_start = (1024 - center_size) // 2
+center_end = center_start + center_size
+clip_value = 0.7
+
+dst_dir = "/share/gpu0/jjwhit/kappa_cosmos_simulations/cropped_dataset/"
 if not os.path.exists(dst_dir):
    # Create a new directory because it does not exist
    os.makedirs(dst_dir)
@@ -96,7 +104,11 @@ for i in range(len(redshift_vals_array)):
 norm = omega.sum()
 
 
-n = 1
+# Train and val share one counter (as in cropper.py, where the val loop reuses
+# img_number), so val files continue on from the last train number.
+# Test has its own counter starting from 1.
+train_val_n = 1
+test_n = 1
 for it in range(len(flat_mesh1)):
     path_to_load = '/share/gpu0/jjwhit/kappaTNG_suites/LP{:03d}/run{:03d}/'.format(flat_mesh1[it], flat_mesh2[it])
     
@@ -129,11 +141,26 @@ for it in range(len(flat_mesh1)):
 
     if (it/len(flat_mesh1)) <= 0.85:
         dst_dir = dst_train_path
+        split = 'train'
     elif (it/len(flat_mesh1)) > 0.85 and (it/len(flat_mesh1)) <=0.95:
         dst_dir = dst_test_path
+        split = 'test'
     else:
         dst_dir = dst_val_path
+        split = 'val'
 
-    save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "sim_", n, ".npy")
-    np.save(save_path, kappa_tot, allow_pickle=True)
-    n +=1
+    # Crop to the central 300x300 region in memory.
+    kappa_crop = kappa_tot[center_start:center_end, center_start:center_end]
+
+    if split == 'test':
+        # Test maps are deliberately NOT clipped, matching cropper.py.
+        save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "cropped_sim_", test_n, ".npy")
+        test_n += 1
+    else:
+        # Train and val maps are clipped at 0.7 (equivalent to cropper.py's
+        # in-place kappa[kappa>0.7]=0.7).
+        kappa_crop = np.minimum(kappa_crop, clip_value)
+        save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "cropped_sim_", train_val_n, ".npy")
+        train_val_n += 1
+
+    np.save(save_path, kappa_crop, allow_pickle=True)
