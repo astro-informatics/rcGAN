@@ -62,7 +62,7 @@ if __name__ == '__main__':
     wandb_logger = WandbLogger(
         project=cfg.experience,
         name=args.exp_name,
-        log_model=True,
+        log_model=False,
         save_dir=cfg.checkpoint_dir + 'wandb'
     )
 
