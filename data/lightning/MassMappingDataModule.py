@@ -2,11 +2,7 @@ import numpy as np
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 from typing import Optional
-from data.datasets.MM_data import (
-    MassMappingDataset_Test,
-    MassMappingDataset_Train,
-    MassMappingDataset_Val,
-)
+from data.datasets.MM_data import MassMappingDataset
 from mass_map_utils.scripts import transforms
 from typing import Tuple
 import pathlib
@@ -230,18 +226,18 @@ class MMDataModule(pl.LightningDataModule):
     def setup(self, stage: Optional[str] = None):
         # Assign train/val datasets for use in dataloaders
 
-        train_data = MassMappingDataset_Train(
-            data_dir=pathlib.Path(self.args.data_path) / "kappa_train",
+        train_data = MassMappingDataset(
+            data_dir=pathlib.Path(self.args.data_path) / "train",
             transform=MMDataTransform(self.args, test=False),
         )
 
-        dev_data = MassMappingDataset_Val(
-            data_dir=pathlib.Path(self.args.data_path) / "kappa_val",
+        dev_data = MassMappingDataset(
+            data_dir=pathlib.Path(self.args.data_path) / "val",
             transform=MMDataTransform(self.args, test=True),
         )
 
-        test_data = MassMappingDataset_Test(
-            data_dir=pathlib.Path(self.args.data_path) / "kappa_test",
+        test_data = MassMappingDataset(
+            data_dir=pathlib.Path(self.args.data_path) / "test",
             transform=MMDataTransform(self.args, test=True),
         )
 
@@ -253,6 +249,7 @@ class MMDataModule(pl.LightningDataModule):
             dataset=self.train,
             batch_size=self.args.batch_size,
             num_workers=self.args.num_workers,
+            shuffle=True,
             drop_last=True,
             pin_memory=False,
         )

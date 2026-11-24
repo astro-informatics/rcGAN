@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import glob
 import sys
 sys.path.append("/home/jjwhit/rcGAN")
 import yaml
@@ -15,9 +16,11 @@ with open(args.config, "r") as f:
     cfg = yaml.load(f, Loader=yaml.FullLoader)
     cfg = json.loads(json.dumps(cfg), object_hook=load_object)
 
-data_dir = cfg.data_path + 'kappa_train/'
+data_dir = os.path.join(cfg.data_path, 'train')
 
-files = os.listdir(data_dir)
+# Sorted order is the generator's seeded random permutation, so the first 500
+# files are a random sample of the training set.
+files = sorted(glob.glob(os.path.join(data_dir, 'kappa_*.npy')))
 kappa_mean=[]
 shear_mean=[]
 
@@ -36,7 +39,7 @@ kernel = MM.compute_fourier_kernel(im_size)
 
 count = 0
 for file in files:
-    data = np.load(os.path.join(data_dir, file))
+    data = np.load(file)
     kappa_mean.append(np.mean(data))
     shear = MM.forward_model(data, kernel)
     noisy_shear = shear + (
@@ -61,7 +64,7 @@ count=0
 std_i = 0
 std_k = 0
 for file in files:
-    data = np.load(os.path.join(data_dir, file))
+    data = np.load(file)
     kappa_i = (data - total_kappa_mean)**2
     std_i += np.sum(kappa_i)
     shear = MM.forward_model(data, kernel)
