@@ -15,14 +15,16 @@ from evaluation_scripts.metrics import psnr
 from torchmetrics.functional import peak_signal_noise_ratio
 
 class mmGAN(pl.LightningModule):
-    def __init__(self, args, exp_name, num_gpus):
+    def __init__(self, args, exp_name, num_gpus, crps_mode=None, crps_alpha=None):
         super().__init__()
-        self.args = args # This is the cfg object 
+        self.args = args # This is the cfg object
         self.exp_name = exp_name
         self.num_gpus = num_gpus
 
-        self.crps_mode = "standard" # "standard", "fair", or "alpha_fair"
-        self.crps_alpha = 0.95 # Only used if crps_mode is "alpha_fair"
+        # "standard", "fair", or "alpha_fair" -- overridable via --crps-mode/--crps-alpha
+        # so sweeps can be launched as separate jobs without editing this file per-run.
+        self.crps_mode = crps_mode if crps_mode is not None else "alpha_fair"
+        self.crps_alpha = crps_alpha if crps_alpha is not None else 0.95 # Only used if crps_mode is "alpha_fair"
 
         self.in_chans = args.in_chans + 2  # Two extra dimensions of the added noise 
         self.out_chans = args.out_chans
@@ -91,20 +93,27 @@ class mmGAN(pl.LightningModule):
         return crps.mean()
 
     def fair_crps_loss(self, gens, x):
-        """Calculates the continuous ranked probability score (CRPS) loss with an adjustement term for small sample sizes.
-        Fair CRPS = E|X_m - y| - (M-1)/M E|X_m - X_m'|
-        
+        """Calculates the continuous ranked probability score (CRPS) loss with a bias-correction
+        term for small ensemble sizes (the "fair"/NRG estimator; Ferro et al. 2008).
+        Fair CRPS = E|X_m - y| - M/(M-1) * 0.5 * E|X_m - X_m'|
+
+        Note: the correction factor is M/(M-1) (NOT (M-1)/M -- that was a bug here that
+        inverted the correction, weakening the spread reward instead of strengthening it,
+        and produced collapsed/underdispersed posteriors). M/(M-1) > 1, so fair CRPS rewards
+        ensemble spread *more* than standard CRPS, correcting the latter's finite-M bias
+        toward underestimating spread.
+
         Args:
             gens (torch.tensor): The generated approx. posterior samples, shape (batch_size, num_samples, channels, height, width).
             x (torch.tensor): The ground truth samples, shape (batch_size, channels, height, width).
-        
+
         Returns:
             torch.tensor: The fair CRPS loss value.
         """
         abs_diff_truth, abs_diff_samps = self._crps_core(gens, x)
 
         M = gens.shape[1]
-        fair_crps = abs_diff_truth.mean(dim=1) - ((M - 1) / M) * 0.5 * abs_diff_samps.mean(dim=(1, 2))
+        fair_crps = abs_diff_truth.mean(dim=1) - (M / (M - 1)) * 0.5 * abs_diff_samps.mean(dim=(1, 2))
         return fair_crps.mean()
     
     def alpha_fair_crps_loss(self, gens, x, alpha):
@@ -259,7 +268,7 @@ class mmGAN(pl.LightningModule):
 
             # adversarial loss is binary cross-entropy
             g_loss = self.adversarial_loss_generator(y, gens)
-            # g_loss += self.l1_std_p(avg_recon, gens, x)
+            # g_loss += self.l1_std_p(avg_recon, gens, x)  # old rcGAN L1+std loss, superseded by CRPS
             g_loss += self.crps_loss(gens, x)
 
 
