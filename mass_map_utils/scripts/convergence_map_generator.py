@@ -13,12 +13,10 @@ import yaml
 
 Output layout (root = cfg.data_path):
     root/train/kappa_00000.npy ... kappa_08499.npy   (8500 maps)
-    root/val/kappa_00000.npy   ... kappa_00499.npy   (500 maps)
-    root/test/kappa_00000.npy  ... kappa_00999.npy   (1000 maps)
-    root/manifest.csv          (split,index,lp,run,clipped,seed)
+    root/val/kappa_00000.npy   ... kappa_00999.npy   (1000 maps)
+    root/test/kappa_00000.npy  ... kappa_00499.npy   (500 maps)
+    root/manifest.csv          (split,index,lp,run)
 '''
-
-DEFAULT_KAPPATNG_PATH = '/share/gpu0/jjwhit/kappaTNG_suites'
 
 parser = argparse.ArgumentParser(description='Build the COSMOS-like kappaTNG convergence map dataset.')
 parser.add_argument('--config', type=str, required=True, help='Path to the config file (e.g. ./configs/mass_map.yml)')
@@ -28,7 +26,32 @@ with open(args.config, 'r') as f:
     cfg = json.loads(json.dumps(cfg), object_hook=lambda d: types.SimpleNamespace(**d))
 
 root = cfg.data_path
-kappatng_path = getattr(cfg, 'kappatng_path', DEFAULT_KAPPATNG_PATH)
+kappatng_path = cfg.kappatng_path
+hist_path = os.path.join(cfg.cosmo_dir_path, 'hist_n_z.npy')
+
+# All 100 x 100 kappaTNG (LP, run) pairs.
+pairs = [(lp, run) for lp in range(1, 101) for run in range(1, 101)]
+n_tng_slices = 41 # kappa00.dat ... kappa40.dat
+
+
+def kappatng_file(lp, run, fname):
+    """Path of the kappaTNG map read for redshift slice `fname` of one (LP, run) pair."""
+    # Uses z=2.6 map (kappa40.dat, with appropriate weight) for redshifts beyond kappaTNG range.
+    return os.path.join(kappatng_path, 'LP{:03d}'.format(lp), 'run{:03d}'.format(run),
+                        'kappa{:02d}.dat'.format(min(fname, n_tng_slices - 1)))
+
+
+# Check that every input exists before writing any output, so a missing file
+# can never leave a partially written dataset behind.
+required = [hist_path] + [kappatng_file(lp, run, k) for lp, run in pairs for k in range(n_tng_slices)]
+missing = [p for p in required if not os.path.exists(p)]
+if missing:
+    max_listed = 20
+    raise FileNotFoundError(
+        f'{len(missing)} of {len(required)} required input files are missing'
+        + (f' (first {max_listed} listed)' if len(missing) > max_listed else '') + ':\n'
+        + '\n'.join(missing[:max_listed])
+    )
 
 
 # Configures output directories. One explicit, distinct directory per split.
@@ -51,7 +74,7 @@ if os.path.exists(manifest_path):
 
 
 # Configures redshift distribution.
-redshift_distribution = np.load(os.path.join(cfg.cosmo_dir_path, 'hist_n_z.npy'), allow_pickle=True)
+redshift_distribution = np.load(hist_path, allow_pickle=True)
 
 redshift_vals_array = np.array((0,
                                 0.034, 0.070, 0.105, 0.142, 0.179,
@@ -93,11 +116,10 @@ pdf = hist
 # Note: the split is by (LP, run) pair, not by LP, so maps that share an LP can
 # appear in different splits.
 seed = 0
-pairs = [(lp, run) for lp in range(1, 101) for run in range(1, 101)]
 order = np.random.default_rng(seed).permutation(len(pairs))
 
-n_train, n_val, n_test = 8500, 500, 1000
-assert n_train + n_val + n_test == len(pairs)
+n_train, n_val, n_test = 8500, 1000, 500
+assert n_train + n_val + n_test == len(pairs) == 10000
 split_order = {
     'train': order[:n_train],
     'val': order[n_train:n_train + n_val],
@@ -139,19 +161,9 @@ norm = omega.sum()
 
 def build_map(lp, run):
     """Returns the redshift-weighted 1024x1024 convergence map for one (LP, run) pair."""
-    path_to_load = os.path.join(kappatng_path, 'LP{:03d}'.format(lp), 'run{:03d}'.format(run))
     kappa_tot = np.zeros((1024, 1024))
     for fname in range(len(redshift_vals_array)):
-        if fname in range(0, 41):
-            full_path = os.path.join(path_to_load, 'kappa' + str(fname).zfill(2) + '.dat')
-        else:
-            # Uses z=2.6 map (with appropriate weight) for redshifts beyond kappaTNG range.
-            full_path = os.path.join(path_to_load, 'kappa40.dat')
-
-        if not os.path.exists(full_path):
-            raise FileNotFoundError(f'The file at {full_path} does not exist.')
-
-        with open(full_path, 'rb') as f:
+        with open(kappatng_file(lp, run, fname), 'rb') as f:
             dummy = np.fromfile(f, dtype="int32", count=1)
             kappa = np.fromfile(f, dtype="float", count=1024*1024)
             dummy = np.fromfile(f, dtype="int32", count=1)
@@ -176,10 +188,10 @@ for split in ('train', 'val', 'test'):
 
         save_path = os.path.join(split_dir, 'kappa_{:05d}.npy'.format(index))
         np.save(save_path, kappa_crop, allow_pickle=True)
-        manifest_rows.append((split, index, lp, run, clipped, seed))
+        manifest_rows.append((split, index, lp, run))
 
 
 with open(manifest_path, 'w', newline='') as f:
     writer = csv.writer(f)
-    writer.writerow(('split', 'index', 'lp', 'run', 'clipped', 'seed'))
+    writer.writerow(('split', 'index', 'lp', 'run'))
     writer.writerows(manifest_rows)

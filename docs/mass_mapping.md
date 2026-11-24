@@ -13,17 +13,17 @@ Note that you may need to change the PyTorch version, depending on your CUDA dis
 Update ```configs/mass_map.yml``` with the path to your data, where you want to store checkpoints, and with the path to additional data such as masks.
 
 ## Data Setup
-All of the scripts required are in the ```mass_map_utils``` folder. For our training we used the [kappaTNG mock weak lensing suite](https://columbialensing.github.io/#tng) and the [Schrabback et al.](https://www.aanda.org/articles/aa/abs/2010/08/aa13577-09/aa13577-09.html) COSMOS shape catalog to build a set of COSMOS-like convergence maps. To build the same dataset yourself, set ```data_path``` (output root), ```cosmo_dir_path``` and ```kappatng_path``` (kappaTNG source maps) in ```configs/mass_map.yml``` and run the ```mass_map_utils/jobs/preprocessing/create_dataset.sh``` bash file. This runs ```convergence_map_generator.py --config ./configs/mass_map.yml```, which builds the mock convergence maps and saves only their central 300x300 pixels, and then ```normalisation.py```, which computes the normalisation constants (copy the printed values into ```kappa_mean``` and ```kappa_std```). No shear maps are saved in the pre-processing step, they are all created on the fly by MMGAN during training.
+All of the scripts required are in the ```mass_map_utils``` folder. For our training we used the [kappaTNG mock weak lensing suite](https://columbialensing.github.io/#tng) and the [Schrabback et al.](https://www.aanda.org/articles/aa/abs/2010/08/aa13577-09/aa13577-09.html) COSMOS shape catalog to build a set of COSMOS-like convergence maps. To build the same dataset yourself run the ```mass_map_utils/jobs/preprocessing/create_dataset.sh``` bash file. This will run a series of scripts which will create the mock convergence maps, crop them down to 300x300 pixel maps, and then normalise the dataset. No shear maps are saved in the pre-processing step, they are all created on the fly by MMGAN during training.
 
-The 10,000 kappaTNG (LP, run) pairs are shuffled once with a fixed seed (```np.random.default_rng(0)```) and split by pair into 8,500 train, 500 validation and 1,000 test maps. Train and validation maps are clipped at 0.7; test maps are not. The generator writes:
+The generator reads ```data_path```, ```cosmo_dir_path``` and ```kappatng_path``` from ```configs/mass_map.yml```, splits the 10,000 kappaTNG (LP, run) pairs with seed 0, and records each map's source in ```manifest.csv``` (```split,index,lp,run```). Before writing anything it checks that every input file exists, and it refuses to write into non-empty split directories:
 ```
 <data_path>/
     train/kappa_00000.npy ... kappa_08499.npy
-    val/kappa_00000.npy   ... kappa_00499.npy
-    test/kappa_00000.npy  ... kappa_00999.npy
+    val/kappa_00000.npy   ... kappa_00999.npy
+    test/kappa_00000.npy  ... kappa_00499.npy
     manifest.csv
 ```
-File indices start at 0 within each split. ```manifest.csv``` has one row per map with columns ```split,index,lp,run,clipped,seed```, so each file can be traced back to its kappaTNG source. The generator refuses to run if any split directory is non-empty or a manifest already exists, so generate into a fresh ```data_path```. It also stops if any kappaTNG ```kappa*.dat``` file is missing.
+**Note:** the ```kappa_mean``` and ```kappa_std``` values in ```configs/mass_map.yml``` are stale (old dataset) and must be recomputed with ```normalisation.py``` after regenerating the dataset.
 
 If you wish to modify the dataset creation process, the python scripts themselves can be found in ```mass_map_utils/scripts```.
 

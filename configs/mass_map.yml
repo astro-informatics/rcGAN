@@ -8,8 +8,8 @@ fig_path: /share/gpu0/jjwhit/plots/crps_base/
 
 # Define the experience
 experience: mass_mapping
-kappa_mean: 0.00015744006243248638 # Value calculated during preprocessing
-kappa_std: 0.02968584954283938 # Value calculated during preprocessing
+kappa_mean: 0.00015744006243248638 # STALE: computed on the old dataset; recompute with normalisation.py after regenerating
+kappa_std: 0.02968584954283938 # STALE: computed on the old dataset; recompute with normalisation.py after regenerating
 
 # Number of code vectors for each phase
 num_z_test: 32

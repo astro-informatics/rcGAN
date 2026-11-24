@@ -259,7 +259,8 @@ class MMDataModule(pl.LightningDataModule):
             dataset=self.validate,
             batch_size=self.args.batch_size,
             num_workers=self.args.num_workers,
-            drop_last=True,
+            # Keep all 1000 val maps: validation metrics are per-sample and the generator is in eval mode, so a short last batch is fine.
+            drop_last=False,
             pin_memory=False,
         )
 

@@ -25,7 +25,8 @@ export WANDB_DIR=/share/gpu0/jjwhit/wandb/logs
 export WANDB_CACHE_DIR=/share/gpu0/jjwhit/wandb/.cache/wandb
 export WANDB_CONFIG_DIR=/share/gpu0/jjwhit/wandb/.config/wandb
 
-# Echo commands
+# Stop on the first failing command, and echo commands
+set -e
 set -x
 
 echo $CUDA_VISIBLE_DEVICES

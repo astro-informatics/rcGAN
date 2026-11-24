@@ -20,6 +20,8 @@ class MassMappingDataset(torch.utils.data.Dataset):
         # already writes them in a seeded random order; per-epoch shuffling of the
         # training set is done by the DataLoader.
         self.examples = sorted(pathlib.Path(data_dir).glob("kappa_*.npy"))
+        if not self.examples:
+            raise FileNotFoundError(f"No kappa_*.npy files found in {data_dir}.")
 
     def __len__(self):
         """Returns the number of samples in the dataset."""
