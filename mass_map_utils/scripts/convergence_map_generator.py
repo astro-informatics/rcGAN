@@ -11,6 +11,9 @@ import yaml
 
 '''This script Builds a COSMOS-like dataset of weak lensing maps from kappaTNG weak lensing suites.
 
+Each saved map is the central 300x300 crop of a 1024x1024 map, clipped at 0.7
+(kappa values above 0.7 are set to 0.7) in all splits: train, val and test.
+
 Output layout (root = cfg.data_path):
     root/train/kappa_00000.npy ... kappa_08499.npy   (8500 maps)
     root/val/kappa_00000.npy   ... kappa_00999.npy   (1000 maps)
@@ -129,13 +132,11 @@ split_order = {
 # Cropping and clipping are folded in from cropper.py (which is now no longer
 # needed in the pipeline): only the central 300x300 crop of each map is written,
 # never the full 1024x1024 map.
-# Train and val maps are clipped at 0.7 (equivalent to cropper.py's in-place
-# kappa[kappa>0.7]=0.7); test maps are deliberately NOT clipped, matching cropper.py.
+# Every map in every split (train, val and test) is clipped at 0.7
+# (equivalent to cropper.py's in-place kappa[kappa>0.7]=0.7).
 center_size = 300 # Size of COSMOS maps
 center_start = (1024 - center_size) // 2
 center_end = center_start + center_size
-clip_value = 0.7
-clip_split = {'train': True, 'val': True, 'test': False}
 
 
 # Precompute redshift weights once (they do not depend on LP or run).
@@ -176,15 +177,13 @@ def build_map(lp, run):
 manifest_rows = []
 for split in ('train', 'val', 'test'):
     split_dir = split_dirs[split]
-    clipped = clip_split[split]
     for index, pair_idx in enumerate(split_order[split]):
         lp, run = pairs[pair_idx]
         kappa_tot = build_map(lp, run)
 
-        # Crop to the central 300x300 region in memory.
+        # Crop to the central 300x300 region in memory, then clip at 0.7.
         kappa_crop = kappa_tot[center_start:center_end, center_start:center_end]
-        if clipped:
-            kappa_crop = np.minimum(kappa_crop, clip_value)
+        kappa_crop = np.minimum(kappa_crop, 0.7)
 
         save_path = os.path.join(split_dir, 'kappa_{:05d}.npy'.format(index))
         np.save(save_path, kappa_crop, allow_pickle=True)
