@@ -49,8 +49,12 @@ runs = np.arange(1, 101)
 mesh1, mesh2 = np.meshgrid(LPs, runs)
 flat_mesh1 = mesh1.flatten()
 flat_mesh2 = mesh2.flatten()
-np.random.shuffle(flat_mesh1)
-np.random.shuffle(flat_mesh2)
+# Shuffle (LP, run) pairs jointly so every pair is used exactly once.
+# (Shuffling the two columns independently samples pairs with replacement
+# and produced duplicate maps across train/test/val.)
+perm = np.random.permutation(flat_mesh1.size)
+flat_mesh1 = flat_mesh1[perm]
+flat_mesh2 = flat_mesh2[perm]
 
 
 dst_dir = "/share/gpu0/jjwhit/kappa_cosmos_simulations/"
@@ -71,14 +75,34 @@ if not os.path.exists(dst_val_path):
     os.makedirs(dst_val_path)
 
 
+# Precompute redshift weights once (they do not depend on LP or run).
+# Bin size halved for first and last bins.
+# delta_z is the range of each bin.
+omega = np.zeros(len(redshift_vals_array))
+for i in range(len(redshift_vals_array)):
+    if i == 0:
+        delta_z = (redshift_vals_array[i + 1] - redshift_vals_array[i])/2
+
+    elif i == len(redshift_vals_array) - 1:
+        delta_z = (redshift_vals_array[i] - redshift_vals_array[i - 1])/2
+
+    else:
+        delta_z = (
+            (redshift_vals_array[i + 1] - redshift_vals_array[i]) /2
+            + (redshift_vals_array[i] - redshift_vals_array[i - 1]) /2
+        )
+
+    omega[i] = pdf[i] * delta_z
+norm = omega.sum()
+
+
 n = 1
 for it in range(len(flat_mesh1)):
     path_to_load = '/share/gpu0/jjwhit/kappaTNG_suites/LP{:03d}/run{:03d}/'.format(flat_mesh1[it], flat_mesh2[it])
     
-    # Reset slice, kappa_tot, and omega for each different map.
+    # Reset slice and kappa_tot for each different map.
     slice = 0
     kappa_tot = np.zeros((1024, 1024))
-    omega = np.zeros(len(redshift_vals_array))
     for fname in range(len(redshift_vals_array)):
         if fname in range(0, 41):
             full_path = os.path.join(path_to_load, 'kappa' + str(fname).zfill(2) + '.dat')
@@ -97,23 +121,10 @@ for it in range(len(flat_mesh1)):
                 dummy = np.fromfile(f, dtype="int32", count=1)  
     
                 kappa = kappa.reshape((1024, 1024))
-            # Bin size halved for first and last bins.
-            # delta_z is the range of each bin.
-            if slice == 0:
-                delta_z = (redshift_vals_array[slice + 1] - redshift_vals_array[slice])/2     
-
-            elif slice == len(redshift_vals_array) - 1:
-                delta_z = (redshift_vals_array[slice] - redshift_vals_array[slice - 1])/2
-
-            else:
-                delta_z = (
-                    (redshift_vals_array[slice + 1] - redshift_vals_array[slice]) /2
-                    - (redshift_vals_array[slice] - redshift_vals_array[slice - 1]) /2
-                )
-
-            omega[slice] = pdf[slice] * delta_z
-            norm_factor = np.sum(omega)
-            kappa_tot += (omega[slice]/norm_factor) * kappa
+            # Note: slice only advances when the file exists, so if a file were
+            # missing, later slices would pick up the wrong precomputed weight
+            # (exactly as in the original code). When all files exist, slice == fname.
+            kappa_tot += (omega[slice]/norm) * kappa
             slice +=1
 
     if (it/len(flat_mesh1)) <= 0.85:
