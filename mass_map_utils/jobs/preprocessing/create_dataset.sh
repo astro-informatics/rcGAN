@@ -37,4 +37,5 @@ echo $WANDB_CONFIG_DIR
 cd /home/jjwhit/rcGAN
 
 srun python -u ./mass_map_utils/scripts/convergence_map_generator.py --config ./configs/mass_map.yml
-srun python -u ./mass_map_utils/scripts/normalisation.py --config ./configs/mass_map.yml
+# normalisation.py is now a standalone fallback: convergence_map_generator.py writes kappa_mean/kappa_std/shear_mag_mean/shear_mag_std to the config.
+# srun python -u ./mass_map_utils/scripts/normalisation.py --config ./configs/mass_map.yml

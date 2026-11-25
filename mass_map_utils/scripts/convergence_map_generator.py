@@ -2,11 +2,21 @@
 import argparse
 import json
 import os
+import re
+import sys
 import types
 
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+
+# Repo root (two levels up from mass_map_utils/scripts/), so the data module
+# can be imported without a hardcoded absolute path.
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+# Same forward model as training and normalisation.py (pulls in torch / lightning).
+from data.lightning.MassMappingDataModule import MMDataTransform as MM
 
 '''This script Builds a COSMOS-like dataset of weak lensing maps from kappaTNG weak lensing suites.
 
@@ -53,6 +63,44 @@ if missing:
         + (f' (first {max_listed} listed)' if len(missing) > max_listed else '') + ':\n'
         + '\n'.join(missing[:max_listed])
     )
+
+
+# Normalisation stats written back to the --config after all maps are saved.
+# Check the keys now (and again at write time) so a missing key fails before
+# hours of generation rather than after.
+STAT_KEYS = ('kappa_mean', 'kappa_std', 'shear_mag_mean', 'shear_mag_std')
+
+
+def stat_key_pattern(key):
+    return re.compile(rf'^{key}:.*$', flags=re.M)
+
+
+def yaml_float(val):
+    """Full-precision float literal that PyYAML reads back as a float.
+
+    repr() gives e.g. '5e-05' for small values, which PyYAML (YAML 1.1) loads
+    as a *string*; force a '.' in the mantissa ('5.0e-05').
+    """
+    val = float(val)
+    if not np.isfinite(val):
+        raise ValueError(f'Refusing to write non-finite stat {val!r} to the config.')
+    s = repr(val)
+    mantissa, e, exponent = s.partition('e')
+    if e and '.' not in mantissa:
+        s = f'{mantissa}.0e{exponent}'
+    return s
+
+
+with open(args.config, 'r') as f:
+    _cfg_text = f.read()
+_missing_keys = [k for k in STAT_KEYS if not stat_key_pattern(k).search(_cfg_text)]
+if _missing_keys:
+    raise KeyError(f'{_missing_keys} not found in {args.config}; add them (any value) before generating.')
+
+# COSMOS noise std maps for the shear-magnitude stats (as in normalisation.py).
+# Loaded before any output is written, so a missing file aborts cleanly.
+std1 = np.load(os.path.join(cfg.cosmo_dir_path, 'cosmos_std1.npy'), allow_pickle=True)
+std2 = np.load(os.path.join(cfg.cosmo_dir_path, 'cosmos_std2.npy'), allow_pickle=True)
 
 
 # Configures output directories. One explicit, distinct directory per split.
@@ -133,6 +181,54 @@ center_size = 300 # Size of COSMOS maps
 center_start = (1024 - center_size) // 2
 center_end = center_start + center_size
 
+# Normalisation stats are accumulated on the fly over the train split only,
+# from the same cropped + clipped maps that are saved (see RunningStats).
+for name, arr in (('cosmos_std1', std1), ('cosmos_std2', std2)):
+    if arr.shape != (center_size, center_size):
+        raise ValueError(f'{name}.npy has shape {arr.shape}, expected {(center_size, center_size)}.')
+kernel = MM.compute_fourier_kernel(center_size) # computed once
+# Dedicated RNG for the shear noise, separate from default_rng(0) above, so the
+# split permutation is unchanged and the shear stats are reproducible.
+shear_noise_seed = 1
+shear_noise_rng = np.random.default_rng(shear_noise_seed)
+
+
+class RunningStats:
+    """Population mean / std over every pixel of many maps.
+
+    Each map contributes (count, mean, M2) computed in float64, merged with
+    Chan et al.'s parallel update, so there is no sum-of-squares cancellation.
+    Matches normalisation.py's definition:
+        mean = mean over all pixels
+        std  = sqrt(sum((x - mean)^2) / (n_maps * im_size^2))
+    """
+
+    def __init__(self):
+        self.n_maps = 0
+        self.count = 0
+        self.mean = 0.0
+        self.m2 = 0.0
+
+    def update(self, x):
+        x = np.asarray(x, dtype=np.float64)
+        n_b = x.size
+        mean_b = x.mean()
+        m2_b = np.sum((x - mean_b) ** 2)
+        n = self.count + n_b
+        delta = mean_b - self.mean
+        self.mean += delta * n_b / n
+        self.m2 += m2_b + delta ** 2 * self.count * n_b / n
+        self.count = n
+        self.n_maps += 1
+
+    @property
+    def std(self):
+        return np.sqrt(self.m2 / self.count)
+
+
+kappa_stats = RunningStats()
+shear_mag_stats = RunningStats()
+
 
 # Precompute redshift weights once (they do not depend on LP or run).
 # Bin size halved for first and last bins.
@@ -179,5 +275,45 @@ for split in ('train', 'val', 'test'):
         kappa_crop = kappa_tot[center_start:center_end, center_start:center_end]
         kappa_crop = np.minimum(kappa_crop, 0.7)
 
+        if split == 'train':
+            # Normalisation stats from the train split only. The shear is not
+            # stored anywhere, so it is simulated here exactly as in
+            # normalisation.py: noiseless shear from the clipped 300x300 kappa,
+            # plus COSMOS noise, then its magnitude.
+            kappa_stats.update(kappa_crop)
+            shear = MM.forward_model(kappa_crop, kernel)
+            noisy_shear = shear + (
+                std1 * shear_noise_rng.standard_normal((center_size, center_size))
+                + 1j * std2 * shear_noise_rng.standard_normal((center_size, center_size))
+            )
+            shear_mag_stats.update(np.abs(noisy_shear))
+
         save_path = os.path.join(split_dir, 'kappa_{:05d}.npy'.format(index))
         np.save(save_path, kappa_crop, allow_pickle=True)
+
+
+# All maps saved: write the train-split stats back into the --config, editing
+# only the four stat lines so all other lines and comments are preserved.
+if not kappa_stats.n_maps == shear_mag_stats.n_maps == n_train:
+    raise RuntimeError(f'Stats cover {kappa_stats.n_maps}/{shear_mag_stats.n_maps} maps, expected {n_train}.')
+stats = {
+    'kappa_mean': kappa_stats.mean,
+    'kappa_std': kappa_stats.std,
+    'shear_mag_mean': shear_mag_stats.mean,
+    'shear_mag_std': shear_mag_stats.std,
+}
+for key, val in stats.items():
+    print(f'{key}: {val!r}')
+
+with open(args.config, 'r') as f:
+    cfg_text = f.read()
+for key, val in stats.items():
+    note = f'computed by convergence_map_generator.py from {n_train} train maps'
+    if key.startswith('shear_mag'):
+        note += f' (noise seed {shear_noise_seed})'
+    cfg_text, n = stat_key_pattern(key).subn(f'{key}: {yaml_float(val)} # {note}', cfg_text, count=1)
+    if n != 1:
+        raise KeyError(f'{key} not found in {args.config}')
+with open(args.config, 'w') as f:
+    f.write(cfg_text)
+print('Wrote', ', '.join(stats), 'to', args.config)

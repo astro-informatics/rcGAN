@@ -50,8 +50,19 @@ if __name__ == "__main__":
         pt_ks = pt_ks.permute(2,0,1)
         cosmos_map = transforms.to_tensor(cosmos_map)
         cosmos_map = cosmos_map.permute(2,0,1)
-        normalized_gamma, mean, std = transforms.normalise_complex(cosmos_map)
-        normalized_ks, mean_ks, std_ks = transforms.normalise_complex(pt_ks)
+        # Real COSMOS shear, normalised with the mock-train shear-magnitude stats.
+        normalized_gamma, mean, std = transforms.normalise_complex(
+            cosmos_map, cfg.shear_mag_mean, cfg.shear_mag_std
+        )
+        # FLAG: the KS channel here is normalised with the *shear* stats (the
+        # normalise_complex output is discarded; only its returned mean/std are
+        # used by transforms.normalize below), whereas MMDataTransform uses
+        # per-instance stats (normalize_instance) for the KS channel in training.
+        # Behaviour kept identical to the old hardcoded defaults; review whether
+        # this should be normalize_instance(pt_ks) instead.
+        normalized_ks, mean_ks, std_ks = transforms.normalise_complex(
+            pt_ks, cfg.shear_mag_mean, cfg.shear_mag_std
+        )
         normalized_ks = transforms.normalize(pt_ks, mean_ks, std_ks)
         normalized_gamma = torch.cat([normalized_gamma, normalized_ks], dim=0).unsqueeze(0).float()
         batch_size = 9

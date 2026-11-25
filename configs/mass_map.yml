@@ -8,8 +8,10 @@ fig_path: /share/gpu0/jjwhit/plots/crps_base/
 
 # Define the experience
 experience: mass_mapping
-kappa_mean: 0.00015744006243248638 # STALE: computed on the old dataset; recompute with normalisation.py after regenerating
-kappa_std: 0.02968584954283938 # STALE: computed on the old dataset; recompute with normalisation.py after regenerating
+kappa_mean: 0.00015744006243248638 # STALE: computed on the old dataset; overwritten by convergence_map_generator.py (normalisation.py as fallback)
+kappa_std: 0.02968584954283938 # STALE: computed on the old dataset; overwritten by convergence_map_generator.py (normalisation.py as fallback)
+shear_mag_mean: 0.14049194898307577 # STALE: old hardcoded normalise_complex default; overwritten by convergence_map_generator.py
+shear_mag_std: 0.11606233247891737 # STALE: old hardcoded normalise_complex default; overwritten by convergence_map_generator.py
 
 # Number of code vectors for each phase
 num_z_test: 32
