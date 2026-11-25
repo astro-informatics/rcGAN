@@ -25,7 +25,8 @@ export WANDB_DIR=/share/gpu0/jjwhit/wandb/logs
 export WANDB_CACHE_DIR=/share/gpu0/jjwhit/wandb/.cache/wandb
 export WANDB_CONFIG_DIR=/share/gpu0/jjwhit/wandb/.config/wandb
 
-# Echo commands
+# Stop on the first failing command, and echo commands
+set -e
 set -x
 
 echo $CUDA_VISIBLE_DEVICES
@@ -35,6 +36,5 @@ echo $WANDB_CONFIG_DIR
 
 cd /home/jjwhit/rcGAN
 
-srun python -u ./mass_map_utils/scripts/convergence_map_generator.py
-srun python -u ./mass_map_utils/scripts/preprocessing/cropper.py --config ./configs/mass_map.yml
+srun python -u ./mass_map_utils/scripts/convergence_map_generator.py --config ./configs/mass_map.yml
 srun python -u ./mass_map_utils/scripts/normalisation.py --config ./configs/mass_map.yml

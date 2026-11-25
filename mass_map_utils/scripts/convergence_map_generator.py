@@ -1,14 +1,80 @@
 
-import numpy as np
+import argparse
+import json
 import os
-import matplotlib.pyplot as plt
+import types
 
-'''This script Builds a COSMOS-like dataset of weak lensing maps from kappaTNG weak lensing suites.'''
+import matplotlib.pyplot as plt
+import numpy as np
+import yaml
+
+'''This script Builds a COSMOS-like dataset of weak lensing maps from kappaTNG weak lensing suites.
+
+Each saved map is the central 300x300 crop of a 1024x1024 map, clipped at 0.7
+(kappa values above 0.7 are set to 0.7) in all splits: train, val and test.
+
+Output layout (root = cfg.data_path):
+    root/train/kappa_00000.npy ... kappa_08499.npy   (8500 maps)
+    root/val/kappa_00000.npy   ... kappa_00999.npy   (1000 maps)
+    root/test/kappa_00000.npy  ... kappa_00499.npy   (500 maps)
+'''
+
+parser = argparse.ArgumentParser(description='Build the COSMOS-like kappaTNG convergence map dataset.')
+parser.add_argument('--config', type=str, required=True, help='Path to the config file (e.g. ./configs/mass_map.yml)')
+args = parser.parse_args()
+with open(args.config, 'r') as f:
+    cfg = yaml.load(f, Loader=yaml.FullLoader)
+    cfg = json.loads(json.dumps(cfg), object_hook=lambda d: types.SimpleNamespace(**d))
+
+root = cfg.data_path
+kappatng_path = cfg.kappatng_path
+hist_path = os.path.join(cfg.cosmo_dir_path, 'hist_n_z.npy')
+
+# All 100 x 100 kappaTNG (LP, run) pairs.
+pairs = [(lp, run) for lp in range(1, 101) for run in range(1, 101)]
+n_tng_slices = 41 # kappa00.dat ... kappa40.dat
+
+
+def kappatng_file(lp, run, fname):
+    """Path of the kappaTNG map read for redshift slice `fname` of one (LP, run) pair."""
+    # Uses z=2.6 map (kappa40.dat, with appropriate weight) for redshifts beyond kappaTNG range.
+    return os.path.join(kappatng_path, 'LP{:03d}'.format(lp), 'run{:03d}'.format(run),
+                        'kappa{:02d}.dat'.format(min(fname, n_tng_slices - 1)))
+
+
+# Check that every input exists before writing any output, so a missing file
+# can never leave a partially written dataset behind.
+required = [hist_path] + [kappatng_file(lp, run, k) for lp, run in pairs for k in range(n_tng_slices)]
+missing = [p for p in required if not os.path.exists(p)]
+if missing:
+    max_listed = 20
+    raise FileNotFoundError(
+        f'{len(missing)} of {len(required)} required input files are missing'
+        + (f' (first {max_listed} listed)' if len(missing) > max_listed else '') + ':\n'
+        + '\n'.join(missing[:max_listed])
+    )
+
+
+# Configures output directories. One explicit, distinct directory per split.
+# Refuse to write into a non-empty split dir so stale files from an earlier run
+# can never be mixed into the new dataset.
+split_dirs = {
+    'train': os.path.join(root, 'train'),
+    'val': os.path.join(root, 'val'),
+    'test': os.path.join(root, 'test'),
+}
+
+os.makedirs(root, exist_ok=True)
+for split, split_dir in split_dirs.items():
+    os.makedirs(split_dir, exist_ok=True)
+    if os.listdir(split_dir):
+        raise RuntimeError(f'{split} directory {split_dir} is not empty; generate into a fresh data_path.')
+
 
 # Configures redshift distribution.
-redshift_distribution = np.load("/home/jjwhit/rcGAN/mass_map_utils/cosmos/hist_n_z.npy", allow_pickle=True)
+redshift_distribution = np.load(hist_path, allow_pickle=True)
 
-redshift_vals_array = np.array((0, 
+redshift_vals_array = np.array((0,
                                 0.034, 0.070, 0.105, 0.142, 0.179,
                                 0.216, 0.255, 0.294, 0.335, 0.376,
                                 0.418, 0.462, 0.506, 0.552, 0.599,
@@ -30,49 +96,42 @@ redshift_vals_array = np.array((0,
 z = np.arange(0, 5.5, .01)
 
 bin_edges = (np.concatenate([[0],
-            [(redshift_vals_array[i] - redshift_vals_array[i-1])/2 + 
+            [(redshift_vals_array[i] - redshift_vals_array[i-1])/2 +
             redshift_vals_array[i-1] for i in range(1, len(redshift_vals_array))],
             [redshift_vals_array[-1] + (redshift_vals_array[-1] - redshift_vals_array[-2])/2]]))
 # Create a histogram using your specified bin edges
-hist, bin_edges, _ = (plt.hist(z, weights=redshift_distribution, bins=bin_edges, color="purple", 
+hist, bin_edges, _ = (plt.hist(z, weights=redshift_distribution, bins=bin_edges, color="purple",
                         alpha=0.5, ec="k", histtype='stepfilled', density=True, label='Normalized'))
 plt.legend()
 plt.savefig('Redshift Distribution Histogram')
 pdf = hist
 
 
-# Configures kappaTNG files. 
+# Configures kappaTNG files.
+# One seeded permutation of all (LP, run) pairs, so every pair is used exactly
+# once. (Shuffling the LP and run columns independently samples pairs with
+# replacement and produced duplicate maps across train/test/val.)
+# Note: the split is by (LP, run) pair, not by LP, so maps that share an LP can
+# appear in different splits.
+seed = 0
+order = np.random.default_rng(seed).permutation(len(pairs))
 
-np.random.seed(0)
-LPs = np.arange(1, 101)
-runs = np.arange(1, 101)
-mesh1, mesh2 = np.meshgrid(LPs, runs)
-flat_mesh1 = mesh1.flatten()
-flat_mesh2 = mesh2.flatten()
-# Shuffle (LP, run) pairs jointly so every pair is used exactly once.
-# (Shuffling the two columns independently samples pairs with replacement
-# and produced duplicate maps across train/test/val.)
-perm = np.random.permutation(flat_mesh1.size)
-flat_mesh1 = flat_mesh1[perm]
-flat_mesh2 = flat_mesh2[perm]
+n_train, n_val, n_test = 8500, 1000, 500
+assert n_train + n_val + n_test == len(pairs) == 10000
+split_order = {
+    'train': order[:n_train],
+    'val': order[n_train:n_train + n_val],
+    'test': order[n_train + n_val:],
+}
 
-
-dst_dir = "/share/gpu0/jjwhit/kappa_cosmos_simulations/"
-if not os.path.exists(dst_dir):
-   # Create a new directory because it does not exist
-   os.makedirs(dst_dir)
-   print("The new directory has been made!")
-
-dst_train_path = dst_dir + 'kappa_train/'
-dst_test_path = dst_dir + 'kappa_test/'
-dst_val_path = dst_dir + 'kappa_val/'
-
-if not os.path.exists(dst_train_path):
-    os.makedirs(dst_train_path)
-if not os.path.exists(dst_test_path):
-    os.makedirs(dst_test_path)
-if not os.path.exists(dst_val_path):
-    os.makedirs(dst_val_path)
+# Cropping and clipping are folded in from cropper.py (which is now no longer
+# needed in the pipeline): only the central 300x300 crop of each map is written,
+# never the full 1024x1024 map.
+# Every map in every split (train, val and test) is clipped at 0.7
+# (equivalent to cropper.py's in-place kappa[kappa>0.7]=0.7).
+center_size = 300 # Size of COSMOS maps
+center_start = (1024 - center_size) // 2
+center_end = center_start + center_size
 
 
 # Precompute redshift weights once (they do not depend on LP or run).
@@ -96,44 +155,29 @@ for i in range(len(redshift_vals_array)):
 norm = omega.sum()
 
 
-n = 1
-for it in range(len(flat_mesh1)):
-    path_to_load = '/share/gpu0/jjwhit/kappaTNG_suites/LP{:03d}/run{:03d}/'.format(flat_mesh1[it], flat_mesh2[it])
-    
-    # Reset slice and kappa_tot for each different map.
-    slice = 0
+def build_map(lp, run):
+    """Returns the redshift-weighted 1024x1024 convergence map for one (LP, run) pair."""
     kappa_tot = np.zeros((1024, 1024))
     for fname in range(len(redshift_vals_array)):
-        if fname in range(0, 41):
-            full_path = os.path.join(path_to_load, 'kappa' + str(fname).zfill(2) + '.dat')
-        else:
-            # Uses z=2.6 map (with appropriate weight) for redshifts beyond kappaTNG range.
-            full_path = os.path.join(path_to_load, 'kappa40.dat')
+        with open(kappatng_file(lp, run, fname), 'rb') as f:
+            dummy = np.fromfile(f, dtype="int32", count=1)
+            kappa = np.fromfile(f, dtype="float", count=1024*1024)
+            dummy = np.fromfile(f, dtype="int32", count=1)
 
-        if not os.path.exists(full_path):
-            print(f'The file at {full_path} does not exist.')
-        else:
-            with open(full_path, 'rb') as f:
-                # Load file
-                #print(f"loading z = {redshift_vals_array[fname]}...")
-                dummy = np.fromfile(f, dtype="int32", count=1)
-                kappa = np.fromfile(f, dtype="float", count=1024*1024)
-                dummy = np.fromfile(f, dtype="int32", count=1)  
-    
-                kappa = kappa.reshape((1024, 1024))
-            # Note: slice only advances when the file exists, so if a file were
-            # missing, later slices would pick up the wrong precomputed weight
-            # (exactly as in the original code). When all files exist, slice == fname.
-            kappa_tot += (omega[slice]/norm) * kappa
-            slice +=1
+        kappa = kappa.reshape((1024, 1024))
+        kappa_tot += (omega[fname]/norm) * kappa
+    return kappa_tot
 
-    if (it/len(flat_mesh1)) <= 0.85:
-        dst_dir = dst_train_path
-    elif (it/len(flat_mesh1)) > 0.85 and (it/len(flat_mesh1)) <=0.95:
-        dst_dir = dst_test_path
-    else:
-        dst_dir = dst_val_path
 
-    save_path = '{:s}{:s}{:05d}{:s}'.format(dst_dir, "sim_", n, ".npy")
-    np.save(save_path, kappa_tot, allow_pickle=True)
-    n +=1
+for split in ('train', 'val', 'test'):
+    split_dir = split_dirs[split]
+    for index, pair_idx in enumerate(split_order[split]):
+        lp, run = pairs[pair_idx]
+        kappa_tot = build_map(lp, run)
+
+        # Crop to the central 300x300 region in memory, then clip at 0.7.
+        kappa_crop = kappa_tot[center_start:center_end, center_start:center_end]
+        kappa_crop = np.minimum(kappa_crop, 0.7)
+
+        save_path = os.path.join(split_dir, 'kappa_{:05d}.npy'.format(index))
+        np.save(save_path, kappa_crop, allow_pickle=True)

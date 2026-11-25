@@ -2,13 +2,14 @@
 checkpoint_dir: /share/gpu0/jjwhit/mass_map/mm_models/ # Where model will save checkpoints
 data_path: /share/gpu0/jjwhit/kappa_cosmos_simulations/cropped_dataset/ # Path to simulation dataset
 cosmo_dir_path: /home/jjwhit/rcGAN/mass_map_utils/cosmos/ # Path to cosmos information such as mask
+kappatng_path: /share/gpu0/jjwhit/kappaTNG_suites # Path to kappaTNG source maps (LPxxx/runxxx/kappaNN.dat)
 save_path: /share/gpu0/jjwhit/samples/crps_base/ # where figures and samples will be saved
 fig_path: /share/gpu0/jjwhit/plots/crps_base/
 
 # Define the experience
 experience: mass_mapping
-kappa_mean: 0.00015744006243248638 # Value calculated during preprocessing
-kappa_std: 0.02968584954283938 # Value calculated during preprocessing
+kappa_mean: 0.00015744006243248638 # STALE: computed on the old dataset; recompute with normalisation.py after regenerating
+kappa_std: 0.02968584954283938 # STALE: computed on the old dataset; recompute with normalisation.py after regenerating
 
 # Number of code vectors for each phase
 num_z_test: 32
