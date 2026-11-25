@@ -50,8 +50,12 @@ if __name__ == "__main__":
         pt_ks = pt_ks.permute(2,0,1)
         cosmos_map = transforms.to_tensor(cosmos_map)
         cosmos_map = cosmos_map.permute(2,0,1)
-        normalized_gamma, mean, std = transforms.normalise_complex(cosmos_map)
-        normalized_ks, mean_ks, std_ks = transforms.normalise_complex(pt_ks)
+        # Real COSMOS shear, normalised with the mock-train shear-magnitude stats.
+        normalized_gamma, mean, std = transforms.normalise_complex(
+            cosmos_map, cfg.shear_mag_mean, cfg.shear_mag_std
+        )
+        # KS channel: per-map stats, matching MMDataTransform in training.
+        normalized_ks, mean_ks, std_ks = transforms.normalize_instance(pt_ks)
         normalized_ks = transforms.normalize(pt_ks, mean_ks, std_ks)
         normalized_gamma = torch.cat([normalized_gamma, normalized_ks], dim=0).unsqueeze(0).float()
         batch_size = 9

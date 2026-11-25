@@ -8,8 +8,12 @@ fig_path: /share/gpu0/jjwhit/plots/crps_base/
 
 # Define the experience
 experience: mass_mapping
-kappa_mean: 0.00015744006243248638 # STALE: computed on the old dataset; recompute with normalisation.py after regenerating
-kappa_std: 0.02968584954283938 # STALE: computed on the old dataset; recompute with normalisation.py after regenerating
+kappa_mean: 0.00015744006243248638
+kappa_std: 0.02968584954283938
+shear_mag_mean: 0.14049194898307577
+shear_mag_std: 0.11606233247891737
+shear_noise_seed: 1
+shear_noise_draws: 10 # noise draws per train map
 
 # Number of code vectors for each phase
 num_z_test: 32

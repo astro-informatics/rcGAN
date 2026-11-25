@@ -258,17 +258,17 @@ def normalize_instance(
 
 def normalise_complex(
     shear: torch.Tensor, #Shape (2, H, W) 
-    mag_mean: float = 0.14049194898307577,
-    mag_std: float = 0.11606233247891737,
+    mag_mean: float,
+    mag_std: float,
     eps: Union[float, torch.Tensor] = 0.0
 ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """
     Normalise a complex tensor. (Used during data transform)
 
     More specifically, we separate the magnitude and phase of the complex tensor, before
-    normalising the magnitude given a mean and standard deviation of that magnitude. The default values
-    are the mean and standard deviation across the entire dataset of mock shear maps, computed
-    during preprocessing. 
+    normalising the magnitude given a mean and standard deviation of that magnitude. These are
+    required (no defaults): pass the config's shear_mag_mean / shear_mag_std, computed over the
+    training set of mock shear maps during preprocessing.
     Once the magnitude is normalised, we re-integrate the phase, to returned a normalied complex tensor, with mean 
     and standard deviation of the magnitude.
 
@@ -295,16 +295,16 @@ def normalise_complex(
 
 def unnormalize_complex(
     normed_data: torch.Tensor, 
-    mag_mean: float = 0.14049194898307577, 
-    mag_std: float = 0.11606233247891737,
-):  
+    mag_mean: float,
+    mag_std: float,
+):
     """
     Unnormalise a complex tensor.
 
     Tensors are normalised before being passed through the GAN, therefore this function 'unnormalises' the 
     output, to return a tensor with the same scale as the input. The magnitude and phase of the complex tensor
     are separated, and then the magnitude is unnormalised according to the mean and standard deviation of the shear. 
-    Default values for these were calculated across the entire dataset of mock shear maps during preprocessing.
+    These are required (no defaults): pass the config's shear_mag_mean / shear_mag_std.
     Then, the phase is recombined with the unnormalised magnitude to return the unnormalised complex tensor.
 
     Args:

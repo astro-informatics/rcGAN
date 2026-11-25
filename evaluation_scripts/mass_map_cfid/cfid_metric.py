@@ -166,7 +166,9 @@ class CFIDMetric:
             reformatted[:, :, :, 0] = multi_coil_inp[i, 0, :, :]
             reformatted[:, :, :, 1] = multi_coil_inp[i, 1, :, :]
 
-            unnormal_im = unnormalize_complex(reformatted) #Mean/std calculated during preprocessing
+            unnormal_im = unnormalize_complex(
+                reformatted, self.args.shear_mag_mean, self.args.shear_mag_std
+            ) # Shear-magnitude mean/std from the config, computed during preprocessing
 
             im = torch.real(torch.tensor(tensor_to_complex_np(unnormal_im.cpu()))).cuda()
             im = (im - torch.min(im)) / (torch.max(im) - torch.min(im))

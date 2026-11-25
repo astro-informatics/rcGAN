@@ -15,14 +15,9 @@ Update ```configs/mass_map.yml``` with the path to your data, where you want to 
 ## Data Setup
 All of the scripts required are in the ```mass_map_utils``` folder. For our training we used the [kappaTNG mock weak lensing suite](https://columbialensing.github.io/#tng) and the [Schrabback et al.](https://www.aanda.org/articles/aa/abs/2010/08/aa13577-09/aa13577-09.html) COSMOS shape catalog to build a set of COSMOS-like convergence maps. To build the same dataset yourself run the ```mass_map_utils/jobs/preprocessing/create_dataset.sh``` bash file. This will run a series of scripts which will create the mock convergence maps, crop them down to 300x300 pixel maps, and then normalise the dataset. No shear maps are saved in the pre-processing step, they are all created on the fly by MMGAN during training.
 
-The generator reads ```data_path```, ```cosmo_dir_path``` and ```kappatng_path``` from ```configs/mass_map.yml```, and splits the 10,000 kappaTNG (LP, run) pairs with seed 0. Before writing anything it checks that every input file exists, and it refuses to write into non-empty split directories:
-```
-<data_path>/
-    train/kappa_00000.npy ... kappa_08499.npy
-    val/kappa_00000.npy   ... kappa_00999.npy
-    test/kappa_00000.npy  ... kappa_00499.npy
-```
-**Note:** the ```kappa_mean``` and ```kappa_std``` values in ```configs/mass_map.yml``` are stale (old dataset) and must be recomputed with ```normalisation.py``` after regenerating the dataset.
+- The generator splits the 10,000 kappaTNG (LP, run) pairs into 8500/1000/500 train/val/test maps, saved as ```<data_path>/{train,val,test}/kappa_NNNNN.npy```.
+- It computes ```kappa_mean```, ```kappa_std```, ```shear_mag_mean``` and ```shear_mag_std``` on the train maps (after the 0.7 clip; shear pooled over ```shear_noise_draws``` noise draws seeded by ```shear_noise_seed```) and writes them to the config, keeping each old value as a ```# <number>``` line above.
+- ```mass_map_utils/scripts/normalisation.py``` is a standalone fallback.
 
 If you wish to modify the dataset creation process, the python scripts themselves can be found in ```mass_map_utils/scripts```.
 
@@ -104,8 +99,8 @@ If you would like to use MMGAN for your own mass-mapping problems there are a nu
 ## Config
 
 We chose to normalise across the entire dataset, rather than on an instance by instance case. Therefore we recommend, making a copy of ```configs/mass_map.yml```
-with updated directory paths, as well as an updated kappa_mean and kappa_std configured to your dataset. 
-We provide a script ```mass_map_utils/scripts/normalisation.py``` in order to calculate these values.
+with updated directory paths, as well as an updated kappa_mean, kappa_std, shear_mag_mean and shear_mag_std configured to your dataset. 
+These are written to the config by ```mass_map_utils/scripts/convergence_map_generator.py```, with ```mass_map_utils/scripts/normalisation.py``` as a fallback.
 
 To find the optimal batch size, we have created a script in ```examples```, where the config file should be updated to a test version of the configuration 
 you plan on using.

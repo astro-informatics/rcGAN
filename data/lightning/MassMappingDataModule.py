@@ -22,6 +22,11 @@ class MMDataTransform:
         self.std1 = None
         self.std2 = None
         self.D = self.compute_fourier_kernel(self.im_size)
+        # Shear-magnitude normalisation stats from the config (computed over the
+        # train split by convergence_map_generator.py). Read here so a config
+        # without them fails at construction, not inside a dataloader worker.
+        self.shear_mag_mean = args.shear_mag_mean
+        self.shear_mag_std = args.shear_mag_std
 
         # Load mask and std dev for noise
         try:
@@ -190,7 +195,9 @@ class MMDataTransform:
         pt_ks = pt_ks.permute(2, 0, 1)  # Shape (2, H, W)
 
         # Normalization step.
-        normalized_gamma, mean, std = transforms.normalise_complex(pt_gamma)
+        normalized_gamma, mean, std = transforms.normalise_complex(
+            pt_gamma, self.shear_mag_mean, self.shear_mag_std
+        )
         normalized_gt = transforms.normalize(
             pt_gt, self.args.kappa_mean, self.args.kappa_std
         )  # Shape (1, H, W)

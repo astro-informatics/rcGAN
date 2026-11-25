@@ -2,11 +2,16 @@
 import argparse
 import json
 import os
+import sys
 import types
 
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from data.lightning.MassMappingDataModule import MMDataTransform as MM
+from mass_map_utils.scripts.config_stats import write_stats
 
 '''This script Builds a COSMOS-like dataset of weak lensing maps from kappaTNG weak lensing suites.
 
@@ -53,6 +58,14 @@ if missing:
         + (f' (first {max_listed} listed)' if len(missing) > max_listed else '') + ':\n'
         + '\n'.join(missing[:max_listed])
     )
+
+noise_seed = cfg.shear_noise_seed
+noise_draws = cfg.shear_noise_draws
+missing = [k for k in ('kappa_mean', 'kappa_std', 'shear_mag_mean', 'shear_mag_std') if not hasattr(cfg, k)]
+if missing:
+    raise KeyError(f'{missing} not found in {args.config}')
+std1 = np.load(os.path.join(cfg.cosmo_dir_path, 'cosmos_std1.npy'), allow_pickle=True)
+std2 = np.load(os.path.join(cfg.cosmo_dir_path, 'cosmos_std2.npy'), allow_pickle=True)
 
 
 # Configures output directories. One explicit, distinct directory per split.
@@ -133,6 +146,11 @@ center_size = 300 # Size of COSMOS maps
 center_start = (1024 - center_size) // 2
 center_end = center_start + center_size
 
+kernel = MM.compute_fourier_kernel(center_size)
+rng = np.random.default_rng(noise_seed)
+kappa_n = shear_n = 0
+kappa_sum = kappa_sumsq = shear_sum = shear_sumsq = 0.0
+
 
 # Precompute redshift weights once (they do not depend on LP or run).
 # Bin size halved for first and last bins.
@@ -179,5 +197,31 @@ for split in ('train', 'val', 'test'):
         kappa_crop = kappa_tot[center_start:center_end, center_start:center_end]
         kappa_crop = np.minimum(kappa_crop, 0.7)
 
+        if split == 'train':
+            kappa_n += kappa_crop.size
+            kappa_sum += kappa_crop.sum()
+            kappa_sumsq += np.square(kappa_crop).sum()
+            shear = MM.forward_model(kappa_crop, kernel)
+            # Each noise draw is pooled as extra pixels, never averaged across draws.
+            for _ in range(noise_draws):
+                mag = np.abs(shear + std1 * rng.standard_normal(shear.shape)
+                             + 1j * std2 * rng.standard_normal(shear.shape))
+                shear_n += mag.size
+                shear_sum += mag.sum()
+                shear_sumsq += np.square(mag).sum()
+
         save_path = os.path.join(split_dir, 'kappa_{:05d}.npy'.format(index))
         np.save(save_path, kappa_crop, allow_pickle=True)
+
+
+kappa_mean = kappa_sum / kappa_n
+shear_mean = shear_sum / shear_n
+stats = {
+    'kappa_mean': kappa_mean,
+    'kappa_std': np.sqrt(kappa_sumsq / kappa_n - kappa_mean**2),
+    'shear_mag_mean': shear_mean,
+    'shear_mag_std': np.sqrt(shear_sumsq / shear_n - shear_mean**2),
+}
+for key, val in stats.items():
+    print(f'{key}: {val!r}')
+write_stats(args.config, stats)
