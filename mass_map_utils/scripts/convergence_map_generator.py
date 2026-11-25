@@ -1,6 +1,5 @@
 
 import argparse
-import csv
 import json
 import os
 import types
@@ -18,7 +17,6 @@ Output layout (root = cfg.data_path):
     root/train/kappa_00000.npy ... kappa_08499.npy   (8500 maps)
     root/val/kappa_00000.npy   ... kappa_00999.npy   (1000 maps)
     root/test/kappa_00000.npy  ... kappa_00499.npy   (500 maps)
-    root/manifest.csv          (split,index,lp,run)
 '''
 
 parser = argparse.ArgumentParser(description='Build the COSMOS-like kappaTNG convergence map dataset.')
@@ -58,22 +56,19 @@ if missing:
 
 
 # Configures output directories. One explicit, distinct directory per split.
-# Refuse to write into a non-empty split dir (or over an existing manifest) so
-# stale files from an earlier run can never be mixed into the new dataset.
+# Refuse to write into a non-empty split dir so stale files from an earlier run
+# can never be mixed into the new dataset.
 split_dirs = {
     'train': os.path.join(root, 'train'),
     'val': os.path.join(root, 'val'),
     'test': os.path.join(root, 'test'),
 }
-manifest_path = os.path.join(root, 'manifest.csv')
 
 os.makedirs(root, exist_ok=True)
 for split, split_dir in split_dirs.items():
     os.makedirs(split_dir, exist_ok=True)
     if os.listdir(split_dir):
         raise RuntimeError(f'{split} directory {split_dir} is not empty; generate into a fresh data_path.')
-if os.path.exists(manifest_path):
-    raise RuntimeError(f'{manifest_path} already exists; generate into a fresh data_path.')
 
 
 # Configures redshift distribution.
@@ -174,7 +169,6 @@ def build_map(lp, run):
     return kappa_tot
 
 
-manifest_rows = []
 for split in ('train', 'val', 'test'):
     split_dir = split_dirs[split]
     for index, pair_idx in enumerate(split_order[split]):
@@ -187,10 +181,3 @@ for split in ('train', 'val', 'test'):
 
         save_path = os.path.join(split_dir, 'kappa_{:05d}.npy'.format(index))
         np.save(save_path, kappa_crop, allow_pickle=True)
-        manifest_rows.append((split, index, lp, run))
-
-
-with open(manifest_path, 'w', newline='') as f:
-    writer = csv.writer(f)
-    writer.writerow(('split', 'index', 'lp', 'run'))
-    writer.writerows(manifest_rows)
