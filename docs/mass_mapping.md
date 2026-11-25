@@ -22,7 +22,7 @@ The generator reads ```data_path```, ```cosmo_dir_path``` and ```kappatng_path``
     val/kappa_00000.npy   ... kappa_00999.npy
     test/kappa_00000.npy  ... kappa_00499.npy
 ```
-**Note:** the ```kappa_mean``` and ```kappa_std``` values in ```configs/mass_map.yml``` are stale (old dataset) and must be recomputed with ```normalisation.py``` after regenerating the dataset.
+**Note:** after saving all maps, the generator computes ```kappa_mean```, ```kappa_std```, ```shear_mag_mean``` and ```shear_mag_std``` from the train split and writes all four into the ```--config``` file. Each old value is kept as a commented history line (```# kappa_mean: <old> # old value, replaced by ... on <date>```) directly above the new one. The shear stats simulate COSMOS noise with ```shear_noise_seed``` and pool ```shear_noise_draws``` independent noise draws per train map; both keys must be set in the config. ```mass_map_utils/scripts/normalisation.py``` is a standalone fallback that writes the same four keys (from the first 500 train maps) in the same way.
 
 If you wish to modify the dataset creation process, the python scripts themselves can be found in ```mass_map_utils/scripts```.
 
@@ -104,8 +104,8 @@ If you would like to use MMGAN for your own mass-mapping problems there are a nu
 ## Config
 
 We chose to normalise across the entire dataset, rather than on an instance by instance case. Therefore we recommend, making a copy of ```configs/mass_map.yml```
-with updated directory paths, as well as an updated kappa_mean and kappa_std configured to your dataset. 
-We provide a script ```mass_map_utils/scripts/normalisation.py``` in order to calculate these values.
+with updated directory paths, as well as updated ```kappa_mean```, ```kappa_std```, ```shear_mag_mean``` and ```shear_mag_std``` configured to your dataset.
+```mass_map_utils/scripts/convergence_map_generator.py``` computes all four from the train split and writes them into the config; ```mass_map_utils/scripts/normalisation.py``` is a standalone fallback that does the same for an existing dataset. Both keep each old value as a commented history line, and both read ```shear_noise_seed``` and ```shear_noise_draws``` (seed and number of pooled noise draws per map for the shear stats) from the config.
 
 To find the optimal batch size, we have created a script in ```examples```, where the config file should be updated to a test version of the configuration 
 you plan on using.
