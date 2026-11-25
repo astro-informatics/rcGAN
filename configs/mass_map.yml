@@ -8,14 +8,12 @@ fig_path: /share/gpu0/jjwhit/plots/crps_base/
 
 # Define the experience
 experience: mass_mapping
-kappa_mean: 0.00015744006243248638 # STALE: computed on the old dataset; overwritten by convergence_map_generator.py (normalisation.py as fallback)
-kappa_std: 0.02968584954283938 # STALE: computed on the old dataset; overwritten by convergence_map_generator.py (normalisation.py as fallback)
-shear_mag_mean: 0.14049194898307577 # STALE: old hardcoded normalise_complex default; overwritten by convergence_map_generator.py
-shear_mag_std: 0.11606233247891737 # STALE: old hardcoded normalise_complex default; overwritten by convergence_map_generator.py
-# Shear noise used for the shear_mag_* stats (generator and normalisation.py).
-# On each run the old stat values above are kept as commented history lines.
-shear_noise_seed: 1 # seed of the shear-noise RNG
-shear_noise_draws: 10 # noise draws per train map, pooled into the stats
+kappa_mean: 0.00015744006243248638
+kappa_std: 0.02968584954283938
+shear_mag_mean: 0.14049194898307577
+shear_mag_std: 0.11606233247891737
+shear_noise_seed: 1
+shear_noise_draws: 10 # noise draws per train map
 
 # Number of code vectors for each phase
 num_z_test: 32

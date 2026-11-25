@@ -1,9 +1,7 @@
 
 import argparse
-import datetime
 import json
 import os
-import re
 import sys
 import types
 
@@ -11,13 +9,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import yaml
 
-# Repo root (two levels up from mass_map_utils/scripts/), so the data module
-# can be imported without a hardcoded absolute path.
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-if REPO_ROOT not in sys.path:
-    sys.path.insert(0, REPO_ROOT)
-# Same forward model as training and normalisation.py (pulls in torch / lightning).
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from data.lightning.MassMappingDataModule import MMDataTransform as MM
+from mass_map_utils.scripts.config_stats import write_stats
 
 '''This script Builds a COSMOS-like dataset of weak lensing maps from kappaTNG weak lensing suites.
 
@@ -65,87 +59,11 @@ if missing:
         + '\n'.join(missing[:max_listed])
     )
 
-
-# Normalisation stats written back to the --config after all maps are saved.
-# Check the keys now (and again at write time) so a missing key fails before
-# hours of generation rather than after.
-STAT_KEYS = ('kappa_mean', 'kappa_std', 'shear_mag_mean', 'shear_mag_std')
-SCRIPT_NAME = 'convergence_map_generator.py'
-
-
-def stat_key_pattern(key):
-    """Matches only the ACTIVE `key:` line (column 0), never a commented history line."""
-    return re.compile(rf'^{re.escape(key)}:(.*)$', flags=re.M)
-
-
-def yaml_float(val):
-    """Full-precision float literal that PyYAML reads back as a float.
-
-    repr() gives e.g. '5e-05' for small values, which PyYAML (YAML 1.1) loads
-    as a *string*; force a '.' in the mantissa ('5.0e-05').
-    """
-    val = float(val)
-    if not np.isfinite(val):
-        raise ValueError(f'Refusing to write non-finite stat {val!r} to the config.')
-    s = repr(val)
-    mantissa, e, exponent = s.partition('e')
-    if e and '.' not in mantissa:
-        s = f'{mantissa}.0e{exponent}'
-    return s
-
-
-def replace_stat_line(cfg_text, key, val, note, script_name, today):
-    """Replace the active `key:` line with a commented history line plus the new value.
-
-    The active line becomes two lines:
-        # <key>: <old value> # old value, replaced by <script_name> on <today>
-        <key>: <new value> # <note>
-    The old line's trailing comment is dropped. Only an uncommented line at
-    column 0 is matched, so repeated runs stack history lines and never touch
-    earlier commented ones. Every other line is preserved.
-    """
-    matches = list(stat_key_pattern(key).finditer(cfg_text))
-    if not matches:
-        raise KeyError(f'{key} not found in {args.config}')
-    if len(matches) > 1:
-        raise ValueError(f'{key} is set {len(matches)} times in {args.config}; keep only one active line.')
-    m = matches[0]
-    old_val = re.split(r'\s#', m.group(1), maxsplit=1)[0].strip()
-    new_lines = (
-        f'# {key}: {old_val} # old value, replaced by {script_name} on {today}\n'
-        f'{key}: {yaml_float(val)} # {note}'
-    )
-    # Slice rather than re.sub so backslashes in the old value are kept literally.
-    return cfg_text[:m.start()] + new_lines + cfg_text[m.end():]
-
-
-def require_int_cfg(name, minimum):
-    """Return integer cfg.<name>, raising a clear error if it is missing, not an int or < minimum."""
-    if not hasattr(cfg, name):
-        raise KeyError(f'{name} not found in {args.config}; add it (see configs/mass_map.yml).')
-    val = getattr(cfg, name)
-    if isinstance(val, bool) or not isinstance(val, int):
-        raise TypeError(f'{name} in {args.config} must be an integer, got {val!r}.')
-    if val < minimum:
-        raise ValueError(f'{name} in {args.config} must be >= {minimum}, got {val}.')
-    return val
-
-
-with open(args.config, 'r') as f:
-    _cfg_text = f.read()
-_missing_keys = [k for k in STAT_KEYS if not stat_key_pattern(k).search(_cfg_text)]
-if _missing_keys:
-    raise KeyError(f'{_missing_keys} not found in {args.config}; add them (any value) before generating.')
-_dup_keys = [k for k in STAT_KEYS if len(stat_key_pattern(k).findall(_cfg_text)) > 1]
-if _dup_keys:
-    raise ValueError(f'{_dup_keys} are set more than once in {args.config}; keep only one active line each.')
-
-# Shear-noise settings for the shear_mag_* stats (same keys as normalisation.py).
-shear_noise_seed = require_int_cfg('shear_noise_seed', 0) # default_rng rejects negative seeds
-shear_noise_draws = require_int_cfg('shear_noise_draws', 1)
-
-# COSMOS noise std maps for the shear-magnitude stats (as in normalisation.py).
-# Loaded before any output is written, so a missing file aborts cleanly.
+noise_seed = cfg.shear_noise_seed
+noise_draws = cfg.shear_noise_draws
+missing = [k for k in ('kappa_mean', 'kappa_std', 'shear_mag_mean', 'shear_mag_std') if not hasattr(cfg, k)]
+if missing:
+    raise KeyError(f'{missing} not found in {args.config}')
 std1 = np.load(os.path.join(cfg.cosmo_dir_path, 'cosmos_std1.npy'), allow_pickle=True)
 std2 = np.load(os.path.join(cfg.cosmo_dir_path, 'cosmos_std2.npy'), allow_pickle=True)
 
@@ -228,54 +146,10 @@ center_size = 300 # Size of COSMOS maps
 center_start = (1024 - center_size) // 2
 center_end = center_start + center_size
 
-# Normalisation stats are accumulated on the fly over the train split only,
-# from the same cropped + clipped maps that are saved (see RunningStats).
-for name, arr in (('cosmos_std1', std1), ('cosmos_std2', std2)):
-    if arr.shape != (center_size, center_size):
-        raise ValueError(f'{name}.npy has shape {arr.shape}, expected {(center_size, center_size)}.')
-kernel = MM.compute_fourier_kernel(center_size) # computed once
-# Dedicated RNG for the shear noise (cfg.shear_noise_seed), separate from the
-# split permutation's default_rng(0) above, so the split is unchanged and the
-# shear stats are reproducible.
-shear_noise_rng = np.random.default_rng(shear_noise_seed)
-
-
-class RunningStats:
-    """Population mean / std over every pixel of many maps.
-
-    Each update (one map, or one noise draw of a map) contributes
-    (count, mean, M2) computed in float64, merged with Chan et al.'s parallel
-    update, so there is no sum-of-squares cancellation.
-    Matches normalisation.py's definition:
-        mean = mean over all pixels
-        std  = sqrt(sum((x - mean)^2) / (n_updates * im_size^2))
-    """
-
-    def __init__(self):
-        self.n_updates = 0
-        self.count = 0
-        self.mean = 0.0
-        self.m2 = 0.0
-
-    def update(self, x):
-        x = np.asarray(x, dtype=np.float64)
-        n_b = x.size
-        mean_b = x.mean()
-        m2_b = np.sum((x - mean_b) ** 2)
-        n = self.count + n_b
-        delta = mean_b - self.mean
-        self.mean += delta * n_b / n
-        self.m2 += m2_b + delta ** 2 * self.count * n_b / n
-        self.count = n
-        self.n_updates += 1
-
-    @property
-    def std(self):
-        return np.sqrt(self.m2 / self.count)
-
-
-kappa_stats = RunningStats()
-shear_mag_stats = RunningStats()
+kernel = MM.compute_fourier_kernel(center_size)
+rng = np.random.default_rng(noise_seed)
+kappa_n = shear_n = 0
+kappa_sum = kappa_sumsq = shear_sum = shear_sumsq = 0.0
 
 
 # Precompute redshift weights once (they do not depend on LP or run).
@@ -324,52 +198,30 @@ for split in ('train', 'val', 'test'):
         kappa_crop = np.minimum(kappa_crop, 0.7)
 
         if split == 'train':
-            # Normalisation stats from the train split only. The shear is not
-            # stored anywhere, so it is simulated here exactly as in
-            # normalisation.py: noiseless shear from the clipped 300x300 kappa,
-            # plus COSMOS noise, then its magnitude.
-            kappa_stats.update(kappa_crop)
-            # Noise-free shear once per map; then shear_noise_draws independent
-            # noise draws, each adding one more batch of pixels to the pooled
-            # stats. Never average noise / noisy shear across draws before
-            # abs() or accumulating: that would shrink the noise variance.
+            kappa_n += kappa_crop.size
+            kappa_sum += kappa_crop.sum()
+            kappa_sumsq += np.square(kappa_crop).sum()
             shear = MM.forward_model(kappa_crop, kernel)
-            for _ in range(shear_noise_draws):
-                noisy_shear = shear + (
-                    std1 * shear_noise_rng.standard_normal((center_size, center_size))
-                    + 1j * std2 * shear_noise_rng.standard_normal((center_size, center_size))
-                )
-                shear_mag_stats.update(np.abs(noisy_shear))
+            # Each noise draw is pooled as extra pixels, never averaged across draws.
+            for _ in range(noise_draws):
+                mag = np.abs(shear + std1 * rng.standard_normal(shear.shape)
+                             + 1j * std2 * rng.standard_normal(shear.shape))
+                shear_n += mag.size
+                shear_sum += mag.sum()
+                shear_sumsq += np.square(mag).sum()
 
         save_path = os.path.join(split_dir, 'kappa_{:05d}.npy'.format(index))
         np.save(save_path, kappa_crop, allow_pickle=True)
 
 
-# All maps saved: write the train-split stats back into the --config, editing
-# only the four stat lines (old values kept as commented history lines) so all
-# other lines and comments are preserved.
-if kappa_stats.n_updates != n_train or shear_mag_stats.n_updates != n_train * shear_noise_draws:
-    raise RuntimeError(
-        f'Stats cover {kappa_stats.n_updates} kappa / {shear_mag_stats.n_updates} shear updates, '
-        f'expected {n_train} / {n_train * shear_noise_draws} ({n_train} maps x {shear_noise_draws} draws).'
-    )
+kappa_mean = kappa_sum / kappa_n
+shear_mean = shear_sum / shear_n
 stats = {
-    'kappa_mean': kappa_stats.mean,
-    'kappa_std': kappa_stats.std,
-    'shear_mag_mean': shear_mag_stats.mean,
-    'shear_mag_std': shear_mag_stats.std,
+    'kappa_mean': kappa_mean,
+    'kappa_std': np.sqrt(kappa_sumsq / kappa_n - kappa_mean**2),
+    'shear_mag_mean': shear_mean,
+    'shear_mag_std': np.sqrt(shear_sumsq / shear_n - shear_mean**2),
 }
 for key, val in stats.items():
     print(f'{key}: {val!r}')
-
-today = datetime.date.today().isoformat()
-with open(args.config, 'r') as f:
-    cfg_text = f.read()
-for key, val in stats.items():
-    note = f'computed by {SCRIPT_NAME} from {n_train} train maps'
-    if key.startswith('shear_mag'):
-        note += f' (noise seed {shear_noise_seed}, {shear_noise_draws} draws)'
-    cfg_text = replace_stat_line(cfg_text, key, val, note, SCRIPT_NAME, today)
-with open(args.config, 'w') as f:
-    f.write(cfg_text)
-print('Wrote', ', '.join(stats), 'to', args.config)
+write_stats(args.config, stats)
